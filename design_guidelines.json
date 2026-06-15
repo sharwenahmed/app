@@ -1,0 +1,79 @@
+{
+  "theme": "Dark",
+  "archetype": "5 (Luxury) combined with 4 (Swiss & High-Contrast)",
+  "vibe": "Premium, Luxury, Modern, Minimalist, Spacious, Interactive. Feels like Apple, Framer, Linear, Stripe, Vercel, and Wix Studio combined.",
+  "colors": {
+    "background_primary": "#030008",
+    "background_secondary": "#0A0319",
+    "background_tertiary": "#120524",
+    "accent_primary": "#9333EA",
+    "accent_secondary": "#6B21A8",
+    "accent_glow": "rgba(147, 51, 234, 0.4)",
+    "text_primary": "#FFFFFF",
+    "text_secondary": "#A198B6",
+    "text_tertiary": "#6D6385",
+    "border_subtle": "rgba(255, 255, 255, 0.08)",
+    "glass_background": "rgba(20, 10, 35, 0.6)",
+    "instructions": "Use deep charcoal/midnight backgrounds. Avoid flat black. Use purple-to-violet gradients purely as soft glows (radial backgrounds) or text gradients, never as flat backgrounds. Use glassmorphism ('backdrop-blur-xl bg-white/5' or 'bg-black/40') with 1px subtle white/10 borders for cards and navigation."
+  },
+  "typography": {
+    "headings_font": "Cabinet Grotesk, Outfit, or General Sans",
+    "body_font": "General Sans, Satoshi, or Inter (if restricted, but heavily track out)",
+    "hierarchy": {
+      "h1": "text-5xl sm:text-6xl lg:text-7xl font-medium tracking-tighter leading-none",
+      "h2": "text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tight",
+      "h3": "text-2xl sm:text-3xl font-medium",
+      "body": "text-base sm:text-lg leading-relaxed text-secondary",
+      "labels": "text-xs font-bold uppercase tracking-[0.2em] text-accent_primary"
+    },
+    "instructions": "Typography must carry the premium feel. Use tight letter-spacing for headings (tracking-tighter) and loose line-height for body. Never center body text; left-align paragraphs."
+  },
+  "layout_and_spacing": {
+    "spacing_scale": "Generous. Use py-24 to py-32 for sections. Gaps should be gap-8 to gap-16.",
+    "grids": "Use 'Bento Grid' protocol. Asymmetrical layouts for services/features. Card containers must have generous p-8 or p-10 padding.",
+    "mockups": "For the Demo Gallery, use CSS-based device frames. Wrap Unsplash images in div containers with rounded-3xl (for mobile mockups) and rounded-xl (for desktop), overflow-hidden, and a 1px border. Render images with object-cover."
+  },
+  "animations": {
+    "scrolling": "MANDATORY: Use lenis for smooth scrolling.",
+    "reveals": "Framer Motion: Initial opacity 0, y 20, blur(10px) -> animate to opacity 1, y 0, blur(0px). Stagger children.",
+    "hover_states": "Cards should slightly lift (-translate-y-1) and increase border opacity and shadow (soft purple drop-shadow).",
+    "mouse_follow": "Implement a custom cursor or an interactive radial gradient that follows the mouse on the hero section."
+  },
+  "image_urls": {
+    "hero_abstract": [
+      "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwzfHxhYnN0cmFjdCUyMGRhcmslMjBwdXJwbGUlMjBnbG93aW5nJTIwYXVyYXxlbnwwfHx8fDE3ODE0OTE1NDB8MA&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1637952112301-6090dca83ccb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwyfHxhYnN0cmFjdCUyMGRhcmslMjBwdXJwbGUlMjBnbG93aW5nJTIwYXVyYXxlbnwwfHx8fDE3ODE0OTE1NDB8MA&ixlib=rb-4.1.0&q=85"
+    ],
+    "restaurants": [
+      "https://images.pexels.com/photos/16046683/pexels-photo-16046683.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "https://images.unsplash.com/photo-1726835498689-b4f6dbcdbdfb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDF8MHwxfHNlYXJjaHwzfHxsdXh1cnklMjByZXN0YXVyYW50JTIwaW50ZXJpb3IlMjBkYXJrfGVufDB8fHx8MTc4MTQ5MTU0MHww&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDF8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjByZXN0YXVyYW50JTIwaW50ZXJpb3IlMjBkYXJrfGVufDB8fHx8MTc4MTQ5MTU0MHww&ixlib=rb-4.1.0&q=85"
+    ],
+    "barbers_salons": [
+      "https://images.unsplash.com/photo-1759134198561-e2041049419c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTF8MHwxfHNlYXJjaHwxfHxwcmVtaXVtJTIwYmFyYmVyJTIwc2hvcHxlbnwwfHx8fDE3ODE0OTE1NDB8MA&ixlib=rb-4.1.0&q=85",
+      "https://images.pexels.com/photos/7195805/pexels-photo-7195805.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "https://images.pexels.com/photos/7195803/pexels-photo-7195803.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+    ],
+    "roofing_construction": [
+      "https://images.unsplash.com/photo-1613490493576-7fde63acd811?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzl8MHwxfHNlYXJjaHwxfHxyb29maW5nJTIwY29uc3RydWN0aW9uJTIwbW9kZXJuJTIwaG91c2V8ZW58MHx8fHwxNzgxNDkxNTUyfDA&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1628744448840-55bdb2497bd4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzl8MHwxfHNlYXJjaHwzfHxyb29maW5nJTIwY29uc3RydWN0aW9uJTIwbW9kZXJuJTIwaG91c2V8ZW58MHx8fHwxNzgxNDkxNTUyfDA&ixlib=rb-4.1.0&q=85"
+    ],
+    "cleaning": [
+      "https://images.unsplash.com/photo-1580256081112-e49377338b7f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTB8MHwxfHNlYXJjaHwzfHxwcm9mZXNzaW9uYWwlMjByZXNpZGVudGlhbCUyMGNsZWFuaW5nfGVufDB8fHx8MTc4MTQ5MTU1Mnww&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1740657254989-42fe9c3b8cce?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTB8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjByZXNpZGVudGlhbCUyMGNsZWFuaW5nfGVufDB8fHx8MTc4MTQ5MTU1Mnww&ixlib=rb-4.1.0&q=85"
+    ]
+  },
+  "sections_instructions": {
+    "hero": "Dark theme with an abstract purple glowing aura background image (low opacity). Large headline 'Websites That Make Your Business Look Like The Best In Town'. Include floating UI preview cards using Framer Motion.",
+    "why_modern": "Focus on typography and stats. Use a side-by-side layout comparing old vs new concepts via text or subtle wireframe icons.",
+    "why_a_designs": "Bento Grid layout. 6 animated glassmorphic cards with 'Tracing Beam' or glowing borders on hover. Deep purple accents.",
+    "demo_gallery": "MOST IMPORTANT. Create a tabbed interface (Restaurants, Barbers, Hair Salons, Roofing, Cleaning). Inside each tab, display 4 concepts. Concepts should be shown as a mix of desktop and mobile mockups using CSS borders/shadows to simulate screens. Use the provided Unsplash images inside these simulated screens.",
+    "before_after": "Use a custom slider component (React-compare-slider or custom framer motion) to show an outdated design wireframe vs a modern sleek design.",
+    "services": "Animated grid. Minimalist icons (Phosphor or Lucide). Focus on hover states revealing more info.",
+    "process": "Vertical interactive timeline. As you scroll down, the line fills with purple and nodes light up.",
+    "pricing": "3 columns. Middle column (Growth) scaled slightly larger (scale-105), highlighted with a subtle purple glowing border. 'Starting at' pricing.",
+    "contact": "Multi-field form (Shadcn customized). Premium input styles (bg-white/5, border-white/10, focus:border-purple-500).",
+    "admin_dashboard": "Separate route (/admin). Use a 'Control Room' grid (Archetype 2 style but dark mode). Dense, tabular data for leads. Flat solid surfaces, NO glassmorphism here, to ensure data clarity."
+  },
+  "testing": "All interactive elements must include 'data-testid' attributes (kebab-case, role-based)."
+}
