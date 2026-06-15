@@ -71,7 +71,7 @@ export default function Nav() {
                 }
               }}
             >
-              <span className="relative inline-flex w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 via-fuchsia-500 to-indigo-500 shadow-[0_0_24px_rgba(168,85,247,0.55)]">
+              <span className="relative inline-flex w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 via-fuchsia-500 to-indigo-500 shadow-[0_0_24px_rgba(168,85,247,0.55)]" aria-hidden="true">
                 <span className="absolute inset-[3px] rounded-md bg-black/60 backdrop-blur-sm grid place-items-center text-[10px] font-bold tracking-tight text-white">
                   A
                 </span>
@@ -149,7 +149,7 @@ export default function Nav() {
                 <a
                   key={l.id}
                   href={l.href}
-                  data-testid={l.testId}
+                  data-testid={`${l.testId}-mobile`}
                   onClick={(e) => handleNav(e, l.href)}
                   className="px-4 py-3 text-base text-white/85 hover:text-white border-b border-white/5 last:border-b-0"
                 >

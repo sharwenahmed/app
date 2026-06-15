@@ -30,7 +30,11 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  overflow-x: clip;
 }
+
+/* Belt + suspenders: prevent any decorative element from forcing horizontal scroll. */
+html, body, #root, .App, main { overflow-x: clip; }
 
 ::selection {
   background: rgba(147, 51, 234, 0.45);
