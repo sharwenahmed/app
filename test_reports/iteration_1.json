@@ -1,0 +1,60 @@
+{
+  "summary": "Completed full backend (pytest, 14/14 PASS) and frontend (Playwright) testing for A-Designs site + admin dashboard. Backend APIs (public leads, auth, admin CRUD, search/filter, stats, status updates, CSV export) all work correctly. Frontend home page renders correctly, demo gallery has 5 tabs x 4 concept cards, pricing shows 3 cards, FAQ accordion expands, footer links correct, hero/nav CTAs scroll and prefill the contact form subject. Contact form validation + submission works end-to-end and lead is persisted in MongoDB. Admin login + protected /admin route + search + filters + status dropdown + delete + CSV download + logout all work. One mobile UI issue found: horizontal scroll on 414px due to decorative aurora blur backgrounds that extend past the viewport.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "Global layout (aurora background blurs)",
+        "issue": "Mobile viewport at 414px has horizontal scrollbar (scrollWidth=614, clientWidth=414). The cause is multiple absolutely-positioned 'aurora' / 'aurora-violet' / 'aurora-purple' / 'aurora-indigo' decorative blur divs that extend beyond the viewport. They are decorative only (pointer-events: none) but they push the document width.",
+        "selector": "div.aurora, .aurora-violet, .aurora-purple, .aurora-indigo",
+        "priority": "MEDIUM",
+        "fix_hint": "Add `overflow-x: hidden` on <html>/<body> or on each <section> wrapper, OR constrain the aurora divs (max-width: 100vw / inset clipping). Many sections already have `overflow-hidden` on the section element but the global <main>/<body> still scrolls."
+      },
+      {
+        "component": "Nav mobile menu",
+        "issue": "Mobile menu links lack data-testid attributes (e.g. nav-link-work). The visible menu shows 'Work / Services / Pricing / About / Contact' text links but the data-testids only exist on desktop nav. Functional, but breaks parity for mobile automation.",
+        "selector": "mobile menu links",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Nav brand",
+        "issues": ["Brand text node reads 'AA-Designs' because an 'A' icon badge sits next to the 'A-Designs' word-mark with no separator. Visually fine, but the textContent reads 'AA-Designs'. Consider aria-hidden on the icon-letter or visually-hidden separator for screen readers."]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_a_designs_api.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Fix mobile horizontal overflow: add `overflow-x: hidden` to body or main, or clip the aurora decorative blurs so they don't extend past 100vw.",
+    "(Optional) Add data-testid attributes to the mobile menu nav links for parity with desktop.",
+    "(Optional) Mark the 'A' icon badge in <Nav> brand as aria-hidden so screen readers don't say 'A A-Designs'."
+  ],
+  "critical_code_review_comments": [
+    "server.py:276-277 — `recent_7d` query compares stored ISO-string `created_at` to a Python ISO string. This works because both are ISO-8601 UTC strings of the same format, but it is brittle. Prefer storing `created_at` as a real BSON Date.",
+    "server.py:368-389 — admin seed logic is idempotent and re-syncs password when ADMIN_PASSWORD env changes. Good. Bcrypt hash is generated at runtime (not in .env), avoiding $-expansion issues.",
+    "Contact.jsx — `noValidate` is set on the form and zod handles validation. Good. Phone regex on client (min 7) is slightly stricter than backend (min 5). Acceptable.",
+    "CORS is set to '*' with allow_credentials=True which browsers reject; harmless here because JWT is sent via Authorization header (not cookies) and frontend uses bearer token in localStorage.",
+    "AdminDashboard stats initial render shows 0/0 before API resolves; consider a skeleton/loader. Not a functional bug."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_a_designs_api.py (new)"
+  ],
+  "success_rate": {
+    "backend": "100% (14/14)",
+    "frontend": "95% (mobile horizontal overflow is the only failing assertion; all functional flows pass)"
+  },
+  "test_credentials": "admin@a-designs.ca / ADesigns2025!",
+  "seed_data_creation": "Test created several TEST_ prefixed leads during pytest run and cleaned them up via the session-scoped cleanup fixture. UI run created one additional lead via the contact form (name starts with 'TEST_UI ...').",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend test file is /app/backend/tests/test_a_designs_api.py — fully self-cleaning. Admin token endpoint POST /api/auth/login, then GET/PATCH/DELETE /api/admin/leads. All critical UI testids are present. The only known issue is mobile horizontal scroll caused by aurora blur background divs (cosmetic decorations).",
+  "rca_of_the_issue": "Mobile horizontal scroll RCA: Multiple absolutely-positioned decorative gradient/blur divs with class 'aurora aurora-violet/aurora-purple/aurora-indigo' use left/right offsets like `-right-32` along with widths of 380-520px. On a 414px viewport these protrude up to ~200px beyond the viewport. Section wrappers do have `overflow-hidden` in some sections but several do not (e.g. Contact has it, but body-level scrolling is unclipped). Mitigation: add `overflow-x: hidden` to `body` in index.css or to `<main>` in HomePage.jsx — single-line CSS fix."
+}
