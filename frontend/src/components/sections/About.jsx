@@ -4,25 +4,25 @@ import { Reveal } from "@/components/Reveal";
 
 export default function About() {
   return (
-    <section id="about" className="relative py-24 sm:py-32 overflow-hidden">
+    <section id="about" className="relative py-32 sm:py-44 overflow-hidden">
       <div className="aurora aurora-purple right-[-120px] top-[20%] w-[460px] h-[460px] opacity-25" />
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="relative max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-10">
         <Reveal>
-          <div className="grid lg:grid-cols-12 gap-10 items-start">
+          <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
             <div className="lg:col-span-7">
               <div className="text-xs tracking-eyebrow text-purple-300">About A-Designs</div>
-              <h2 className="mt-4 font-display text-3xl sm:text-5xl lg:text-[3.5rem] font-medium tracking-tight leading-[1.05]">
+              <h2 className="mt-5 font-display text-display-lg font-medium tracking-tight leading-[1.05]">
                 We help local businesses{" "}
                 <span className="text-gradient-violet">compete with the big brands.</span>
               </h2>
-              <p className="mt-6 text-white/70 leading-relaxed text-base sm:text-lg max-w-2xl">
+              <p className="mt-8 text-white/70 leading-relaxed text-lg max-w-2xl">
                 A-Designs was created in Halifax to give independent restaurants,
                 barbers, salons, roofers and cleaning companies the same calibre
                 of website that national chains spend tens of thousands on. We
                 believe great design shouldn't be a luxury — it should be the
                 baseline for any business that wants to grow.
               </p>
-              <p className="mt-4 text-white/65 leading-relaxed max-w-2xl">
+              <p className="mt-5 text-white/65 leading-relaxed max-w-2xl">
                 Every project is led personally — no agencies, no outsourcing,
                 no templates. Just considered design, clean code, and a real
                 human picking up the phone when you call.

@@ -100,19 +100,19 @@ function CompareSlider({ before, after, title }) {
 
 export default function BeforeAfter() {
   return (
-    <section className="relative py-24 sm:py-32">
+    <section className="relative py-32 sm:py-44">
       <div className="aurora aurora-indigo left-1/2 -translate-x-1/2 top-1/3 w-[520px] h-[520px] opacity-30" />
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="relative max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-10">
         <Reveal>
           <div className="max-w-3xl">
             <div className="text-xs tracking-eyebrow text-purple-300">
               Before & after
             </div>
-            <h2 className="mt-4 font-display text-3xl sm:text-5xl lg:text-[3.5rem] font-medium tracking-tight">
+            <h2 className="mt-5 font-display text-display-lg font-medium tracking-tight">
               The difference is{" "}
               <span className="text-gradient-purple">night and day.</span>
             </h2>
-            <p className="mt-5 text-white/65 max-w-2xl">
+            <p className="mt-7 text-white/65 max-w-2xl text-base sm:text-lg leading-relaxed">
               We rebuild outdated, hard-to-read websites into modern, mobile-first
               experiences. Drag the slider to see the transformation.
             </p>
@@ -124,7 +124,7 @@ export default function BeforeAfter() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7 }}
-          className="mt-12 grid md:grid-cols-2 gap-6"
+          className="mt-20 grid md:grid-cols-2 gap-6 sm:gap-8"
         >
           {BEFORE_AFTER.map((b) => (
             <CompareSlider key={b.title} {...b} />

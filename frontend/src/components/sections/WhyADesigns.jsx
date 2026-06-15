@@ -9,6 +9,7 @@ import {
   LifeBuoy,
 } from "lucide-react";
 import { Reveal, Stagger, StaggerItem } from "@/components/Reveal";
+import TiltCard from "@/components/motion/TiltCard";
 
 const PILLARS = [
   {
@@ -47,47 +48,49 @@ const PILLARS = [
 
 export default function WhyADesigns() {
   return (
-    <section id="why-a-designs" className="relative py-24 sm:py-32">
+    <section id="why-a-designs" className="relative py-32 sm:py-44">
       <div className="aurora aurora-violet right-[-200px] top-[20%] w-[520px] h-[520px] opacity-25" />
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="relative max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-10">
         <Reveal>
           <div className="flex items-end justify-between flex-wrap gap-6">
             <div className="max-w-2xl">
               <div className="text-xs tracking-eyebrow text-purple-300">Why A-Designs</div>
-              <h2 className="mt-4 font-display text-3xl sm:text-5xl lg:text-[3.5rem] font-medium tracking-tight">
+              <h2 className="mt-5 font-display text-display-lg font-medium tracking-tight">
                 Studio-grade work,{" "}
                 <span className="text-gradient-purple">priced for local businesses.</span>
               </h2>
             </div>
-            <p className="text-white/65 text-sm sm:text-base max-w-md">
+            <p className="text-white/65 text-base sm:text-lg max-w-md leading-relaxed">
               We work with one local business at a time, end to end. No outsourcing,
               no templates — just thoughtful, conversion-focused design.
             </p>
           </div>
         </Reveal>
 
-        <Stagger className="mt-14 grid md:grid-cols-3 gap-5">
+        <Stagger className="mt-20 grid md:grid-cols-3 gap-5 sm:gap-6">
           {PILLARS.map((p) => {
             const Icon = p.icon;
             return (
               <StaggerItem key={p.title} className={p.span || ""}>
-                <motion.div
-                  whileHover={{ y: -6 }}
-                  transition={{ type: "spring", stiffness: 220, damping: 22 }}
-                  className="relative gradient-border h-full overflow-hidden"
-                >
-                  <div className="relative p-7 sm:p-8 h-full">
-                    <div className="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-purple-500/15 text-purple-200 ring-1 ring-purple-500/30">
-                      <Icon className="w-5 h-5" />
+                <TiltCard intensity={5} className="h-full">
+                  <motion.div
+                    whileHover={{ y: -6 }}
+                    transition={{ type: "spring", stiffness: 220, damping: 22 }}
+                    className="relative gradient-border h-full overflow-hidden"
+                  >
+                    <div className="relative p-7 sm:p-9 h-full">
+                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-purple-500/15 text-purple-200 ring-1 ring-purple-500/30">
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <h3 className="mt-7 font-display text-2xl sm:text-[1.65rem] font-medium leading-tight">
+                        {p.title}
+                      </h3>
+                      <p className="mt-3 text-white/65 text-sm sm:text-base leading-relaxed">
+                        {p.body}
+                      </p>
                     </div>
-                    <h3 className="mt-6 font-display text-xl sm:text-2xl font-medium">
-                      {p.title}
-                    </h3>
-                    <p className="mt-2 text-white/65 text-sm sm:text-base leading-relaxed">
-                      {p.body}
-                    </p>
-                  </div>
-                </motion.div>
+                  </motion.div>
+                </TiltCard>
               </StaggerItem>
             );
           })}

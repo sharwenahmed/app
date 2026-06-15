@@ -11,6 +11,7 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { Reveal, Stagger, StaggerItem } from "@/components/Reveal";
+import TiltCard from "@/components/motion/TiltCard";
 import { HOME } from "@/constants/testIds";
 
 const SERVICES = [
@@ -67,26 +68,26 @@ const SERVICES = [
 
 export default function Services() {
   return (
-    <section id="services" className="relative py-24 sm:py-32">
+    <section id="services" className="relative py-32 sm:py-44">
       <div className="aurora aurora-purple right-[-180px] top-[20%] w-[460px] h-[460px] opacity-25" />
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="relative max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-10">
         <Reveal>
           <div className="flex items-end justify-between flex-wrap gap-6">
             <div className="max-w-2xl">
               <div className="text-xs tracking-eyebrow text-purple-300">Services</div>
-              <h2 className="mt-4 font-display text-3xl sm:text-5xl lg:text-[3.5rem] font-medium tracking-tight">
+              <h2 className="mt-5 font-display text-display-lg font-medium tracking-tight">
                 Everything your business needs{" "}
                 <span className="text-gradient-violet">to win online.</span>
               </h2>
             </div>
-            <p className="text-white/65 max-w-md text-sm sm:text-base">
+            <p className="text-white/65 max-w-md text-base sm:text-lg">
               We bundle design, development, copy, and growth into one studio.
               Built for owners who don't want to manage agencies.
             </p>
           </div>
         </Reveal>
 
-        <Stagger className="mt-14 grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <Stagger className="mt-20 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {SERVICES.map((s, i) => {
             const Icon = s.icon;
             const featured = i === 0 || i === 3;
@@ -95,40 +96,42 @@ export default function Services() {
                 key={s.slug}
                 className={featured ? "lg:row-span-2" : ""}
               >
-                <motion.div
-                  whileHover={{ y: -6 }}
-                  transition={{ type: "spring", stiffness: 220, damping: 22 }}
-                  data-testid={HOME.serviceCard(s.slug)}
-                  className={`relative glass glass-hover rounded-3xl p-7 sm:p-8 h-full overflow-hidden ${
-                    featured ? "min-h-[260px]" : ""
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-purple-500/15 text-purple-200 ring-1 ring-purple-500/30">
-                      <Icon className="w-5 h-5" />
+                <TiltCard intensity={5} className="h-full">
+                  <motion.div
+                    whileHover={{ y: -6 }}
+                    transition={{ type: "spring", stiffness: 220, damping: 22 }}
+                    data-testid={HOME.serviceCard(s.slug)}
+                    className={`relative glass glass-hover rounded-3xl p-8 sm:p-9 h-full overflow-hidden ${
+                      featured ? "min-h-[300px]" : ""
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-purple-500/15 text-purple-200 ring-1 ring-purple-500/30">
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <ArrowUpRight className="w-4 h-4 text-white/40" />
                     </div>
-                    <ArrowUpRight className="w-4 h-4 text-white/40" />
-                  </div>
-                  <h3 className="mt-6 font-display text-xl sm:text-2xl font-medium">
-                    {s.name}
-                  </h3>
-                  <p className="mt-2 text-white/65 text-sm sm:text-base leading-relaxed">
-                    {s.body}
-                  </p>
+                    <h3 className="mt-7 font-display text-2xl sm:text-[1.65rem] font-medium leading-tight">
+                      {s.name}
+                    </h3>
+                    <p className="mt-3 text-white/65 text-sm sm:text-base leading-relaxed">
+                      {s.body}
+                    </p>
 
-                  <ul className="mt-5 space-y-1.5 text-xs text-white/70">
-                    {s.benefits.map((b) => (
-                      <li key={b} className="flex items-center gap-2">
-                        <span className="inline-block w-1 h-1 rounded-full bg-purple-300" />
-                        {b}
-                      </li>
-                    ))}
-                  </ul>
+                    <ul className="mt-6 space-y-2 text-xs text-white/70">
+                      {s.benefits.map((b) => (
+                        <li key={b} className="flex items-center gap-2">
+                          <span className="inline-block w-1 h-1 rounded-full bg-purple-300" />
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
 
-                  {featured && (
-                    <div className="pointer-events-none absolute -right-12 -bottom-12 w-56 h-56 rounded-full bg-purple-500/15 blur-3xl" />
-                  )}
-                </motion.div>
+                    {featured && (
+                      <div className="pointer-events-none absolute -right-12 -bottom-12 w-56 h-56 rounded-full bg-purple-500/15 blur-3xl" />
+                    )}
+                  </motion.div>
+                </TiltCard>
               </StaggerItem>
             );
           })}

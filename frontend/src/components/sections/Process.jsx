@@ -7,32 +7,32 @@ const STEPS = [
   {
     n: "01",
     icon: Search,
-    title: "Discovery",
-    body: "We learn your business, customers, and competitors. Decide what success looks like.",
+    title: "Free Consultation",
+    body: "We learn about your business, customers, and goals — and decide together what success looks like.",
   },
   {
     n: "02",
     icon: PenTool,
-    title: "Design",
-    body: "Wireframes → high-fidelity design in Figma. You see your new site before a line of code.",
+    title: "Custom Website Concept",
+    body: "We design a tailored concept in Figma so you can see your future website before any code is written.",
   },
   {
     n: "03",
     icon: Code2,
-    title: "Development",
-    body: "We hand-code the site for performance & SEO. No bloated builders, no slow themes.",
+    title: "Design & Development",
+    body: "We hand-craft the site for speed, SEO, and conversion — no bloated builders, no slow themes.",
   },
   {
     n: "04",
     icon: Rocket,
     title: "Launch",
-    body: "We migrate your domain, set up analytics, schema and Google Business — then go live.",
+    body: "Domain, analytics, schema and Google Business setup — we handle it, then go live with you.",
   },
   {
     n: "05",
     icon: LifeBuoy,
     title: "Support",
-    body: "Ongoing hosting, edits, and support so your site keeps improving over time.",
+    body: "Hosting, edits, and improvements after launch so your site keeps working as your business grows.",
   },
 ];
 
@@ -45,20 +45,20 @@ export default function Process() {
   const height = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   return (
-    <section id="process" className="relative py-24 sm:py-32">
+    <section id="process" className="relative py-32 sm:py-44">
       <div className="aurora aurora-violet left-1/3 top-1/4 w-[380px] h-[380px] opacity-30" />
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
+      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-10">
         <Reveal>
           <div className="max-w-2xl">
             <div className="text-xs tracking-eyebrow text-purple-300">Our Process</div>
-            <h2 className="mt-4 font-display text-3xl sm:text-5xl lg:text-[3.5rem] font-medium tracking-tight">
+            <h2 className="mt-5 font-display text-display-lg font-medium tracking-tight">
               From discovery to launch, in{" "}
               <span className="text-gradient-purple">five careful steps.</span>
             </h2>
           </div>
         </Reveal>
 
-        <div ref={ref} className="relative mt-16">
+        <div ref={ref} className="relative mt-20">
           {/* Vertical line */}
           <div className="absolute left-6 sm:left-1/2 sm:-translate-x-1/2 top-0 bottom-0 w-px bg-white/10" />
           <motion.div

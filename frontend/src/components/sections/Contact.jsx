@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { HOME } from "@/constants/testIds";
 import api, { formatApiError } from "@/lib/api";
+import MagneticButton from "@/components/motion/MagneticButton";
 
 const INDUSTRY_OPTIONS = [
   "Restaurant / Cafe",
@@ -84,15 +85,27 @@ export default function Contact() {
         document.querySelector("[data-testid='contact-input-name']")?.focus();
       });
     };
+    const onPrefillMockup = () => {
+      setValue("subject", "Free Website Mockup Request");
+      setValue(
+        "message",
+        "Hi A-Designs, I'd love to see what my business could look like with a custom website. Please put together a free mockup for me."
+      );
+      requestAnimationFrame(() => {
+        document.querySelector("[data-testid='contact-input-name']")?.focus();
+      });
+    };
     const onPrefill = (e) => {
       const d = e.detail || {};
       if (d.subject) setValue("subject", d.subject);
       if (d.message) setValue("message", d.message);
     };
     window.addEventListener("a-designs:prefill-consult", onPrefillConsult);
+    window.addEventListener("a-designs:prefill-mockup", onPrefillMockup);
     window.addEventListener("a-designs:prefill", onPrefill);
     return () => {
       window.removeEventListener("a-designs:prefill-consult", onPrefillConsult);
+      window.removeEventListener("a-designs:prefill-mockup", onPrefillMockup);
       window.removeEventListener("a-designs:prefill", onPrefill);
     };
   }, [setValue]);
@@ -120,23 +133,24 @@ export default function Contact() {
     <section
       id="contact"
       ref={sectionRef}
-      className="relative py-24 sm:py-32 overflow-hidden"
+      className="relative py-32 sm:py-44 overflow-hidden"
     >
       <div className="aurora aurora-purple -left-32 top-10 w-[460px] h-[460px] opacity-25" />
       <div className="aurora aurora-violet -right-32 bottom-10 w-[460px] h-[460px] opacity-25" />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="grid lg:grid-cols-12 gap-10 lg:gap-14">
+      <div className="relative max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-10">
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16">
           <div className="lg:col-span-5">
             <Reveal>
               <div className="text-xs tracking-eyebrow text-purple-300">Contact</div>
-              <h2 className="mt-4 font-display text-3xl sm:text-5xl lg:text-[3.5rem] font-medium tracking-tight leading-[1.05]">
-                Tell us about your{" "}
-                <span className="text-gradient-violet">business.</span>
+              <h2 className="mt-5 font-display text-display-lg font-medium tracking-tight leading-[1.05]">
+                See what your business{" "}
+                <span className="text-gradient-violet">could look like.</span>
               </h2>
-              <p className="mt-5 text-white/65 leading-relaxed">
-                We reply to every message within 1 business day. If it's urgent,
-                call us directly — a human will pick up.
+              <p className="mt-7 text-white/65 leading-relaxed text-lg">
+                Tell us a little about your business and we'll put together a
+                free, no-pressure website concept. We reply to every message
+                within one business day.
               </p>
             </Reveal>
 
@@ -318,6 +332,7 @@ export default function Contact() {
                         <Label className="text-xs text-white/70">Subject</Label>
                         <Input
                           {...register("subject")}
+                          data-testid="contact-subject"
                           value={subject}
                           onChange={(e) => setValue("subject", e.target.value)}
                           className="mt-1.5 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus-visible:ring-purple-400"
@@ -351,11 +366,12 @@ export default function Contact() {
                           By submitting, you agree to be contacted about your
                           inquiry. We never share your information.
                         </p>
-                        <button
+                        <MagneticButton
                           type="submit"
                           data-testid={HOME.contactSubmit}
                           disabled={isSubmitting}
-                          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-fuchsia-600 shadow-[0_24px_60px_-15px_rgba(147,51,234,0.7)] hover:shadow-[0_32px_70px_-12px_rgba(147,51,234,0.85)] transition-all disabled:opacity-60"
+                          strength={0.2}
+                          className="group px-7 py-3.5 rounded-full text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-fuchsia-600 shadow-[0_24px_60px_-15px_rgba(147,51,234,0.7)] hover:shadow-[0_32px_70px_-12px_rgba(147,51,234,0.85)] transition-all disabled:opacity-60 sheen"
                         >
                           {isSubmitting ? (
                             <>
@@ -363,10 +379,10 @@ export default function Contact() {
                             </>
                           ) : (
                             <>
-                              Send message <ArrowRight className="w-4 h-4" />
+                              Send message <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
                             </>
                           )}
-                        </button>
+                        </MagneticButton>
                       </div>
                     </motion.form>
                   )}

@@ -43,7 +43,7 @@ export default function Nav() {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     setOpen(false);
     setTimeout(() => {
-      window.dispatchEvent(new CustomEvent("a-designs:prefill-consult"));
+      window.dispatchEvent(new CustomEvent("a-designs:prefill-mockup"));
     }, 600);
   };
 
@@ -119,7 +119,8 @@ export default function Nav() {
                 data-testid={HOME.navCtaConsult}
                 className="relative group inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-fuchsia-600 shadow-[0_10px_30px_-10px_rgba(147,51,234,0.6)] hover:shadow-[0_18px_40px_-12px_rgba(147,51,234,0.8)] transition-all"
               >
-                <span>Book Consult</span>
+                <span className="hidden sm:inline">Free Website Mockup</span>
+                <span className="sm:hidden">Free Mockup</span>
               </button>
               <button
                 onClick={() => setOpen((v) => !v)}

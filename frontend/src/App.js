@@ -5,10 +5,12 @@ import { Toaster } from "@/components/ui/sonner";
 import HomePage from "@/pages/HomePage";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
+import MouseGradient from "@/components/motion/MouseGradient";
 
 function App() {
   return (
     <div className="App">
+      <MouseGradient />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage />} />

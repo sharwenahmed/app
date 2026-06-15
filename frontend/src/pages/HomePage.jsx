@@ -11,6 +11,7 @@ import Services from "@/components/sections/Services";
 import Process from "@/components/sections/Process";
 import Pricing from "@/components/sections/Pricing";
 import About from "@/components/sections/About";
+import Founder from "@/components/sections/Founder";
 import FAQ from "@/components/sections/FAQ";
 import FinalCTA from "@/components/sections/FinalCTA";
 import Contact from "@/components/sections/Contact";
@@ -31,6 +32,7 @@ export default function HomePage() {
         <Process />
         <Pricing />
         <About />
+        <Founder />
         <FAQ />
         <FinalCTA />
         <Contact />

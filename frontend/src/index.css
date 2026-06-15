@@ -210,3 +210,74 @@ html, body, #root, .App, main { overflow-x: clip; }
 
 /* Browser chrome dot */
 .dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; }
+
+/* Section vignette — used to create a soft top/bottom fade between sections */
+.section-vignette::before,
+.section-vignette::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 160px;
+  pointer-events: none;
+  z-index: 1;
+}
+.section-vignette::before {
+  top: 0;
+  background: linear-gradient(to bottom, rgba(3,0,8,0.85), transparent);
+}
+.section-vignette::after {
+  bottom: 0;
+  background: linear-gradient(to top, rgba(3,0,8,0.85), transparent);
+}
+
+/* Premium pill / chrome */
+.chrome-pill {
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 30px 60px -30px rgba(0,0,0,0.6);
+}
+
+/* Display utilities */
+.text-display-xl  { font-size: clamp(2.5rem, 7.5vw, 7.25rem); letter-spacing: -0.04em; line-height: 0.94; }
+.text-display-lg  { font-size: clamp(2rem, 5.8vw, 5rem); letter-spacing: -0.035em; line-height: 0.98; }
+.text-display-md  { font-size: clamp(1.65rem, 4vw, 3.25rem); letter-spacing: -0.03em; line-height: 1.04; }
+
+/* Marquee row used by Hero proof strip */
+.row-fade-mask {
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+}
+
+/* Sheen sweep across an element on hover */
+.sheen { position: relative; overflow: hidden; }
+.sheen::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.12) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.sheen:hover::after { transform: translateX(120%); }
+
+/* Tab pill backdrop blur for layoutId switches */
+.tab-pill-bg {
+  background: linear-gradient(120deg, #9333ea, #c026d3);
+  box-shadow: 0 18px 40px -16px rgba(168,85,247,0.7), inset 0 1px 0 rgba(255,255,255,0.18);
+}
+
+/* Slow pulse for a "now playing" indicator */
+@keyframes pulseDot {
+  0%, 100% { opacity: 0.65; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.18); }
+}
+.pulse-dot { animation: pulseDot 1.8s ease-in-out infinite; }
+
+/* Subtle gradient ring used around the hero featured mockup */
+.ring-aurora {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06),
+    0 60px 140px -40px rgba(147,51,234,0.55),
+    0 30px 80px -30px rgba(99,102,241,0.45);
+}

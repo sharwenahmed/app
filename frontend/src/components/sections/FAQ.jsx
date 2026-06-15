@@ -41,13 +41,13 @@ const FAQS = [
 
 export default function FAQ() {
   return (
-    <section id="faq" className="relative py-24 sm:py-32">
+    <section id="faq" className="relative py-32 sm:py-44">
       <div className="aurora aurora-violet left-1/4 top-1/3 w-[420px] h-[420px] opacity-25" />
-      <div className="relative max-w-4xl mx-auto px-4 sm:px-6">
+      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-10">
         <Reveal>
           <div className="max-w-2xl">
             <div className="text-xs tracking-eyebrow text-purple-300">FAQ</div>
-            <h2 className="mt-4 font-display text-3xl sm:text-5xl lg:text-[3.5rem] font-medium tracking-tight">
+            <h2 className="mt-5 font-display text-display-lg font-medium tracking-tight">
               Questions, answered{" "}
               <span className="text-gradient-purple">honestly.</span>
             </h2>
@@ -55,7 +55,7 @@ export default function FAQ() {
         </Reveal>
 
         <Reveal delay={0.05}>
-          <Accordion type="single" collapsible className="mt-12 glass rounded-3xl divide-y divide-white/5">
+          <Accordion type="single" collapsible className="mt-16 glass rounded-3xl divide-y divide-white/5">
             {FAQS.map((f, i) => (
               <AccordionItem
                 key={i}
