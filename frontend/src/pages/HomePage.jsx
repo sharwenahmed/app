@@ -1,5 +1,6 @@
+```jsx
 import React from "react";
-import useSmoothScroll from "@/hooks/useSmoothScroll";
+// import useSmoothScroll from "@/hooks/useSmoothScroll";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import Hero from "@/components/sections/Hero";
@@ -17,7 +18,7 @@ import FinalCTA from "@/components/sections/FinalCTA";
 import Contact from "@/components/sections/Contact";
 
 export default function HomePage() {
-  useSmoothScroll();
+  // useSmoothScroll();
 
   return (
     <div className="relative">
@@ -41,3 +42,4 @@ export default function HomePage() {
     </div>
   );
 }
+```
