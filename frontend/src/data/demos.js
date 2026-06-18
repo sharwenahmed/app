@@ -324,16 +324,12 @@ export const DEMOS = {
 export const BEFORE_AFTER = [
   {
     title: "Local Cafe Website",
-    before:
-      "https://images.unsplash.com/photo-1599050751795-6cdaafbc2319?auto=format&fit=crop&w=1200&q=70",
-    after:
-      "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1400&q=80",
+    before: "/images:before-cafe.png",
+    after: "/images:after-cafe.png",
   },
   {
-    title: "Barbershop Storefront",
-    before:
-      "https://images.unsplash.com/photo-1517163904100-fc7c7e72f48b?auto=format&fit=crop&w=1200&q=70",
-    after:
-      "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1400&q=80",
+    title: "Barbershop Website",
+    before: "/images:before-barber.png",
+    after: "/images:after-barber.png",
   },
 ];
