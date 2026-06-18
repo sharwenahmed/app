@@ -39,11 +39,11 @@ export default function Hero() {
     offset: ["start start", "end start"],
   });
 
-  const mockupY = useTransform(scrollYProgress, [0, 1], [0, -90]);
-  const mockupScale = useTransform(scrollYProgress, [0, 1], [1, 0.96]);
+  const mockupY = useTransform(scrollYProgress, [0, 1], [0, -70]);
+  const mockupScale = useTransform(scrollYProgress, [0, 1], [1, 0.97]);
   const mockupRotate = useTransform(scrollYProgress, [0, 1], [0, -1]);
-  const headlineY = useTransform(scrollYProgress, [0, 1], [0, -35]);
-  const headlineOpacity = useTransform(scrollYProgress, [0, 0.9], [1, 0]);
+  const headlineY = useTransform(scrollYProgress, [0, 1], [0, -25]);
+  const headlineOpacity = useTransform(scrollYProgress, [0, 0.95], [1, 0]);
 
   const featureDemo = DEMOS.restaurants[0];
   const mobileDemo = DEMOS.barbers[0];
@@ -63,7 +63,7 @@ export default function Hero() {
   return (
     <section
       ref={ref}
-      className="relative min-h-screen pt-32 sm:pt-36 lg:pt-40 pb-20 sm:pb-28 overflow-hidden"
+      className="relative min-h-screen pt-28 sm:pt-32 lg:pt-36 pb-20 sm:pb-28 overflow-hidden"
     >
       <div className="absolute inset-0 bg-grid opacity-50 pointer-events-none" />
       <div className="aurora aurora-purple top-[-200px] left-[-160px] w-[640px] h-[640px]" />
@@ -87,10 +87,10 @@ export default function Hero() {
 
         <motion.div
           style={reduce ? undefined : { y: headlineY, opacity: headlineOpacity }}
-          className="mt-10 sm:mt-12 max-w-[1180px]"
+          className="mt-8 sm:mt-10 max-w-[1180px]"
           data-testid={HOME.heroHeadline}
         >
-          <h1 className="font-display text-display-xl font-medium text-white leading-[0.95]">
+          <h1 className="font-display text-[clamp(4rem,8vw,8.5rem)] font-medium text-white leading-[0.9]">
             <SplitWords text="Websites that make" duration={0.85} stagger={0.05} />
             <br />
             <SplitWords
@@ -111,7 +111,7 @@ export default function Hero() {
           </h1>
         </motion.div>
 
-        <div className="relative grid lg:grid-cols-12 gap-10 lg:gap-14 mt-10 sm:mt-12 items-start">
+        <div className="relative grid lg:grid-cols-12 gap-8 lg:gap-12 mt-8 sm:mt-10 items-start">
           <div className="lg:col-span-5">
             <motion.p
               initial={{ opacity: 0, y: 20 }}
