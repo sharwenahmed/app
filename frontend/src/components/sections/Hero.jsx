@@ -82,30 +82,26 @@ export default function Hero() {
               data-testid={HOME.heroHeadline}
             >
               <h1 className="font-display text-[clamp(3rem,5.2vw,5.8rem)] font-medium text-white leading-[0.94] tracking-tight">
-                <SplitWords text="Websites that make" duration={0.85} stagger={0.05} />
-                <br />
-                <SplitWords
-                  text="your business look"
-                  duration={0.85}
-                  stagger={0.05}
-                  delay={0.18}
-                />
-                <br />
-                <SplitWords
-                  text="like "
-                  duration={0.85}
-                  stagger={0.05}
-                  delay={0.3}
-                />
-                <span className="text-gradient-purple inline-block">
-                  <SplitWords
-                    text="the best in town."
-                    duration={0.9}
-                    stagger={0.05}
-                    delay={0.38}
-                  />
-                </span>
-              </h1>
+  <SplitWords text="Websites that make" duration={0.85} stagger={0.05} />
+  <br />
+  <SplitWords
+    text="your business look"
+    duration={0.85}
+    stagger={0.05}
+    delay={0.18}
+  />
+  <br />
+  <SplitWords
+    text="like"
+    duration={0.85}
+    stagger={0.05}
+    delay={0.3}
+  />
+  <br />
+  <span className="text-gradient-purple inline-block">
+    the best in town.
+  </span>
+</h1>
             </motion.div>
 
             <motion.p
