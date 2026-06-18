@@ -28,7 +28,7 @@ export default function Founder() {
               <div className="relative gradient-border rounded-3xl overflow-hidden">
                 <div className="relative aspect-[4/5] sm:aspect-[5/6] overflow-hidden rounded-3xl bg-[#0a0418]">
                   <img
-                    src="/founder.jpg"
+                    src="/founder.jpeg"
                     alt="Sharwen Ahmed, founder of A-Designs"
                     className="absolute inset-0 w-full h-full object-cover object-center scale-[1.02]"
                     loading="lazy"
