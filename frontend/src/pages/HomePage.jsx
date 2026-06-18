@@ -1,4 +1,4 @@
-```jsx
+
 import React from "react";
 // import useSmoothScroll from "@/hooks/useSmoothScroll";
 import Nav from "@/components/Nav";
