@@ -92,22 +92,21 @@ export default function Hero() {
         >
           <h1 className="font-display text-[clamp(4rem,8vw,8.5rem)] font-medium text-white leading-[0.9]">
             <SplitWords text="Websites that make" duration={0.85} stagger={0.05} />
-            <br />
-            <SplitWords
-              text="your business look like"
-              duration={0.85}
-              stagger={0.05}
-              delay={0.18}
-            />
-            <br />
-            <span className="text-gradient-purple inline-block">
-              <SplitWords
-                text="the best in town."
-                duration={0.9}
-                stagger={0.05}
-                delay={0.38}
-              />
-            </span>
+<br />
+<SplitWords
+  text="your business looks like "
+  duration={0.85}
+  stagger={0.05}
+  delay={0.18}
+/>
+<span className="text-gradient-purple inline-block">
+  <SplitWords
+    text="the best in town."
+    duration={0.9}
+    stagger={0.05}
+    delay={0.38}
+  />
+</span>
           </h1>
         </motion.div>
 
