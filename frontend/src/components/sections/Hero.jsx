@@ -63,7 +63,7 @@ export default function Hero() {
   return (
     <section
       ref={ref}
-      className="relative min-h-screen pt-28 sm:pt-32 lg:pt-36 pb-20 sm:pb-28 overflow-hidden"
+      className="relative min-h-[100svh] pt-24 sm:pt-28 lg:pt-28 pb-16 sm:pb-20 overflow-hidden"
     >
       <div className="absolute inset-0 bg-grid opacity-50 pointer-events-none" />
       <div className="aurora aurora-purple top-[-200px] left-[-160px] w-[640px] h-[640px]" />
@@ -90,27 +90,27 @@ export default function Hero() {
           className="mt-8 sm:mt-10 max-w-[1180px]"
           data-testid={HOME.heroHeadline}
         >
-          <h1 className="font-display text-[clamp(4rem,8vw,8.5rem)] font-medium text-white leading-[0.9]">
+          <h1 className="font-display text-[clamp(3rem,5.6vw,6rem)] font-medium text-white leading-[0.94]">
             <SplitWords text="Websites that make" duration={0.85} stagger={0.05} />
-<br />
-<SplitWords
-  text="your business looks like "
-  duration={0.85}
-  stagger={0.05}
-  delay={0.18}
-/>
-<span className="text-gradient-purple inline-block">
-  <SplitWords
-    text="the best in town."
-    duration={0.9}
-    stagger={0.05}
-    delay={0.38}
-  />
-</span>
+            <br />
+            <SplitWords
+              text="your business look like "
+              duration={0.85}
+              stagger={0.05}
+              delay={0.18}
+            />
+            <span className="text-gradient-purple inline-block">
+              <SplitWords
+                text="the best in town."
+                duration={0.9}
+                stagger={0.05}
+                delay={0.38}
+              />
+            </span>
           </h1>
         </motion.div>
 
-        <div className="relative grid lg:grid-cols-12 gap-8 lg:gap-12 mt-8 sm:mt-10 items-start">
+        <div className="relative grid lg:grid-cols-12 gap-6 lg:gap-10 mt-6 sm:mt-8 items-start">
           <div className="lg:col-span-5">
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -127,7 +127,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.78 }}
-              className="mt-8 flex flex-col sm:flex-row gap-3"
+              className="mt-6 flex flex-col sm:flex-row gap-3"
             >
               <MagneticButton
                 onClick={goMockup}
@@ -153,7 +153,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 1.05 }}
-              className="mt-10 flex flex-wrap gap-2"
+              className="mt-6 flex flex-wrap gap-2"
             >
               {CRED_CHIPS.map((c) => (
                 <span
