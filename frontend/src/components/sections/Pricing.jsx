@@ -10,7 +10,7 @@ const PLANS = [
   {
     slug: "starter",
     name: "Starter",
-    price: "From CA$1,499",
+    price: "From CA$499",
     desc: "A premium one-page website to launch fast.",
     features: [
       "Single-page custom design",
@@ -25,7 +25,7 @@ const PLANS = [
   {
     slug: "growth",
     name: "Growth",
-    price: "From CA$2,999",
+    price: "From CA$999",
     desc: "Our most popular package for local businesses ready to scale.",
     features: [
       "Up to 6 custom-designed pages",
@@ -41,7 +41,7 @@ const PLANS = [
   {
     slug: "premium",
     name: "Premium",
-    price: "From CA$5,999",
+    price: "From CA$1,999",
     desc: "Custom brand + website + ongoing growth support.",
     features: [
       "10+ page custom website",
