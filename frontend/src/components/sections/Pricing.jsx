@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Check, Sparkles } from "lucide-react";
+import { Check, Sparkles, Users, Clock } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 import TiltCard from "@/components/motion/TiltCard";
 import MagneticButton from "@/components/motion/MagneticButton";
@@ -10,8 +10,12 @@ const PLANS = [
   {
     slug: "starter",
     name: "Starter",
+    originalPrice: "CA$999",
     price: "From CA$499",
-    desc: "A premium one-page website to launch fast.",
+    save: "Save CA$500",
+    badge: "Founding Offer",
+    desc: "Perfect for startups and new businesses.",
+    spots: "Only 2 Starter spots left this month",
     features: [
       "Single-page custom design",
       "Mobile-first responsive build",
@@ -23,10 +27,14 @@ const PLANS = [
     featured: false,
   },
   {
-    slug: "growth",
-    name: "Growth",
+    slug: "business",
+    name: "Business",
+    originalPrice: "CA$1,999",
     price: "From CA$999",
-    desc: "Our most popular package for local businesses ready to scale.",
+    save: "Save CA$1,000",
+    badge: "Founding Offer",
+    desc: "Ideal for local businesses ready to grow.",
+    spots: "Only 3 Business spots left this month",
     features: [
       "Up to 6 custom-designed pages",
       "Blog or menu / services system",
@@ -41,8 +49,12 @@ const PLANS = [
   {
     slug: "premium",
     name: "Premium",
+    originalPrice: "CA$2,999",
     price: "From CA$1,999",
-    desc: "Custom brand + website + ongoing growth support.",
+    save: "Save CA$1,000",
+    badge: "Limited Availability",
+    desc: "For established businesses ready to dominate.",
+    spots: "Only 1 Premium spot left this month",
     features: [
       "10+ page custom website",
       "Logo & brand identity refresh",
@@ -77,17 +89,28 @@ export default function Pricing() {
       <div className="aurora aurora-purple left-1/2 -translate-x-1/2 top-0 w-[520px] h-[520px] opacity-25" />
       <div className="relative max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-10">
         <Reveal>
-          <div className="max-w-3xl">
-            <div className="text-xs tracking-eyebrow text-purple-300">Pricing</div>
-            <h2 className="mt-5 font-display text-display-lg font-medium tracking-tight">
-              Premium work,{" "}
-              <span className="text-gradient-violet">priced honestly.</span>
-            </h2>
-            <p className="mt-7 text-white/65 max-w-2xl text-base sm:text-lg">
-              Every project is quoted custom — these are starting points that
-              cover most local businesses. No hidden fees, no surprise invoices.
-            </p>
-          </div>
+          <div className="max-w-5xl mx-auto text-center">
+  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-fuchsia-400/30 bg-fuchsia-500/10 text-xs font-semibold uppercase tracking-wider text-fuchsia-200">
+    🔥 Founding Client Pricing
+  </div>
+
+  <h2 className="mt-6 font-display text-display-lg font-medium tracking-tight">
+    Get a premium website{" "}
+    <span className="text-gradient-violet">before our rates increase.</span>
+  </h2>
+
+  <p className="mt-6 text-white/65 max-w-3xl mx-auto text-base sm:text-lg">
+    To build our client portfolio, we're offering reduced pricing for a limited
+    number of local businesses.
+  </p>
+
+  <div className="mt-7 inline-flex items-center gap-3 px-6 py-3 rounded-full glass text-white font-medium">
+    <Users className="w-5 h-5 text-fuchsia-300" />
+    <span>
+      <span className="text-fuchsia-300 font-bold">6</span> discounted client spots remaining this month
+    </span>
+  </div>
+</div>
         </Reveal>
 
         <div className="mt-20 grid lg:grid-cols-3 gap-6 items-stretch">
@@ -114,18 +137,41 @@ export default function Pricing() {
                   }`}
                 >
                   {p.featured && (
-                    <div className="absolute top-5 right-5 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gradient-to-r from-purple-600 to-fuchsia-600 text-[10px] tracking-eyebrow text-white shadow-[0_10px_30px_-10px_rgba(147,51,234,0.7)]">
-                      <Sparkles className="w-3 h-3" /> Most popular
-                    </div>
-                  )}
-                  <div className="relative">
-                    <div className="text-xs tracking-eyebrow text-purple-300">
-                      {p.name}
-                    </div>
-                    <div className="mt-4 font-display text-[2.5rem] sm:text-5xl font-medium tracking-tight leading-none">
-                      {p.price}
-                    </div>
-                    <p className="mt-4 text-white/65 text-sm leading-relaxed">{p.desc}</p>
+  <div className="absolute -top-5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 px-5 py-2 rounded-full bg-gradient-to-r from-fuchsia-600 to-pink-500 text-xs font-bold uppercase tracking-wide text-white shadow-[0_10px_30px_-10px_rgba(236,72,153,0.9)]">
+    <Sparkles className="w-3.5 h-3.5" /> Most popular
+  </div>
+)}
+
+<div className="relative">
+  <div className="flex items-start justify-between gap-4">
+    <div>
+      <div className="text-xs tracking-eyebrow text-purple-300">
+        {p.name}
+      </div>
+      <p className="mt-4 text-white/75 text-sm leading-relaxed">{p.desc}</p>
+    </div>
+
+    <div className="px-3 py-2 rounded-xl bg-purple-600/30 border border-purple-400/30 text-[11px] font-bold uppercase text-white text-center">
+      {p.badge}
+    </div>
+  </div>
+
+  <div className="mt-7 pt-6 border-t border-white/10">
+    <div className="text-white/45 line-through text-lg">
+      {p.originalPrice}
+    </div>
+
+    <div className="mt-2 font-display text-[2.5rem] sm:text-5xl font-medium tracking-tight leading-none">
+      <span className="text-white text-2xl sm:text-3xl mr-2">From</span>
+      <span className={p.featured ? "text-fuchsia-400" : "text-purple-400"}>
+        {p.price.replace("From ", "")}
+      </span>
+    </div>
+
+    <div className="mt-4 inline-flex items-center px-4 py-1.5 rounded-full bg-emerald-500/10 text-emerald-300 text-sm font-semibold">
+      {p.save}
+    </div>
+  </div>
 
                     <MagneticButton
                       onClick={() => goToContact(p.name)}
@@ -150,6 +196,10 @@ export default function Pricing() {
                         </li>
                       ))}
                     </ul>
+  <div className="mt-8 pt-5 border-t border-white/10 flex items-center gap-3 text-sm text-white/80">
+  <Clock className={p.featured ? "w-5 h-5 text-fuchsia-400" : "w-5 h-5 text-purple-400"} />
+  <span>{p.spots}</span>
+</div>
                   </div>
                 </div>
               </TiltCard>
