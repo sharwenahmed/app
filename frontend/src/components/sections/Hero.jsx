@@ -142,22 +142,23 @@ export default function Hero() {
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, delay: 1.05 }}
-              className="mt-6 flex flex-wrap gap-2"
-            >
-              {CRED_CHIPS.map((c) => (
-                <span
-                  key={c}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full chrome-pill text-[11px] text-white/75"
-                >
-                  <Check className="w-3 h-3 text-purple-300" />
-                  {c}
-                </span>
-              ))}
-            </motion.div>
-          </div>
+  initial={{ opacity: 0, y: 14 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.9, delay: 1.05 }}
+  className="mt-6 overflow-hidden relative max-w-full [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]"
+>
+  <div className="flex w-max gap-2 animate-marquee">
+    {[...CRED_CHIPS, ...CRED_CHIPS, ...CRED_CHIPS].map((c, index) => (
+      <span
+        key={`${c}-${index}`}
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full chrome-pill text-[11px] text-white/75 shrink-0"
+      >
+        <Check className="w-3 h-3 text-purple-300" />
+        {c}
+      </span>
+    ))}
+  </div>
+</motion.div>
 
           <div className="lg:col-span-6 relative">
             <motion.div
