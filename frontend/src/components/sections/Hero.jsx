@@ -77,31 +77,23 @@ export default function Hero() {
               <span>Halifax web design studio · taking on local businesses</span>
             </motion.div>
 
-            <motion.div
-              className="mt-8"
-              data-testid={HOME.heroHeadline}
-            >
+            <motion.div className="mt-8" data-testid={HOME.heroHeadline}>
               <h1 className="font-display text-[clamp(3rem,5.2vw,5.8rem)] font-medium text-white leading-[0.94] tracking-tight">
-  <SplitWords text="Websites that make" duration={0.85} stagger={0.05} />
-  <br />
-  <SplitWords
-    text="your business look"
-    duration={0.85}
-    stagger={0.05}
-    delay={0.18}
-  />
-  <br />
-  <SplitWords
-    text="like"
-    duration={0.85}
-    stagger={0.05}
-    delay={0.3}
-  />
-  <br />
-  <span className="text-gradient-purple inline-block">
-    the best in town.
-  </span>
-</h1>
+                <SplitWords text="Websites that make" duration={0.85} stagger={0.05} />
+                <br />
+                <SplitWords
+                  text="your business look"
+                  duration={0.85}
+                  stagger={0.05}
+                  delay={0.18}
+                />
+                <br />
+                <SplitWords text="like" duration={0.85} stagger={0.05} delay={0.3} />
+                <br />
+                <span className="text-gradient-purple inline-block">
+                  the best in town.
+                </span>
+              </h1>
             </motion.div>
 
             <motion.p
@@ -142,23 +134,24 @@ export default function Hero() {
             </motion.div>
 
             <motion.div
-  initial={{ opacity: 0, y: 14 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.9, delay: 1.05 }}
-  className="mt-6 overflow-hidden relative max-w-full [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]"
->
-  <div className="flex w-max gap-2 animate-marquee">
-    {[...CRED_CHIPS, ...CRED_CHIPS, ...CRED_CHIPS].map((c, index) => (
-      <span
-        key={`${c}-${index}`}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full chrome-pill text-[11px] text-white/75 shrink-0"
-      >
-        <Check className="w-3 h-3 text-purple-300" />
-        {c}
-      </span>
-    ))}
-  </div>
-</motion.div>
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 1.05 }}
+              className="mt-6 hero-chips-mask overflow-hidden"
+            >
+              <div className="hero-chips-track">
+                {[...CRED_CHIPS, ...CRED_CHIPS].map((c, index) => (
+                  <span
+                    key={`${c}-${index}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full chrome-pill text-[11px] text-white/75 shrink-0"
+                  >
+                    <Check className="w-3 h-3 text-purple-300" />
+                    {c}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+          </div>
 
           <div className="lg:col-span-6 relative">
             <motion.div
