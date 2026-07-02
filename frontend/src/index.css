@@ -281,3 +281,23 @@ html, body, #root, .App, main { overflow-x: clip; }
     0 60px 140px -40px rgba(147,51,234,0.55),
     0 30px 80px -30px rgba(99,102,241,0.45);
 }
+/* Hero chips infinite scroll */
+@keyframes heroChipsScroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-33.333%);
+  }
+}
+
+.hero-chips-track {
+  display: flex;
+  width: max-content;
+  gap: 0.5rem;
+  animation: heroChipsScroll 22s linear infinite;
+}
+
+.hero-chips-track:hover {
+  animation-play-state: paused;
+}
