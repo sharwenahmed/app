@@ -17,10 +17,9 @@ export default function DemoExperience() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    const timer = setTimeout(() => setLoading(false), 0);
-        return () => clearTimeout(timer);
-  }, 
-  [slug]);
+    const timer = setTimeout(() => setLoading(false), 900);
+    return () => clearTimeout(timer);
+  },[slug]);
 
   if (!demo) return <Navigate to="/" replace />;
   if (loading) return <DemoLoader demo={demo} />;
