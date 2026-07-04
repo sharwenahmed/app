@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { ArrowUpRight, MonitorSmartphone, Sparkles } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 import DesktopMockup from "@/components/mockups/DesktopMockup";
@@ -191,9 +192,18 @@ export default function DemoGallery() {
                       {featured.name}
                     </div>
                   </div>
-                  <div className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-full chrome-pill text-xs text-white/70">
-                    <MonitorSmartphone className="w-3.5 h-3.5" />
-                    Desktop + Mobile preview
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <div className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-full chrome-pill text-xs text-white/70">
+                      <MonitorSmartphone className="w-3.5 h-3.5" />
+                      Desktop + Mobile preview
+                    </div>
+                    <Link
+                      to={`/demos/${featured.slug}`}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-fuchsia-600 shadow-[0_18px_45px_-18px_rgba(147,51,234,0.8)] hover:shadow-[0_24px_55px_-16px_rgba(147,51,234,0.95)] transition-all"
+                    >
+                      Preview Live Website
+                      <ArrowUpRight className="w-4 h-4" />
+                    </Link>
                   </div>
                 </div>
 

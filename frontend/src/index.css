@@ -32,10 +32,30 @@ body {
   overflow-x: hidden;
   overflow-x: clip;
 }
+html,
+body,
+#root,
+.App {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
 
 /* Belt + suspenders: prevent any decorative element from forcing horizontal scroll. */
-html, body, #root, .App, main { overflow-x: clip; }
-
+html, body, #root, .App, main { overflow-x: hidden; }
 ::selection {
   background: rgba(147, 51, 234, 0.45);
   color: #fff;
