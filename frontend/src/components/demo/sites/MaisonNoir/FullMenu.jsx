@@ -112,17 +112,16 @@ export default function FullMenu() {
           </LuxuryButton>
         </div>
 
-        <div className="sticky top-28 z-20 mb-12 -mx-6 px-6 py-4 bg-[#050404]/80 backdrop-blur-xl border-y border-white/10">
+        <div className="sticky top-0 md:top-6 z-40 mb-12 -mx-6 px-6 py-4 bg-[#050404]/90 backdrop-blur-2xl border-y border-white/10 shadow-[0_20px_60px_-35px_rgba(201,162,91,0.45)]">
           <div className="flex gap-3 overflow-x-auto no-scrollbar">
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setActive(category)}
-                className={`shrink-0 rounded-full px-5 py-3 text-sm transition-all duration-300 ${
-                  active === category
+                className={`shrink-0 rounded-full px-5 py-3 text-sm transition-all duration-300 ${active === category
                     ? "bg-[#C9A25B] text-black shadow-[0_18px_45px_-20px_rgba(201,162,91,0.9)]"
-                    : "border border-white/10 text-white/60 hover:text-white hover:border-[#C9A25B]/50"
-                }`}
+                    : "border border-white/10 text-white/60 hover:text-white hover:border-[#C9A25B]/50 hover:bg-white/[0.03]"
+                  }`}
               >
                 {category}
               </button>
