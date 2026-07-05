@@ -120,6 +120,9 @@ const categoryHeadlines = {
 
 export default function FullMenu() {
   const [active, setActive] = useState("Starters");
+  const [showStickyBar, setShowStickyBar] = useState(false);
+
+  const fullMenuRef = useRef(null);
   const sectionRefs = useRef({});
 
   const scrollToCategory = (category) => {
@@ -152,15 +155,55 @@ export default function FullMenu() {
 
     return () => observer.disconnect();
   }, []);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShowStickyBar(entry.isIntersecting);
+      },
+      {
+        root: null,
+        threshold: 0.1,
+      }
+    );
+
+    if (fullMenuRef.current) {
+      observer.observe(fullMenuRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   const featured = featuredImages[active];
 
   return (
     <section
       id="full-menu"
+      ref={fullMenuRef}
       className="relative bg-[#050404] px-6 py-24 md:py-36 overflow-visible border-t border-white/10"
     >
       <SectionGlow />
+
+      {showStickyBar && (
+  <div className="fixed top-0 left-0 right-0 z-[9999] bg-[#050404]/92 backdrop-blur-2xl border-b border-white/10 shadow-[0_24px_70px_-40px_rgba(201,162,91,0.55)]">
+    <div className="max-w-7xl mx-auto px-6 py-4 overflow-x-auto no-scrollbar">
+      <div className="flex gap-3 min-w-max">
+        {categories.map((category) => (
+          <button
+            key={category}
+            onClick={() => scrollToCategory(category)}
+            className={`shrink-0 rounded-full px-5 py-3 text-sm transition-all duration-300 ${
+              active === category
+                ? "bg-[#C9A25B] text-black shadow-[0_18px_45px_-20px_rgba(201,162,91,0.9)]"
+                : "border border-white/10 text-white/60 hover:text-white hover:border-[#C9A25B]/50 hover:bg-white/[0.03]"
+            }`}
+          >
+            {category}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
 
       <div className="relative max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-10 mb-14">
@@ -182,18 +225,16 @@ export default function FullMenu() {
         </div>
       </div>
 
-      <div className="sticky top-0 z-50 -mx-6 bg-[#050404]/90 backdrop-blur-2xl border-y border-white/10 shadow-[0_24px_70px_-40px_rgba(201,162,91,0.55)]">
-        <div className="max-w-7xl mx-auto px-6 py-4 overflow-x-auto no-scrollbar">
+      <div className="relative z-20 -mx-6 bg-[#050404]/90 backdrop-blur-2xl border-y border-white/10 shadow-[0_24px_70px_-40px_rgba(201,162,91,0.55)]">        <div className="max-w-7xl mx-auto px-6 py-4 overflow-x-auto no-scrollbar">
           <div className="flex gap-3 min-w-max">
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => scrollToCategory(category)}
-                className={`shrink-0 rounded-full px-5 py-3 text-sm transition-all duration-300 ${
-                  active === category
-                    ? "bg-[#C9A25B] text-black shadow-[0_18px_45px_-20px_rgba(201,162,91,0.9)]"
-                    : "border border-white/10 text-white/60 hover:text-white hover:border-[#C9A25B]/50 hover:bg-white/[0.03]"
-                }`}
+                className={`shrink-0 rounded-full px-5 py-3 text-sm transition-all duration-300 ${active === category
+                  ? "bg-[#C9A25B] text-black shadow-[0_18px_45px_-20px_rgba(201,162,91,0.9)]"
+                  : "border border-white/10 text-white/60 hover:text-white hover:border-[#C9A25B]/50 hover:bg-white/[0.03]"
+                  }`}
               >
                 {category}
               </button>
