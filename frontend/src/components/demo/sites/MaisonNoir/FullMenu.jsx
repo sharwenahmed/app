@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 
 import SectionGlow from "@/components/demo/ui/SectionGlow";
@@ -118,62 +119,116 @@ const categoryHeadlines = {
   Cocktails: "Poured after dark.",
 };
 
+function CategoryBar({ active, onSelect }) {
+  return (
+    <div className="bg-[#050404]/95 backdrop-blur-2xl border-y border-white/10 shadow-[0_24px_70px_-40px_rgba(201,162,91,0.55)]">
+      <div className="max-w-7xl mx-auto px-6 py-4 overflow-x-auto no-scrollbar">
+        <div className="flex gap-3 min-w-max">
+          {categories.map((category) => (
+            <button
+              key={category}
+              onClick={() => onSelect(category)}
+              className={`shrink-0 rounded-full px-5 py-3 text-sm transition-all duration-300 ${
+                active === category
+                  ? "bg-[#C9A25B] text-black shadow-[0_18px_45px_-20px_rgba(201,162,91,0.9)]"
+                  : "border border-white/10 text-white/60 hover:text-white hover:border-[#C9A25B]/50 hover:bg-white/[0.03]"
+              }`}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function FullMenu() {
   const [active, setActive] = useState("Starters");
-  const [showStickyBar, setShowStickyBar] = useState(false);
+  const [showFixedBar, setShowFixedBar] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const fullMenuRef = useRef(null);
+  const inlineBarRef = useRef(null);
+  const endRef = useRef(null);
   const sectionRefs = useRef({});
 
   const scrollToCategory = (category) => {
     setActive(category);
-    sectionRefs.current[category]?.scrollIntoView({
+
+    const el = sectionRefs.current[category];
+    if (!el) return;
+
+    const y = el.getBoundingClientRect().top + window.scrollY - 92;
+
+    window.scrollTo({
+      top: y,
       behavior: "smooth",
-      block: "start",
     });
   };
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.find((entry) => entry.isIntersecting);
-        if (visible?.target?.dataset?.category) {
-          setActive(visible.target.dataset.category);
-        }
-      },
-      {
-        root: null,
-        rootMargin: "-35% 0px -55% 0px",
-        threshold: 0.05,
-      }
-    );
-
-    categories.forEach((category) => {
-      const el = sectionRefs.current[category];
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
+    setMounted(true);
   }, []);
+
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setShowStickyBar(entry.isIntersecting);
-      },
-      {
-        root: null,
-        threshold: 0.1,
-      }
-    );
+    const updateStickyState = () => {
+      const inlineBar = inlineBarRef.current;
+      const end = endRef.current;
 
-    if (fullMenuRef.current) {
-      observer.observe(fullMenuRef.current);
-    }
+      if (!inlineBar || !end) return;
 
-    return () => observer.disconnect();
+      const barRect = inlineBar.getBoundingClientRect();
+      const endRect = end.getBoundingClientRect();
+
+      const shouldShow = barRect.top <= 0 && endRect.top > 90;
+
+      setShowFixedBar(shouldShow);
+
+      let current = "Starters";
+
+      categories.forEach((category) => {
+        const el = sectionRefs.current[category];
+        if (!el) return;
+
+        if (el.getBoundingClientRect().top <= 140) {
+          current = category;
+        }
+      });
+
+      setActive(current);
+    };
+
+    updateStickyState();
+
+    document.addEventListener("scroll", updateStickyState, true);
+    window.addEventListener("resize", updateStickyState);
+
+    return () => {
+      document.removeEventListener("scroll", updateStickyState, true);
+      window.removeEventListener("resize", updateStickyState);
+    };
   }, []);
 
   const featured = featuredImages[active];
+
+  const fixedBar =
+    mounted && showFixedBar
+      ? createPortal(
+          <AnimatePresence>
+            <motion.div
+              initial={{ opacity: 0, y: -14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -14 }}
+              transition={{ duration: 0.2 }}
+              className="fixed top-0 left-0 right-0 z-[99999]"
+            >
+              <CategoryBar active={active} onSelect={scrollToCategory} />
+            </motion.div>
+          </AnimatePresence>,
+          document.body
+        )
+      : null;
 
   return (
     <section
@@ -181,29 +236,9 @@ export default function FullMenu() {
       ref={fullMenuRef}
       className="relative bg-[#050404] px-6 py-24 md:py-36 overflow-visible border-t border-white/10"
     >
-      <SectionGlow />
+      {fixedBar}
 
-      {showStickyBar && (
-  <div className="fixed top-0 left-0 right-0 z-[9999] bg-[#050404]/92 backdrop-blur-2xl border-b border-white/10 shadow-[0_24px_70px_-40px_rgba(201,162,91,0.55)]">
-    <div className="max-w-7xl mx-auto px-6 py-4 overflow-x-auto no-scrollbar">
-      <div className="flex gap-3 min-w-max">
-        {categories.map((category) => (
-          <button
-            key={category}
-            onClick={() => scrollToCategory(category)}
-            className={`shrink-0 rounded-full px-5 py-3 text-sm transition-all duration-300 ${
-              active === category
-                ? "bg-[#C9A25B] text-black shadow-[0_18px_45px_-20px_rgba(201,162,91,0.9)]"
-                : "border border-white/10 text-white/60 hover:text-white hover:border-[#C9A25B]/50 hover:bg-white/[0.03]"
-            }`}
-          >
-            {category}
-          </button>
-        ))}
-      </div>
-    </div>
-  </div>
-)}
+      <SectionGlow />
 
       <div className="relative max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-10 mb-14">
@@ -225,22 +260,8 @@ export default function FullMenu() {
         </div>
       </div>
 
-      <div className="relative z-20 -mx-6 bg-[#050404]/90 backdrop-blur-2xl border-y border-white/10 shadow-[0_24px_70px_-40px_rgba(201,162,91,0.55)]">        <div className="max-w-7xl mx-auto px-6 py-4 overflow-x-auto no-scrollbar">
-          <div className="flex gap-3 min-w-max">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => scrollToCategory(category)}
-                className={`shrink-0 rounded-full px-5 py-3 text-sm transition-all duration-300 ${active === category
-                  ? "bg-[#C9A25B] text-black shadow-[0_18px_45px_-20px_rgba(201,162,91,0.9)]"
-                  : "border border-white/10 text-white/60 hover:text-white hover:border-[#C9A25B]/50 hover:bg-white/[0.03]"
-                  }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-        </div>
+      <div ref={inlineBarRef} className="relative z-20 -mx-6">
+        <CategoryBar active={active} onSelect={scrollToCategory} />
       </div>
 
       <div className="relative max-w-7xl mx-auto pt-14">
@@ -323,9 +344,7 @@ export default function FullMenu() {
                   {active}
                 </p>
 
-                <h3 className="font-serif text-4xl mb-4">
-                  {featured.title}
-                </h3>
+                <h3 className="font-serif text-4xl mb-4">{featured.title}</h3>
 
                 <p className="text-white/60 leading-relaxed">
                   {featured.subtitle}
@@ -334,6 +353,8 @@ export default function FullMenu() {
             </div>
           </div>
         </div>
+
+        <div ref={endRef} className="h-px" />
       </div>
     </section>
   );
