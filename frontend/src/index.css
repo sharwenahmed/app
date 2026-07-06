@@ -38,7 +38,6 @@ body,
 .App {
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
 }
 
 *,
@@ -55,8 +54,14 @@ svg {
 }
 
 /* Belt + suspenders: prevent any decorative element from forcing horizontal scroll. */
-html, body, #root, .App, main { overflow-x: hidden; }
-::selection {
+html, body, #root, .App {
+  width: 100%;
+  max-width: 100%;
+}
+
+body {
+  overflow-x: clip;
+}::selection {
   background: rgba(147, 51, 234, 0.45);
   color: #fff;
 }

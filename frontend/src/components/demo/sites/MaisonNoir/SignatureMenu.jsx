@@ -19,7 +19,7 @@ const dishes = [
     price: "$74",
     description:
       "Center-cut filet with pommes purée, black truffle jus, and charred seasonal greens.",
-    image: "/images/MaisonNoir/fillet.webp",
+    image: "/images/MaisonNoir/filet.webp",
   },
   {
     number: "03",

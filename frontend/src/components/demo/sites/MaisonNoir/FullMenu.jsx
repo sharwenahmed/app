@@ -50,63 +50,63 @@ const featuredImages = {
 
 const menuItems = {
   Starters: [
-    ["Bone Marrow Toast", "$24", "Roasted marrow, grilled sourdough, parsley salad."],
-    ["Truffle Steak Tartare", "$28", "Hand-cut prime beef, cured yolk, black truffle."],
-    ["Oysters Noir", "$32", "Six oysters, champagne mignonette, lemon oil."],
-    ["Charred Spanish Octopus", "$29", "Potato espuma, smoked paprika, herb oil."],
-    ["Burrata & Heirloom Tomatoes", "$22", "Burrata, roasted tomatoes, basil oil."],
-    ["Foie Gras Torchon", "$34", "Brioche, fig jam, aged balsamic."],
-    ["Caviar Potato Crisp", "$38", "Yukon crisp, crème fraîche, Ossetra caviar."],
-    ["Smoked Caesar Salad", "$18", "Romaine hearts, parmesan snow, anchovy dressing."],
+    ["Bone Marrow Toast", "$24", "Roasted marrow, grilled sourdough, parsley salad.", "/images/MaisonNoir/starters.webp"],
+    ["Truffle Steak Tartare", "$28", "Hand-cut prime beef, cured yolk, black truffle.", "/images/MaisonNoir/starters.webp"],
+    ["Oysters Noir", "$32", "Six oysters, champagne mignonette, lemon oil.", "/images/MaisonNoir/starters.webp"],
+    ["Charred Spanish Octopus", "$29", "Potato espuma, smoked paprika, herb oil.", "/images/MaisonNoir/starters.webp"],
+    ["Burrata & Heirloom Tomatoes", "$22", "Burrata, roasted tomatoes, basil oil.", "/images/MaisonNoir/starters.webp"],
+    ["Foie Gras Torchon", "$34", "Brioche, fig jam, aged balsamic.", "/images/MaisonNoir/starters.webp"],
+    ["Caviar Potato Crisp", "$38", "Yukon crisp, crème fraîche, Ossetra caviar.", "/images/MaisonNoir/starters.webp"],
+    ["Smoked Caesar Salad", "$18", "Romaine hearts, parmesan snow, anchovy dressing.", "/images/MaisonNoir/starters.webp"],
   ],
   Steaks: [
-    ["45-Day Dry-Aged Ribeye", "$68", "16 oz ribeye, smoked marrow butter, sea salt."],
-    ["Black Truffle Filet Mignon", "$74", "8 oz filet, pommes purée, truffle jus."],
-    ["A5 Japanese Wagyu", "$128", "4 oz wagyu, binchotan charcoal, smoked salt."],
-    ["Tomahawk for Two", "$145", "32 oz dry-aged tomahawk, roasted garlic, house sauce."],
-    ["Prime New York Strip", "$62", "14 oz striploin, peppercorn jus, charred rosemary."],
+    ["45-Day Dry-Aged Ribeye", "$68", "16 oz ribeye, smoked marrow butter, sea salt.", "/images/MaisonNoir/ribeye.webp"],
+    ["Black Truffle Filet Mignon", "$74", "8 oz filet, pommes purée, truffle jus.", "/images/MaisonNoir/filet.webp"],
+    ["A5 Japanese Wagyu", "$128", "4 oz wagyu, binchotan charcoal, smoked salt.", "/images/MaisonNoir/wagyu.webp"],
+    ["Tomahawk for Two", "$145", "32 oz dry-aged tomahawk, roasted garlic, house sauce.", "/images/MaisonNoir/tomahawk.webp"],
+    ["Prime New York Strip", "$62", "14 oz striploin, peppercorn jus, charred rosemary.", "/images/MaisonNoir/new-york-strip.webp"],
   ],
   Seafood: [
-    ["Butter Poached Atlantic Lobster", "$58", "Saffron butter, preserved lemon."],
-    ["Seared Nova Scotia Scallops", "$42", "Brown butter, cauliflower silk."],
-    ["Miso Black Cod", "$46", "Miso glaze, sesame, charred scallion."],
-    ["King Crab Legs", "$72", "Drawn butter, lemon, sea salt."],
-    ["Bluefin Tuna Crudo", "$27", "Citrus, chili oil, crispy shallot."],
-    ["Jumbo Garlic Prawns", "$36", "Garlic butter, smoked chili, parsley."],
-    ["Maison Noir Seafood Tower", "$118", "Oysters, lobster, crab, prawns, seasonal sauces."],
-    ["Charcoal-Grilled Halibut", "$44", "Beurre blanc, fennel, open flame finish."],
+    ["Butter Poached Atlantic Lobster", "$58", "Saffron butter, preserved lemon.", "/images/MaisonNoir/seafood.webp"],
+    ["Seared Nova Scotia Scallops", "$42", "Brown butter, cauliflower silk.", "/images/MaisonNoir/seafood.webp"],
+    ["Miso Black Cod", "$46", "Miso glaze, sesame, charred scallion.", "/images/MaisonNoir/seafood.webp"],
+    ["King Crab Legs", "$72", "Drawn butter, lemon, sea salt.", "/images/MaisonNoir/seafood.webp"],
+    ["Bluefin Tuna Crudo", "$27", "Citrus, chili oil, crispy shallot.", "/images/MaisonNoir/seafood.webp"],
+    ["Jumbo Garlic Prawns", "$36", "Garlic butter, smoked chili, parsley.", "/images/MaisonNoir/seafood.webp"],
+    ["Maison Noir Seafood Tower", "$118", "Oysters, lobster, crab, prawns, seasonal sauces.", "/images/MaisonNoir/seafood.webp"],
+    ["Charcoal-Grilled Halibut", "$44", "Beurre blanc, fennel, open flame finish.", "/images/MaisonNoir/seafood.webp"],
   ],
   Sides: [
-    ["Pommes Purée", "$14", "Cultured butter, chives."],
-    ["Black Truffle Fries", "$17", "Parmesan, herbs, black truffle aioli."],
-    ["Mac & Gruyère", "$18", "Gruyère, aged cheddar, black pepper crumb."],
-    ["Creamed Spinach", "$15", "Garlic cream, nutmeg."],
-    ["Charred Broccolini", "$16", "Lemon oil, chili crisp, toasted almond."],
-    ["Roasted Wild Mushrooms", "$17", "Thyme, garlic butter."],
-    ["Maple Bacon Brussels Sprouts", "$16", "Cider glaze, toasted seeds."],
-    ["Charred Asparagus", "$18", "Hollandaise, smoked salt."],
+    ["Pommes Purée", "$14", "Cultured butter, chives.", "/images/MaisonNoir/sides.webp"],
+    ["Black Truffle Fries", "$17", "Parmesan, herbs, black truffle aioli.", "/images/MaisonNoir/sides.webp"],
+    ["Mac & Gruyère", "$18", "Gruyère, aged cheddar, black pepper crumb.", "/images/MaisonNoir/sides.webp"],
+    ["Creamed Spinach", "$15", "Garlic cream, nutmeg.", "/images/MaisonNoir/sides.webp"],
+    ["Charred Broccolini", "$16", "Lemon oil, chili crisp, toasted almond.", "/images/MaisonNoir/sides.webp"],
+    ["Roasted Wild Mushrooms", "$17", "Thyme, garlic butter.", "/images/MaisonNoir/sides.webp"],
+    ["Maple Bacon Brussels Sprouts", "$16", "Cider glaze, toasted seeds.", "/images/MaisonNoir/sides.webp"],
+    ["Charred Asparagus", "$18", "Hollandaise, smoked salt.", "/images/MaisonNoir/sides.webp"],
   ],
   Desserts: [
-    ["Dark Chocolate Torte", "$18", "Chocolate ganache, espresso cream, salted crumble."],
-    ["Vanilla Bean Crème Brûlée", "$16", "Burnt sugar, citrus, almond tuile."],
-    ["Basque Cheesecake", "$17", "Burnt vanilla top, berry compote."],
-    ["Whiskey Caramel Cake", "$19", "Caramel cream, toasted pecan."],
-    ["Espresso Affogato", "$14", "Vanilla gelato, hot espresso, cocoa dust."],
-    ["Lemon Tart", "$16", "Italian meringue, citrus curd."],
+    ["Dark Chocolate Torte", "$18", "Chocolate ganache, espresso cream, salted crumble.", "/images/MaisonNoir/dessert.webp"],
+    ["Vanilla Bean Crème Brûlée", "$16", "Burnt sugar, citrus, almond tuile.", "/images/MaisonNoir/dessert.webp"],
+    ["Basque Cheesecake", "$17", "Burnt vanilla top, berry compote.", "/images/MaisonNoir/dessert.webp"],
+    ["Whiskey Caramel Cake", "$19", "Caramel cream, toasted pecan.", "/images/MaisonNoir/dessert.webp"],
+    ["Espresso Affogato", "$14", "Vanilla gelato, hot espresso, cocoa dust.", "/images/MaisonNoir/dessert.webp"],
+    ["Lemon Tart", "$16", "Italian meringue, citrus curd.", "/images/MaisonNoir/dessert.webp"],
   ],
   Cocktails: [
-    ["The Noir Old Fashioned", "$19", "Bourbon, cacao bitters, orange oil, smoked cherry."],
-    ["Cellar Martini", "$21", "Vodka, dry vermouth, olive oil wash, sea salt."],
-    ["Midnight Manhattan", "$20", "Rye, sweet vermouth, black cherry, bitters."],
-    ["Gold Rush", "$18", "Bourbon, honey, lemon, smoked ice."],
+    ["The Noir Old Fashioned", "$19", "Bourbon, cacao bitters, orange oil, smoked cherry.", "/images/MaisonNoir/cocktail.webp"],
+    ["Cellar Martini", "$21", "Vodka, dry vermouth, olive oil wash, sea salt.", "/images/MaisonNoir/cocktail.webp"],
+    ["Midnight Manhattan", "$20", "Rye, sweet vermouth, black cherry, bitters.", "/images/MaisonNoir/cocktail.webp"],
+    ["Gold Rush", "$18", "Bourbon, honey, lemon, smoked ice.", "/images/MaisonNoir/cocktail.webp"],
     ["Velvet Negroni", "$19", "Gin, Campari, vermouth, orange oil."],
-    ["Charcoal Whiskey Sour", "$18", "Whiskey, lemon, egg white, activated charcoal."],
-    ["Pearl Gimlet", "$17", "Gin, lime cordial, basil, mineral salt."],
-    ["Smoked Boulevardier", "$21", "Bourbon, Campari, vermouth, oak smoke."],
-    ["Noir Espresso Martini", "$20", "Vodka, espresso, coffee liqueur, vanilla."],
-    ["Amber Spritz", "$17", "Aperitivo, sparkling wine, citrus."],
-    ["Cognac Sidecar", "$22", "Cognac, orange liqueur, lemon, sugared rim."],
-    ["After Midnight", "$23", "Dark rum, amaro, cacao, bitters."],
+    ["Charcoal Whiskey Sour", "$18", "Whiskey, lemon, egg white, activated charcoal.", "/images/MaisonNoir/cocktail.webp"],
+    ["Pearl Gimlet", "$17", "Gin, lime cordial, basil, mineral salt.", "/images/MaisonNoir/cocktail.webp"],
+    ["Smoked Boulevardier", "$21", "Bourbon, Campari, vermouth, oak smoke.", "/images/MaisonNoir/cocktail.webp"],
+    ["Noir Espresso Martini", "$20", "Vodka, espresso, coffee liqueur, vanilla.", "/images/MaisonNoir/cocktail.webp"],
+    ["Amber Spritz", "$17", "Aperitivo, sparkling wine, citrus.", "/images/MaisonNoir/cocktail.webp"],
+    ["Cognac Sidecar", "$22", "Cognac, orange liqueur, lemon, sugared rim.", "/images/MaisonNoir/cocktail.webp"],
+    ["After Midnight", "$23", "Dark rum, amaro, cacao, bitters.", "/images/MaisonNoir/cocktail.webp"],
   ],
 };
 
@@ -128,11 +128,10 @@ function CategoryBar({ active, onSelect }) {
             <button
               key={category}
               onClick={() => onSelect(category)}
-              className={`shrink-0 rounded-full px-5 py-3 text-sm transition-all duration-300 ${
-                active === category
-                  ? "bg-[#C9A25B] text-black shadow-[0_18px_45px_-20px_rgba(201,162,91,0.9)]"
-                  : "border border-white/10 text-white/60 hover:text-white hover:border-[#C9A25B]/50 hover:bg-white/[0.03]"
-              }`}
+              className={`shrink-0 rounded-full px-5 py-3 text-sm transition-colors duration-200 ${active === category
+                ? "bg-[#C9A25B] text-black"
+                : "border border-white/10 text-white/60 hover:text-white hover:border-[#C9A25B]/50 hover:bg-white/[0.03]"
+                }`}
             >
               {category}
             </button>
@@ -145,13 +144,26 @@ function CategoryBar({ active, onSelect }) {
 
 export default function FullMenu() {
   const [active, setActive] = useState("Starters");
+
+  const [selectedByCategory, setSelectedByCategory] = useState(() => ({
+    Starters: menuItems.Starters[0],
+    Steaks: menuItems.Steaks[0],
+    Seafood: menuItems.Seafood[0],
+    Sides: menuItems.Sides[0],
+    Desserts: menuItems.Desserts[0],
+    Cocktails: menuItems.Cocktails[0],
+  }));
+
   const [showFixedBar, setShowFixedBar] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [cardOffsets, setCardOffsets] = useState({});
 
   const fullMenuRef = useRef(null);
   const inlineBarRef = useRef(null);
   const endRef = useRef(null);
   const sectionRefs = useRef({});
+  const menuGridRefs = useRef({});
+  const cardRefs = useRef({});
 
   const scrollToCategory = (category) => {
     setActive(category);
@@ -170,7 +182,6 @@ export default function FullMenu() {
   useEffect(() => {
     setMounted(true);
   }, []);
-
   useEffect(() => {
     const updateStickyState = () => {
       const inlineBar = inlineBarRef.current;
@@ -181,8 +192,7 @@ export default function FullMenu() {
       const barRect = inlineBar.getBoundingClientRect();
       const endRect = end.getBoundingClientRect();
 
-      const shouldShow = barRect.top <= 0 && endRect.top > 90;
-
+      const shouldShow = barRect.top <= 0 && endRect.top > window.innerHeight * 0.25;
       setShowFixedBar(shouldShow);
 
       let current = "Starters";
@@ -197,6 +207,35 @@ export default function FullMenu() {
       });
 
       setActive(current);
+
+      if (window.innerWidth >= 1024) {
+        const nextOffsets = {};
+        const topOffset = 96;
+
+        categories.forEach((category) => {
+          const grid = menuGridRefs.current[category];
+          const card = cardRefs.current[category];
+
+          if (!grid || !card) return;
+
+          const gridTop = grid.getBoundingClientRect().top + window.scrollY;
+          const gridHeight = grid.offsetHeight;
+          const cardHeight = card.offsetHeight;
+          const maxOffset = Math.max(gridHeight - cardHeight, 0);
+          const rawOffset = window.scrollY + topOffset - gridTop;
+
+          nextOffsets[category] = Math.min(Math.max(rawOffset, 0), maxOffset);
+        });
+
+        setCardOffsets((prev) => {
+          const prevString = JSON.stringify(prev);
+          const nextString = JSON.stringify(nextOffsets);
+
+          return prevString === nextString ? prev : nextOffsets;
+        });
+      } else {
+        setCardOffsets({});
+      }
     };
 
     updateStickyState();
@@ -210,24 +249,23 @@ export default function FullMenu() {
     };
   }, []);
 
-  const featured = featuredImages[active];
 
   const fixedBar =
     mounted && showFixedBar
       ? createPortal(
-          <AnimatePresence>
-            <motion.div
-              initial={{ opacity: 0, y: -14 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -14 }}
-              transition={{ duration: 0.2 }}
-              className="fixed top-0 left-0 right-0 z-[99999]"
-            >
-              <CategoryBar active={active} onSelect={scrollToCategory} />
-            </motion.div>
-          </AnimatePresence>,
-          document.body
-        )
+        <AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.22 }}
+            className="fixed top-0 left-0 right-0 z-[99999]"
+          >
+            <CategoryBar active={active} onSelect={scrollToCategory} />
+          </motion.div>
+        </AnimatePresence>,
+        document.body
+      )
       : null;
 
   return (
@@ -265,97 +303,194 @@ export default function FullMenu() {
       </div>
 
       <div className="relative max-w-7xl mx-auto pt-14">
-        <div className="grid lg:grid-cols-12 gap-12">
-          <div className="lg:col-span-7 space-y-20">
-            {categories.map((category) => (
+        <div className="space-y-24">
+          {categories.map((category) => {
+            const selected = selectedByCategory[category] || menuItems[category][0];
+
+            const selectedImage =
+              selected?.[3] ||
+              featuredImages[category]?.image ||
+              "/images/MaisonNoir/ribeye.webp";
+
+            const selectedName = selected?.[0] || featuredImages[category].title;
+            const selectedPrice = selected?.[1] || "";
+            const selectedDesc = selected?.[2] || featuredImages[category].subtitle;
+            const cardOffset = cardOffsets[category] || 0;
+
+            return (
               <section
                 key={category}
                 ref={(el) => {
                   sectionRefs.current[category] = el;
                 }}
                 data-category={category}
-                className="scroll-mt-28 rounded-[2rem] border border-white/10 bg-white/[0.025] p-6 md:p-10"
+                className="relative overflow-visible scroll-mt-28 rounded-[2rem] border border-white/10 bg-white/[0.025] p-6 md:p-10"
               >
-                <p className="text-[#C9A25B] tracking-[0.35em] uppercase text-xs mb-4">
-                  {category}
-                </p>
+                <div>
+                  <div className="mb-10">
+                      <p className="text-[#C9A25B] tracking-[0.35em] uppercase text-xs mb-4">
+                        {category}
+                      </p>
 
-                <h3 className="font-serif text-5xl md:text-6xl mb-10">
-                  {categoryHeadlines[category]}
-                </h3>
+                      <h3 className="font-serif text-5xl md:text-6xl mb-8">
+                        {categoryHeadlines[category]}
+                      </h3>
 
-                <div className="lg:hidden mb-10 rounded-[1.5rem] overflow-hidden border border-white/10">
-                  <img
-                    src={featuredImages[category].image}
-                    alt={featuredImages[category].title}
-                    onError={(e) => {
-                      e.currentTarget.src = "/images/MaisonNoir/ribeye.webp";
-                    }}
-                    className="w-full aspect-[4/5] object-cover opacity-90"
-                  />
-                </div>
+                      <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-black/30 shadow-[0_35px_90px_-55px_rgba(201,162,91,0.5)]">
+                        <img
+                          src={featuredImages[category].image}
+                          alt={featuredImages[category].title}
+                          onError={(e) => {
+                            e.currentTarget.src = "/images/MaisonNoir/ribeye.webp";
+                          }}
+                          className="w-full aspect-[16/10] md:aspect-[16/8] object-cover opacity-90 transition-transform duration-700 hover:scale-105"
+                        />
 
-                <div className="divide-y divide-white/10">
-                  {menuItems[category].map(([name, price, desc]) => (
-                    <div
-                      key={name}
-                      className="grid sm:grid-cols-[1fr_auto] gap-4 py-6 group"
-                    >
-                      <div>
-                        <h4 className="font-serif text-2xl md:text-3xl group-hover:text-[#C9A25B] transition">
-                          {name}
-                        </h4>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
 
-                        <p className="mt-2 text-white/50 leading-relaxed max-w-2xl">
-                          {desc}
-                        </p>
+                        <div className="absolute left-5 right-5 bottom-5 md:left-7 md:right-7 md:bottom-7">
+                          <p className="text-[#C9A25B] tracking-[0.3em] uppercase text-[10px] mb-2">
+                            Featured
+                          </p>
+
+                          <h4 className="font-serif text-3xl md:text-4xl">
+                            {featuredImages[category].title}
+                          </h4>
+
+                          <p className="mt-2 text-white/60 max-w-xl leading-relaxed">
+                            {featuredImages[category].subtitle}
+                          </p>
+                        </div>
                       </div>
+                  </div>
 
-                      <div className="font-serif text-2xl text-[#C9A25B]">
-                        {price}
+                  <div
+                    ref={(el) => {
+                      menuGridRefs.current[category] = el;
+                    }}
+                    className="grid lg:grid-cols-12 gap-12 items-start"
+                  >
+                    <div className="lg:col-span-7 divide-y divide-white/10">
+                      {menuItems[category].map((item) => {
+                        const [name, price, desc] = item;
+                        const isSelected = selected?.[0] === name;
+
+                        return (
+                          <button
+                            key={name}
+                            onClick={() => {
+                              setActive(category);
+                              setSelectedByCategory((prev) => ({
+                                ...prev,
+                                [category]: item,
+                              }));
+                            }}
+                            className={`w-full text-left grid sm:grid-cols-[1fr_auto] gap-4 py-6 group transition-all duration-300 ${isSelected
+                              ? "rounded-2xl bg-white/[0.035] px-5 border border-[#C9A25B]/30"
+                              : "border-b border-white/10 hover:px-4"
+                              }`}
+                          >
+                            <div>
+                              <h4
+                                className={`font-serif text-2xl md:text-3xl transition ${isSelected
+                                  ? "text-[#C9A25B]"
+                                  : "group-hover:text-[#C9A25B]"
+                                  }`}
+                              >
+                                {name}
+                              </h4>
+
+                              <p className="mt-2 text-white/50 leading-relaxed max-w-2xl">
+                                {desc}
+                              </p>
+                            </div>
+
+                            <div className="font-serif text-2xl text-[#C9A25B]">
+                              {price}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div className="hidden lg:block lg:col-span-5 relative">
+                    <div
+                      ref={(el) => {
+                        cardRefs.current[category] = el;
+                      }}
+                      style={{ transform: `translateY(${cardOffset}px)` }}
+                      className="rounded-[2rem] overflow-hidden border border-white/10 bg-black backdrop-blur-xl shadow-[0_50px_120px_-55px_rgba(201,162,91,0.45)] transition-transform duration-150 ease-out will-change-transform"
+                    >
+                      <AnimatePresence mode="sync">
+                        <motion.div
+                          key={`${category}-${selectedName}`}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.2, ease: "easeOut" }}
+                          className="relative"
+                        >
+                          <img
+                            src={selectedImage}
+                            alt={selectedName}
+                            onError={(e) => {
+                              e.currentTarget.src = featuredImages[category].image;
+                            }}
+                            className="w-full aspect-[16/10] object-cover brightness-110 contrast-105" />
+
+                          <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/55 to-transparent" />
+                        </motion.div>
+                      </AnimatePresence>
+
+                      <div className="p-6">
+                        <div className="flex items-start justify-between gap-5">
+                          <div>
+                            <p className="uppercase tracking-[0.35em] text-[11px] text-[#C9A25B] mb-2">
+                              {category}
+                            </p>
+
+                            <h3 className="font-serif text-3xl leading-tight">
+                              {selectedName}
+                            </h3>
+                          </div>
+
+                          <div className="font-serif text-4xl text-[#C9A25B]">
+                            {selectedPrice}
+                          </div>
+                        </div>
+
+                        <p className="mt-4 text-white/60 leading-relaxed text-base">
+                          {selectedDesc}
+                        </p>
+
+                        <div className="mt-6 flex flex-wrap gap-3">
+                          <span className="rounded-full border border-[#C9A25B]/25 px-4 py-2 text-sm text-[#C9A25B]">
+                            House Signature
+                          </span>
+
+                          <span className="rounded-full border border-white/10 px-4 py-2 text-sm text-white/60">
+                            Open Flame
+                          </span>
+
+                          <span className="rounded-full border border-white/10 px-4 py-2 text-sm text-white/60">
+                            Chef Recommended
+                          </span>
+                        </div>
+
+                        <button className="mt-6 w-full rounded-full bg-[#C9A25B] py-3 text-base font-medium text-black transition hover:scale-[1.02] hover:bg-[#d6b36d]">
+                          Reserve This Dish
+                        </button>
                       </div>
                     </div>
-                  ))}
+                  </div>
                 </div>
-              </section>
-            ))}
-          </div>
-
-          <div className="hidden lg:block lg:col-span-5">
-            <div className="sticky top-28 rounded-[2rem] overflow-hidden border border-white/10 bg-black/35 backdrop-blur-xl shadow-[0_40px_110px_-60px_rgba(201,162,91,0.55)]">
-              <AnimatePresence mode="wait">
-                <motion.img
-                  key={featured.image}
-                  src={featured.image}
-                  alt={featured.title}
-                  onError={(e) => {
-                    e.currentTarget.src = "/images/MaisonNoir/ribeye.webp";
-                  }}
-                  initial={{ opacity: 0, scale: 1.04, filter: "blur(8px)" }}
-                  animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, scale: 0.98, filter: "blur(8px)" }}
-                  transition={{ duration: 0.45 }}
-                  className="w-full aspect-[4/5] object-cover"
-                />
-              </AnimatePresence>
-
-              <div className="p-8">
-                <p className="uppercase tracking-[0.35em] text-xs text-[#C9A25B] mb-3">
-                  {active}
-                </p>
-
-                <h3 className="font-serif text-4xl mb-4">{featured.title}</h3>
-
-                <p className="text-white/60 leading-relaxed">
-                  {featured.subtitle}
-                </p>
               </div>
-            </div>
-          </div>
+              </section>
+            );
+          })}
         </div>
-
-        <div ref={endRef} className="h-px" />
       </div>
+      <div ref={endRef} className="h-px" />
     </section>
   );
 }
