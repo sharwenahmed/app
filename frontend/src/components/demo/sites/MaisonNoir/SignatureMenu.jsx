@@ -10,8 +10,7 @@ const dishes = [
     price: "$68",
     description:
       "Prime ribeye aged in-house, finished over open flame, served with smoked marrow butter and sea salt.",
-    image: "/images/MaisonNoir/ribeye.webp",
-  },
+      image: "/images/MaisonNoir/steaks/45-day-dry-aged-ribeye.webp"  },
   {
     number: "02",
     name: "Black Truffle Filet",
@@ -19,7 +18,7 @@ const dishes = [
     price: "$74",
     description:
       "Center-cut filet with pommes purée, black truffle jus, and charred seasonal greens.",
-    image: "/images/MaisonNoir/filet.webp",
+    image: "/images/MaisonNoir/steaks/black-truffle-filet-mignon.webp",
   },
   {
     number: "03",
@@ -28,7 +27,7 @@ const dishes = [
     price: "$128",
     description:
       "Exquisitely marbled A5 wagyu, grilled over binchotan charcoal and finished with smoked sea salt.",
-    image: "/images/MaisonNoir/wagyu.webp",
+    image: "/images/MaisonNoir/steaks/a5-japanese-wagyu.webp",
   },
 ];
 
