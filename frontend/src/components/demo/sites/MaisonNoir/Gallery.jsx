@@ -24,13 +24,13 @@ function RevealImage({ src, alt, label, className = "" }) {
       className={`group relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/[0.03] ${className}`}
     >
       <motion.img
-  src={src}
-  alt={alt}
-  loading="lazy"
-  decoding="async"
-  style={reduce ? undefined : { scale, y }}
-  className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition duration-700"
-/>
+        src={src}
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+        style={reduce ? undefined : { scale, y }}
+        className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition duration-700"
+      />
 
       <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
 
@@ -54,7 +54,7 @@ export default function Gallery() {
     >
       <div className="hidden md:block absolute left-[-180px] top-20 w-[520px] h-[520px] rounded-full bg-[#C9A25B]/10 blur-[150px]" />
       <div className="hidden md:block absolute right-[-180px] bottom-20 w-[520px] h-[520px] rounded-full bg-[#4A1418]/25 blur-[150px]" />
-         
+
 
       <div className="relative max-w-7xl mx-auto">
         <div className="max-w-5xl mb-20">
@@ -63,10 +63,10 @@ export default function Gallery() {
           </p>
 
           <h2 className="font-serif text-6xl md:text-8xl lg:text-9xl leading-[0.86] tracking-tight">
-  From arrival
-  <br />
-  to the final bite.
-</h2>
+            From arrival
+            <br />
+            to the final bite.
+          </h2>
         </div>
 
         <div className="space-y-8 md:space-y-10">
@@ -79,7 +79,7 @@ export default function Gallery() {
 
           <div className="grid lg:grid-cols-2 gap-8 md:gap-10">
             <RevealImage
-              src="/images/MaisonNoir/ribeye.webp"
+              src="/images/MaisonNoir/steaks/45-day-dry-aged-ribeye.webp"
               alt="Maison Noir ribeye"
               label="Chapter II · The Fire"
               className="h-[520px] md:h-[660px]"
@@ -117,7 +117,7 @@ export default function Gallery() {
           </div>
         </div>
 
-        
+
       </div>
     </section>
   );
