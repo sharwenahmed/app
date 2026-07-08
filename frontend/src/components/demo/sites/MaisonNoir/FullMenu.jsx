@@ -455,6 +455,245 @@
   };
 
 
+  const categorySectionAtmospheres = {
+    Starters: {
+      base:
+        "radial-gradient(circle at 18% 16%, rgba(201,162,91,0.16), transparent 30%), radial-gradient(circle at 90% 34%, rgba(92,54,24,0.26), transparent 38%), linear-gradient(135deg, rgba(201,162,91,0.07), transparent 44%)",
+      glowA: "radial-gradient(circle, rgba(201,162,91,0.3), transparent 64%)",
+      glowB: "radial-gradient(circle, rgba(255,226,170,0.14), transparent 66%)",
+      accent: "rgba(201,162,91,0.24)",
+      line: "rgba(201,162,91,0.18)",
+      label: "Smoke / Salt / Acid",
+      pattern: "smoke",
+    },
+    Steaks: {
+      base:
+        "radial-gradient(circle at 80% 76%, rgba(255,92,38,0.2), transparent 34%), radial-gradient(circle at 24% 34%, rgba(201,162,91,0.13), transparent 36%), linear-gradient(160deg, rgba(85,26,10,0.32), transparent 52%)",
+      glowA: "radial-gradient(circle, rgba(255,92,38,0.34), transparent 64%)",
+      glowB: "radial-gradient(circle, rgba(201,162,91,0.18), transparent 66%)",
+      accent: "rgba(255,112,54,0.26)",
+      line: "rgba(255,145,84,0.2)",
+      label: "Charcoal / Marrow / Flame",
+      pattern: "fire",
+    },
+    Seafood: {
+      base:
+        "radial-gradient(circle at 84% 30%, rgba(120,190,255,0.18), transparent 36%), radial-gradient(circle at 22% 80%, rgba(201,162,91,0.11), transparent 36%), linear-gradient(155deg, rgba(16,57,78,0.28), transparent 54%)",
+      glowA: "radial-gradient(circle, rgba(120,190,255,0.28), transparent 64%)",
+      glowB: "radial-gradient(circle, rgba(201,162,91,0.12), transparent 66%)",
+      accent: "rgba(160,215,255,0.24)",
+      line: "rgba(180,225,255,0.18)",
+      label: "Cold Water / Butter / Brine",
+      pattern: "tide",
+    },
+    Sides: {
+      base:
+        "radial-gradient(circle at 80% 74%, rgba(201,162,91,0.18), transparent 36%), radial-gradient(circle at 24% 28%, rgba(150,190,120,0.1), transparent 34%), linear-gradient(90deg, rgba(201,162,91,0.07), transparent 48%)",
+      glowA: "radial-gradient(circle, rgba(201,162,91,0.26), transparent 64%)",
+      glowB: "radial-gradient(circle, rgba(160,205,130,0.13), transparent 66%)",
+      accent: "rgba(201,162,91,0.22)",
+      line: "rgba(201,162,91,0.16)",
+      label: "Table / Texture / Balance",
+      pattern: "grid",
+    },
+    Desserts: {
+      base:
+        "radial-gradient(circle at 76% 42%, rgba(255,210,170,0.2), transparent 36%), radial-gradient(circle at 35% 78%, rgba(201,162,91,0.12), transparent 38%), linear-gradient(150deg, rgba(75,36,24,0.28), transparent 54%)",
+      glowA: "radial-gradient(circle, rgba(255,210,170,0.3), transparent 64%)",
+      glowB: "radial-gradient(circle, rgba(255,180,220,0.12), transparent 66%)",
+      accent: "rgba(255,210,170,0.24)",
+      line: "rgba(255,226,190,0.18)",
+      label: "Cream / Bitter / Sweet",
+      pattern: "bloom",
+    },
+    Cocktails: {
+      base:
+        "radial-gradient(circle at 80% 34%, rgba(170,120,255,0.2), transparent 36%), radial-gradient(circle at 78% 84%, rgba(201,162,91,0.15), transparent 38%), linear-gradient(145deg, rgba(45,28,84,0.3), transparent 54%)",
+      glowA: "radial-gradient(circle, rgba(170,120,255,0.3), transparent 64%)",
+      glowB: "radial-gradient(circle, rgba(201,162,91,0.18), transparent 66%)",
+      accent: "rgba(190,150,255,0.24)",
+      line: "rgba(246,211,139,0.18)",
+      label: "Glass / Smoke / Gold",
+      pattern: "prism",
+    },
+  };
+
+  function CategoryAtmosphereLayer({ category }) {
+    const layerRef = useRef(null);
+    const atmosphere =
+      categorySectionAtmospheres[category] || categorySectionAtmospheres.Starters;
+
+    const { scrollYProgress } = useScroll({
+      target: layerRef,
+      offset: ["start end", "end start"],
+    });
+
+    const glowAY = useTransform(scrollYProgress, [0, 1], ["12%", "-12%"]);
+    const glowBY = useTransform(scrollYProgress, [0, 1], ["-8%", "10%"]);
+    const glowBX = useTransform(scrollYProgress, [0, 1], ["5%", "-5%"]);
+    const patternY = useTransform(scrollYProgress, [0, 1], ["-3%", "3%"]);
+    const patternOpacity = useTransform(scrollYProgress, [0, 0.5, 1], [0.22, 0.46, 0.28]);
+
+    const embers = [12, 20, 29, 38, 48, 57, 66, 78, 88];
+    const waveLines = [20, 31, 42, 54, 66, 78];
+    const prismLines = [18, 31, 44, 57, 70, 83];
+    const smokePanels = [8, 21, 35, 48, 62, 76, 90];
+
+    return (
+      <div
+        ref={layerRef}
+        className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[2rem]"
+      >
+        <div
+          style={{ background: atmosphere.base }}
+          className="absolute inset-0 opacity-100"
+        />
+
+        <motion.div
+          style={{ y: glowAY, background: atmosphere.glowA }}
+          className="absolute -right-28 top-4 h-[30rem] w-[30rem] rounded-full blur-[95px]"
+        />
+
+        <motion.div
+          style={{ x: glowBX, y: glowBY, background: atmosphere.glowB }}
+          className="absolute -left-24 bottom-10 h-[26rem] w-[26rem] rounded-full blur-[90px]"
+        />
+
+        <motion.div
+          style={{ y: patternY, opacity: patternOpacity }}
+          className="absolute inset-0"
+        >
+          {atmosphere.pattern === "smoke" &&
+            smokePanels.map((left, index) => (
+              <motion.div
+                key={`${category}-smoke-${left}`}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: [0, 0.36, 0.18], y: 0 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{
+                  duration: 1.1,
+                  delay: 0.12 + index * 0.06,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                style={{
+                  left: `${left}%`,
+                  background: `linear-gradient(180deg, transparent, ${atmosphere.line}, transparent)`,
+                }}
+                className="absolute top-8 h-[calc(100%-4rem)] w-px"
+              />
+            ))}
+
+          {atmosphere.pattern === "fire" &&
+            embers.map((left, index) => (
+              <motion.span
+                key={`${category}-ember-${left}`}
+                initial={{ opacity: 0, y: 28, scale: 0.5 }}
+                whileInView={{
+                  opacity: [0, 0.95, 0.16],
+                  y: [-2, -42, -70],
+                  scale: [0.6, 1.2, 0.75],
+                }}
+                viewport={{ once: true, amount: 0.24 }}
+                transition={{
+                  duration: 1.6 + index * 0.07,
+                  delay: 0.15 + index * 0.06,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                style={{
+                  left: `${left}%`,
+                  bottom: `${8 + (index % 3) * 8}%`,
+                  background: atmosphere.accent,
+                  boxShadow: `0 0 26px ${atmosphere.accent}`,
+                }}
+                className="absolute h-1.5 w-1.5 rounded-full"
+              />
+            ))}
+
+          {atmosphere.pattern === "tide" &&
+            waveLines.map((top, index) => (
+              <motion.div
+                key={`${category}-wave-${top}`}
+                initial={{ opacity: 0, x: index % 2 === 0 ? "-10%" : "10%" }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.24 }}
+                transition={{
+                  duration: 1,
+                  delay: 0.14 + index * 0.08,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                style={{
+                  top: `${top}%`,
+                  background: `linear-gradient(90deg, transparent, ${atmosphere.line}, transparent)`,
+                }}
+                className="absolute left-8 right-8 h-px"
+              />
+            ))}
+
+          {atmosphere.pattern === "grid" && (
+            <div
+              style={{
+                backgroundImage: `linear-gradient(${atmosphere.line} 1px, transparent 1px), linear-gradient(90deg, ${atmosphere.line} 1px, transparent 1px)`,
+                backgroundSize: "88px 88px",
+              }}
+              className="absolute inset-0 opacity-55"
+            />
+          )}
+
+          {atmosphere.pattern === "bloom" &&
+            [0, 1, 2, 3].map((ring) => (
+              <motion.div
+                key={`${category}-bloom-${ring}`}
+                initial={{ opacity: 0, scale: 0.55 }}
+                whileInView={{ opacity: [0, 0.34, 0.12], scale: [0.55, 1.05, 1.3] }}
+                viewport={{ once: true, amount: 0.24 }}
+                transition={{
+                  duration: 1.35,
+                  delay: 0.12 + ring * 0.14,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                style={{ borderColor: atmosphere.line }}
+                className="absolute left-[68%] top-[48%] h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full border"
+              />
+            ))}
+
+          {atmosphere.pattern === "prism" &&
+            prismLines.map((left, index) => (
+              <motion.div
+                key={`${category}-prism-${left}`}
+                initial={{ opacity: 0, y: 54, rotate: -16 }}
+                whileInView={{ opacity: [0, 0.55, 0.22], y: -24, rotate: 12 }}
+                viewport={{ once: true, amount: 0.24 }}
+                transition={{
+                  duration: 1.15,
+                  delay: 0.12 + index * 0.08,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                style={{
+                  left: `${left}%`,
+                  background: `linear-gradient(180deg, transparent, ${atmosphere.line}, transparent)`,
+                }}
+                className="absolute bottom-0 h-56 w-px blur-[1px]"
+              />
+            ))}
+        </motion.div>
+
+        <div
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(5,4,4,0.72), transparent 26%, transparent 68%, rgba(5,4,4,0.78))",
+          }}
+          className="absolute inset-0"
+        />
+
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,transparent,rgba(5,4,4,0.78)_78%)]" />
+
+        <div className="absolute right-8 top-8 hidden rounded-full border border-white/10 bg-black/25 px-4 py-2 text-[9px] uppercase tracking-[0.32em] text-white/28 backdrop-blur-md md:block">
+          {atmosphere.label}
+        </div>
+      </div>
+    );
+  }
+
 
   function CategoryHeroStage({
     category,
@@ -1484,9 +1723,11 @@
                     sectionRefs.current[category] = el;
                   }}
                   data-category={category}
-                  className="relative overflow-visible scroll-mt-28 rounded-[2rem] border border-white/10 bg-white/[0.025] p-6 md:p-10"
+                  className="relative isolate overflow-visible scroll-mt-28 rounded-[2rem] border border-white/10 bg-black/20 p-6 md:p-10"
                 >
-                  <div>
+                  <CategoryAtmosphereLayer category={category} />
+
+                  <div className="relative z-10">
                     <div className="mb-10">
                       <p className="text-[#C9A25B] tracking-[0.35em] uppercase text-xs mb-4">
                         {category}
@@ -1518,13 +1759,25 @@
                       className="grid lg:grid-cols-12 gap-12 items-start"
                     >
                       <div className="lg:col-span-7 divide-y divide-white/10">
-                        {menuItems[category].map((item) => {
+                        {menuItems[category].map((item, index) => {
                           const [name, price, desc] = item;
                           const isSelected = selected?.[0] === name;
+                          const rowDelay = Math.min(index * 0.055, 0.34);
 
                           return (
-                            <button
+                            <motion.button
                               key={name}
+                              type="button"
+                              initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
+                              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                              viewport={{ once: true, amount: 0.28 }}
+                              whileHover={{ x: 6 }}
+                              whileTap={{ scale: 0.992 }}
+                              transition={{
+                                duration: 0.62,
+                                delay: rowDelay,
+                                ease: [0.22, 1, 0.36, 1],
+                              }}
                               onMouseEnter={(event) => handleDishPreviewMove(category, item, event)}
                               onMouseMove={(event) => handleDishPreviewMove(category, item, event)}
                               onMouseLeave={() => {
@@ -1533,47 +1786,101 @@
                                   visible: false,
                                 }));
                               }}
-                              onClick={() => {
-                                setActive(category);
-                                setSelectedByCategory((prev) => ({
-                                  ...prev,
-                                  [category]: item,
-                                }));
-                              }}
-                              className={`relative w-full text-left grid sm:grid-cols-[1fr_auto] gap-4 py-6 group overflow-hidden transition-all duration-300 ease-out ${isSelected
-                                ? "rounded-2xl bg-white/[0.04] px-5 border border-[#C9A25B]/35 shadow-[0_20px_70px_-55px_rgba(201,162,91,0.65)]"
-                                : "border-b border-white/10 hover:px-4 hover:bg-white/[0.018]"
+                              onClick={(event) => handleDishSelect(category, item, event)}
+                              className={`relative w-full text-left grid sm:grid-cols-[1fr_auto] gap-4 py-6 group overflow-hidden transition-all duration-300 ease-out will-change-transform ${isSelected
+                                ? "rounded-2xl bg-white/[0.045] px-5 border border-[#C9A25B]/35 shadow-[0_24px_80px_-58px_rgba(201,162,91,0.8)]"
+                                : "border-b border-white/10 hover:px-4 hover:bg-white/[0.02]"
                                 }`}
                             >
+                              <motion.span
+                                aria-hidden="true"
+                                animate={{ opacity: isSelected ? 1 : 0 }}
+                                transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                                className="absolute inset-0 bg-[radial-gradient(circle_at_18%_50%,rgba(201,162,91,0.14),transparent_38%)]"
+                              />
+
+                              <motion.span
+                                aria-hidden="true"
+                                initial={{ scaleX: 0, opacity: 0 }}
+                                whileInView={{ scaleX: 1, opacity: 1 }}
+                                viewport={{ once: true, amount: 0.35 }}
+                                transition={{
+                                  duration: 0.72,
+                                  delay: rowDelay + 0.12,
+                                  ease: [0.22, 1, 0.36, 1],
+                                }}
+                                className="absolute bottom-0 left-0 h-px w-full origin-left bg-gradient-to-r from-[#C9A25B]/55 via-white/10 to-transparent"
+                              />
+
                               <span
                                 className={`absolute left-0 top-0 h-full w-px origin-top bg-gradient-to-b from-transparent via-[#C9A25B] to-transparent transition-transform duration-300 ease-out ${isSelected ? "scale-y-100 opacity-100" : "scale-y-0 opacity-0 group-hover:scale-y-100 group-hover:opacity-100"
                                   }`}
                               />
 
-                              <div>
-                                <h4
+                              <div className="relative z-10">
+                                <motion.p
+                                  initial={{ opacity: 0, y: 8 }}
+                                  whileInView={{ opacity: 1, y: 0 }}
+                                  viewport={{ once: true, amount: 0.35 }}
+                                  transition={{
+                                    duration: 0.45,
+                                    delay: rowDelay + 0.05,
+                                    ease: [0.22, 1, 0.36, 1],
+                                  }}
+                                  className="mb-2 text-[10px] uppercase tracking-[0.28em] text-white/25"
+                                >
+                                  {String(index + 1).padStart(2, "0")} / {category}
+                                </motion.p>
+
+                                <motion.h4
+                                  initial={{ opacity: 0, y: 18 }}
+                                  whileInView={{ opacity: 1, y: 0 }}
+                                  viewport={{ once: true, amount: 0.35 }}
+                                  transition={{
+                                    duration: 0.58,
+                                    delay: rowDelay + 0.1,
+                                    ease: [0.22, 1, 0.36, 1],
+                                  }}
                                   className={`font-serif text-2xl md:text-3xl transition-all duration-300 ease-out ${isSelected
                                     ? "translate-x-1 text-[#C9A25B]"
                                     : "text-white group-hover:translate-x-1 group-hover:text-[#C9A25B]"
                                     }`}
                                 >
                                   {name}
-                                </h4>
+                                </motion.h4>
 
-                                <p className="mt-2 text-white/45 leading-relaxed max-w-2xl transition-all duration-300 ease-out group-hover:text-white/65">
+                                <motion.p
+                                  initial={{ opacity: 0, y: 14 }}
+                                  whileInView={{ opacity: 1, y: 0 }}
+                                  viewport={{ once: true, amount: 0.35 }}
+                                  transition={{
+                                    duration: 0.5,
+                                    delay: rowDelay + 0.16,
+                                    ease: [0.22, 1, 0.36, 1],
+                                  }}
+                                  className="mt-2 text-white/45 leading-relaxed max-w-2xl transition-all duration-300 ease-out group-hover:text-white/65"
+                                >
                                   {desc}
-                                </p>
+                                </motion.p>
                               </div>
 
-                              <div
-                                className={`font-serif text-2xl transition-all duration-300 ease-out ${isSelected
+                              <motion.div
+                                initial={{ opacity: 0, x: 26 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true, amount: 0.35 }}
+                                transition={{
+                                  duration: 0.58,
+                                  delay: rowDelay + 0.18,
+                                  ease: [0.22, 1, 0.36, 1],
+                                }}
+                                className={`relative z-10 font-serif text-2xl transition-all duration-300 ease-out ${isSelected
                                   ? "text-[#C9A25B]"
                                   : "text-[#C9A25B]/75 group-hover:text-[#C9A25B] group-hover:translate-x-[-2px]"
                                   }`}
                               >
                                 {price}
-                              </div>
-                            </button>
+                              </motion.div>
+                            </motion.button>
                           );
                         })}
                       </div>
