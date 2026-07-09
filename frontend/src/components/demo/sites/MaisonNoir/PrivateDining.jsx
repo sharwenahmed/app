@@ -42,7 +42,7 @@ export default function PrivateDining() {
 
         <div className="relative rounded-[2.75rem] overflow-hidden border border-white/10 min-h-[760px] shadow-[0_60px_140px_-70px_rgba(201,162,91,0.45)]">
           <motion.img
-            src="/images/MaisonNoir/privateDining.webp"
+            src="/images/MaisonNoir/gallery/privateDining.webp"
             alt="Private dining room at Maison Noir"
             style={reduce ? undefined : { scale: imageScale, y: imageY }}
             className="absolute inset-0 w-full h-full object-cover opacity-90 will-change-transform"

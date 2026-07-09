@@ -71,7 +71,7 @@ export default function Gallery() {
 
         <div className="space-y-8 md:space-y-10">
           <RevealImage
-            src="/images/MaisonNoir/interior.webp"
+            src="/images/MaisonNoir/gallery/interior.webp"
             alt="Maison Noir restaurant interior"
             label="Chapter I · Arrival"
             className="h-[520px] md:h-[760px]"
@@ -79,14 +79,14 @@ export default function Gallery() {
 
           <div className="grid lg:grid-cols-2 gap-8 md:gap-10">
             <RevealImage
-              src="/images/MaisonNoir/steaks/45-day-dry-aged-ribeye.webp"
+              src="/images/MaisonNoir/menu/steaks/45-day-dry-aged-ribeye.webp"
               alt="Maison Noir ribeye"
               label="Chapter II · The Fire"
               className="h-[520px] md:h-[660px]"
             />
 
             <RevealImage
-              src="/images/MaisonNoir/chef.webp"
+              src="/images/MaisonNoir/gallery/chef.webp"
               alt="Maison Noir chef"
               label="Chapter III · The Craft"
               className="h-[520px] md:h-[660px]"
@@ -94,7 +94,7 @@ export default function Gallery() {
           </div>
 
           <RevealImage
-            src="/images/MaisonNoir/wine-cellar.webp"
+            src="/images/MaisonNoir/gallery/wine-cellar.webp"
             alt="Maison Noir wine cellar"
             label="Chapter IV · The Cellar"
             className="h-[520px] md:h-[720px]"
@@ -102,14 +102,14 @@ export default function Gallery() {
 
           <div className="grid lg:grid-cols-2 gap-8 md:gap-10">
             <RevealImage
-              src="/images/MaisonNoir/cocktail.webp"
+              src="/images/MaisonNoir/gallery/cocktail.webp"
               alt="Maison Noir signature cocktail"
               label="Chapter V · The Pour"
               className="h-[520px] md:h-[660px]"
             />
 
             <RevealImage
-              src="/images/MaisonNoir/dessert.webp"
+              src="/images/MaisonNoir/gallery/dessert.webp"
               alt="Maison Noir dessert"
               label="Chapter VI · The Finale"
               className="h-[520px] md:h-[660px]"

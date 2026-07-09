@@ -1,4 +1,4 @@
-  import React, { useEffect, useRef, useState } from "react";
+  import React, { useCallback, useEffect, useRef, useState } from "react";
   import { createPortal } from "react-dom";
   import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 
@@ -17,32 +17,32 @@
 
   const featuredImages = {
     Starters: {
-      image: "/images/MaisonNoir/starters/bone-marrow-toast.webp",
+      image: "/images/MaisonNoir/menu/starters/bone-marrow-toast.webp",
       title: "Bone Marrow Toast",
       subtitle: "Roasted marrow, grilled sourdough, parsley salad.",
     },
     Steaks: {
-      image: "/images/MaisonNoir/steaks/45-day-dry-aged-ribeye.webp",
+      image: "/images/MaisonNoir/menu/steaks/45-day-dry-aged-ribeye.webp",
       title: "45-Day Dry-Aged Ribeye",
       subtitle: "Prime ribeye aged in-house, smoked marrow butter.",
     },
     Seafood: {
-      image: "/images/MaisonNoir/seafood/butter-poached-atlantic-lobster.webp",
+      image: "/images/MaisonNoir/menu/seafood/butter-poached-atlantic-lobster.webp",
       title: "Butter Poached Atlantic Lobster",
       subtitle: "Atlantic lobster with saffron butter.",
     },
     Sides: {
-      image: "/images/MaisonNoir/sides/black-truffle-fries.webp",
+      image: "/images/MaisonNoir/menu/sides/black-truffle-fries.webp",
       title: "Black Truffle Fries",
       subtitle: "Parmesan, herbs and truffle.",
     },
     Desserts: {
-      image: "/images/MaisonNoir/desserts/dark-chocolate-torte.webp",
+      image: "/images/MaisonNoir/menu/desserts/dark-chocolate-torte.webp",
       title: "Dark Chocolate Torte",
       subtitle: "Chocolate ganache, espresso cream.",
     },
     Cocktails: {
-      image: "/images/MaisonNoir/cocktails/the-noir-old-fashioned.webp",
+      image: "/images/MaisonNoir/menu/cocktails/the-noir-old-fashioned.webp",
       title: "The Noir Old Fashioned",
       subtitle: "Bourbon, cacao bitters, orange oil.",
     },
@@ -50,63 +50,63 @@
 
   const menuItems = {
     Starters: [
-      ["Bone Marrow Toast", "$24", "Roasted marrow, grilled sourdough, parsley salad.", "/images/MaisonNoir/starters/bone-marrow-toast.webp"],
-      ["Truffle Steak Tartare", "$28", "Hand-cut prime beef, cured yolk, black truffle.", "/images/MaisonNoir/starters/truffle-steak-tartare.webp"],
-      ["Oysters Noir", "$32", "Six oysters, champagne mignonette, lemon oil.", "/images/MaisonNoir/starters/oysters-noir.webp"],
-      ["Charred Spanish Octopus", "$29", "Potato espuma, smoked paprika, herb oil.", "/images/MaisonNoir/starters/charred-spanish-octopus.webp"],
-      ["Burrata & Heirloom Tomatoes", "$22", "Burrata, roasted tomatoes, basil oil.", "/images/MaisonNoir/starters/burrata-heirloom-tomatoes.webp"],
-      ["Foie Gras Torchon", "$34", "Brioche, fig jam, aged balsamic.", "/images/MaisonNoir/starters/foie-gras-torchon.webp"],
-      ["Caviar Potato Crisp", "$38", "Yukon crisp, crème fraîche, Ossetra caviar.", "/images/MaisonNoir/starters/caviar-potato-crisp.webp"],
-      ["Smoked Caesar Salad", "$18", "Romaine hearts, parmesan snow, anchovy dressing.", "/images/MaisonNoir/starters/smoked-caesar-salad.webp"],
+      ["Bone Marrow Toast", "$24", "Roasted marrow, grilled sourdough, parsley salad.", "/images/MaisonNoir/menu/starters/bone-marrow-toast.webp"],
+      ["Truffle Steak Tartare", "$28", "Hand-cut prime beef, cured yolk, black truffle.", "/images/MaisonNoir/menu/starters/truffle-steak-tartare.webp"],
+      ["Oysters Noir", "$32", "Six oysters, champagne mignonette, lemon oil.", "/images/MaisonNoir/menu/starters/oysters-noir.webp"],
+      ["Charred Spanish Octopus", "$29", "Potato espuma, smoked paprika, herb oil.", "/images/MaisonNoir/menu/starters/charred-spanish-octopus.webp"],
+      ["Burrata & Heirloom Tomatoes", "$22", "Burrata, roasted tomatoes, basil oil.", "/images/MaisonNoir/menu/starters/burrata-heirloom-tomatoes.webp"],
+      ["Foie Gras Torchon", "$34", "Brioche, fig jam, aged balsamic.", "/images/MaisonNoir/menu/starters/foie-gras-torchon.webp"],
+      ["Caviar Potato Crisp", "$38", "Yukon crisp, crème fraîche, Ossetra caviar.", "/images/MaisonNoir/menu/starters/caviar-potato-crisp.webp"],
+      ["Smoked Caesar Salad", "$18", "Romaine hearts, parmesan snow, anchovy dressing.", "/images/MaisonNoir/menu/starters/smoked-caesar-salad.webp"],
     ],
     Steaks: [
-      ["45-Day Dry-Aged Ribeye", "$68", "16 oz ribeye, smoked marrow butter, sea salt.", "/images/MaisonNoir/steaks/45-day-dry-aged-ribeye.webp"],
-      ["Black Truffle Filet Mignon", "$74", "8 oz filet, pommes purée, truffle jus.", "/images/MaisonNoir/steaks/black-truffle-filet-mignon.webp"],
-      ["A5 Japanese Wagyu", "$128", "4 oz wagyu, binchotan charcoal, smoked salt.", "/images/MaisonNoir/steaks/a5-japanese-wagyu.webp"],
-      ["Tomahawk for Two", "$145", "32 oz dry-aged tomahawk, roasted garlic, house sauce.", "/images/MaisonNoir/steaks/tomahawk-for-two.webp"],
-      ["Prime New York Strip", "$62", "14 oz striploin, peppercorn jus, charred rosemary.", "/images/MaisonNoir/steaks/prime-new-york-strip.webp"],
+      ["45-Day Dry-Aged Ribeye", "$68", "16 oz ribeye, smoked marrow butter, sea salt.", "/images/MaisonNoir/menu/steaks/45-day-dry-aged-ribeye.webp"],
+      ["Black Truffle Filet Mignon", "$74", "8 oz filet, pommes purée, truffle jus.", "/images/MaisonNoir/menu/steaks/black-truffle-filet-mignon.webp"],
+      ["A5 Japanese Wagyu", "$128", "4 oz wagyu, binchotan charcoal, smoked salt.", "/images/MaisonNoir/menu/steaks/a5-japanese-wagyu.webp"],
+      ["Tomahawk for Two", "$145", "32 oz dry-aged tomahawk, roasted garlic, house sauce.", "/images/MaisonNoir/menu/steaks/tomahawk-for-two.webp"],
+      ["Prime New York Strip", "$62", "14 oz striploin, peppercorn jus, charred rosemary.", "/images/MaisonNoir/menu/steaks/prime-new-york-strip.webp"],
     ],
     Seafood: [
-      ["Butter Poached Atlantic Lobster", "$58", "Saffron butter, preserved lemon.", "/images/MaisonNoir/seafood/butter-poached-atlantic-lobster.webp"],
-      ["Seared Nova Scotia Scallops", "$42", "Brown butter, cauliflower silk.", "/images/MaisonNoir/seafood/seared-nova-scotia-scallops.webp"],
-      ["Miso Black Cod", "$46", "Miso glaze, sesame, charred scallion.", "/images/MaisonNoir/seafood/miso-black-cod.webp"],
-      ["King Crab Legs", "$72", "Drawn butter, lemon, sea salt.", "/images/MaisonNoir/seafood/king-crab-legs.webp"],
-      ["Bluefin Tuna Crudo", "$27", "Citrus, chili oil, crispy shallot.", "/images/MaisonNoir/seafood/bluefin-tuna-crudo.webp"],
-      ["Jumbo Garlic Prawns", "$36", "Garlic butter, smoked chili, parsley.", "/images/MaisonNoir/seafood/jumbo-garlic-prawns.webp"],
-      ["Maison Noir Seafood Tower", "$118", "Oysters, lobster, crab, prawns, seasonal sauces.", "/images/MaisonNoir/seafood/maison-noir-seafood-tower.webp"],
-      ["Charcoal-Grilled Halibut", "$44", "Beurre blanc, fennel, open flame finish.", "/images/MaisonNoir/seafood/charcoal-grilled-halibut.webp"],
+      ["Butter Poached Atlantic Lobster", "$58", "Saffron butter, preserved lemon.", "/images/MaisonNoir/menu/seafood/butter-poached-atlantic-lobster.webp"],
+      ["Seared Nova Scotia Scallops", "$42", "Brown butter, cauliflower silk.", "/images/MaisonNoir/menu/seafood/seared-nova-scotia-scallops.webp"],
+      ["Miso Black Cod", "$46", "Miso glaze, sesame, charred scallion.", "/images/MaisonNoir/menu/seafood/miso-black-cod.webp"],
+      ["King Crab Legs", "$72", "Drawn butter, lemon, sea salt.", "/images/MaisonNoir/menu/seafood/king-crab-legs.webp"],
+      ["Bluefin Tuna Crudo", "$27", "Citrus, chili oil, crispy shallot.", "/images/MaisonNoir/menu/seafood/bluefin-tuna-crudo.webp"],
+      ["Jumbo Garlic Prawns", "$36", "Garlic butter, smoked chili, parsley.", "/images/MaisonNoir/menu/seafood/jumbo-garlic-prawns.webp"],
+      ["Maison Noir Seafood Tower", "$118", "Oysters, lobster, crab, prawns, seasonal sauces.", "/images/MaisonNoir/menu/seafood/maison-noir-seafood-tower.webp"],
+      ["Charcoal-Grilled Halibut", "$44", "Beurre blanc, fennel, open flame finish.", "/images/MaisonNoir/menu/seafood/charcoal-grilled-halibut.webp"],
     ],
     Sides: [
-      ["Pommes Purée", "$14", "Cultured butter, chives.", "/images/MaisonNoir/sides/pommes-puree.webp"],
-      ["Black Truffle Fries", "$17", "Parmesan, herbs, black truffle aioli.", "/images/MaisonNoir/sides/black-truffle-fries.webp"],
-      ["Mac & Gruyère", "$18", "Gruyère, aged cheddar, black pepper crumb.", "/images/MaisonNoir/sides/mac-and-gruyere.webp"],
-      ["Creamed Spinach", "$15", "Garlic cream, nutmeg.", "/images/MaisonNoir/sides/creamed-spinach.webp"],
-      ["Charred Broccolini", "$16", "Lemon oil, chili crisp, toasted almond.", "/images/MaisonNoir/sides/charred-broccolini.webp"],
-      ["Roasted Wild Mushrooms", "$17", "Thyme, garlic butter.", "/images/MaisonNoir/sides/roasted-wild-mushrooms.webp"],
-      ["Maple Bacon Brussels Sprouts", "$16", "Cider glaze, toasted seeds.", "/images/MaisonNoir/sides/maple-bacon-brussels-sprouts.webp"],
-      ["Charred Asparagus", "$18", "Hollandaise, smoked salt.", "/images/MaisonNoir/sides/charred-asparagus.webp"],
+      ["Pommes Purée", "$14", "Cultured butter, chives.", "/images/MaisonNoir/menu/sides/pommes-puree.webp"],
+      ["Black Truffle Fries", "$17", "Parmesan, herbs, black truffle aioli.", "/images/MaisonNoir/menu/sides/black-truffle-fries.webp"],
+      ["Mac & Gruyère", "$18", "Gruyère, aged cheddar, black pepper crumb.", "/images/MaisonNoir/menu/sides/mac-and-gruyere.webp"],
+      ["Creamed Spinach", "$15", "Garlic cream, nutmeg.", "/images/MaisonNoir/menu/sides/creamed-spinach.webp"],
+      ["Charred Broccolini", "$16", "Lemon oil, chili crisp, toasted almond.", "/images/MaisonNoir/menu/sides/charred-broccolini.webp"],
+      ["Roasted Wild Mushrooms", "$17", "Thyme, garlic butter.", "/images/MaisonNoir/menu/sides/roasted-wild-mushrooms.webp"],
+      ["Maple Bacon Brussels Sprouts", "$16", "Cider glaze, toasted seeds.", "/images/MaisonNoir/menu/sides/maple-bacon-brussels-sprouts.webp"],
+      ["Charred Asparagus", "$18", "Hollandaise, smoked salt.", "/images/MaisonNoir/menu/sides/charred-asparagus.webp"],
     ],
     Desserts: [
-      ["Dark Chocolate Torte", "$18", "Chocolate ganache, espresso cream, salted crumble.", "/images/MaisonNoir/desserts/dark-chocolate-torte.webp"],
-      ["Vanilla Bean Crème Brûlée", "$16", "Burnt sugar, citrus, almond tuile.", "/images/MaisonNoir/desserts/vanilla-bean-creme-brulee.webp"],
-      ["Basque Cheesecake", "$17", "Burnt vanilla top, berry compote.", "/images/MaisonNoir/desserts/basque-cheesecake.webp"],
-      ["Whiskey Caramel Cake", "$19", "Caramel cream, toasted pecan.", "/images/MaisonNoir/desserts/whiskey-caramel-cake.webp"],
-      ["Espresso Affogato", "$14", "Vanilla gelato, hot espresso, cocoa dust.", "/images/MaisonNoir/desserts/espresso-affogato.webp"],
-      ["Lemon Tart", "$16", "Italian meringue, citrus curd.", "/images/MaisonNoir/desserts/lemon-tart.webp"],
+      ["Dark Chocolate Torte", "$18", "Chocolate ganache, espresso cream, salted crumble.", "/images/MaisonNoir/menu/desserts/dark-chocolate-torte.webp"],
+      ["Vanilla Bean Crème Brûlée", "$16", "Burnt sugar, citrus, almond tuile.", "/images/MaisonNoir/menu/desserts/vanilla-bean-creme-brulee.webp"],
+      ["Basque Cheesecake", "$17", "Burnt vanilla top, berry compote.", "/images/MaisonNoir/menu/desserts/basque-cheesecake.webp"],
+      ["Whiskey Caramel Cake", "$19", "Caramel cream, toasted pecan.", "/images/MaisonNoir/menu/desserts/whiskey-caramel-cake.webp"],
+      ["Espresso Affogato", "$14", "Vanilla gelato, hot espresso, cocoa dust.", "/images/MaisonNoir/menu/desserts/espresso-affogato.webp"],
+      ["Lemon Tart", "$16", "Italian meringue, citrus curd.", "/images/MaisonNoir/menu/desserts/lemon-tart.webp"],
     ],
     Cocktails: [
-      ["The Noir Old Fashioned", "$19", "Bourbon, cacao bitters, orange oil, smoked cherry.", "/images/MaisonNoir/cocktails/the-noir-old-fashioned.webp"],
-      ["Cellar Martini", "$21", "Vodka, dry vermouth, olive oil wash, sea salt.", "/images/MaisonNoir/cocktails/cellar-martini.webp"],
-      ["Midnight Manhattan", "$20", "Rye, sweet vermouth, black cherry, bitters.", "/images/MaisonNoir/cocktails/midnight-manhattan.webp"],
-      ["Gold Rush", "$18", "Bourbon, honey, lemon, smoked ice.", "/images/MaisonNoir/cocktails/gold-rush.webp"],
-      ["Velvet Negroni", "$19", "Gin, Campari, vermouth, orange oil.", "/images/MaisonNoir/cocktails/velvet-negroni.webp"],
-      ["Charcoal Whiskey Sour", "$18", "Whiskey, lemon, egg white, activated charcoal.", "/images/MaisonNoir/cocktails/charcoal-whiskey-sour.webp"],
-      ["Pearl Gimlet", "$17", "Gin, lime cordial, basil, mineral salt.", "/images/MaisonNoir/cocktails/pearl-gimlet.webp"],
-      ["Smoked Boulevardier", "$21", "Bourbon, Campari, vermouth, oak smoke.", "/images/MaisonNoir/cocktails/smoked-boulevardier.webp"],
-      ["Noir Espresso Martini", "$20", "Vodka, espresso, coffee liqueur, vanilla.", "/images/MaisonNoir/cocktails/noir-espresso-martini.webp"],
-      ["Amber Spritz", "$17", "Aperitivo, sparkling wine, citrus.", "/images/MaisonNoir/cocktails/amber-spritz.webp"],
-      ["Cognac Sidecar", "$22", "Cognac, orange liqueur, lemon, sugared rim.", "/images/MaisonNoir/cocktails/cognac-sidecar.webp"],
-      ["After Midnight", "$23", "Dark rum, amaro, cacao, bitters.", "/images/MaisonNoir/cocktails/after-midnight.webp"],
+      ["The Noir Old Fashioned", "$19", "Bourbon, cacao bitters, orange oil, smoked cherry.", "/images/MaisonNoir/menu/cocktails/the-noir-old-fashioned.webp"],
+      ["Cellar Martini", "$21", "Vodka, dry vermouth, olive oil wash, sea salt.", "/images/MaisonNoir/menu/cocktails/cellar-martini.webp"],
+      ["Midnight Manhattan", "$20", "Rye, sweet vermouth, black cherry, bitters.", "/images/MaisonNoir/menu/cocktails/midnight-manhattan.webp"],
+      ["Gold Rush", "$18", "Bourbon, honey, lemon, smoked ice.", "/images/MaisonNoir/menu/cocktails/gold-rush.webp"],
+      ["Velvet Negroni", "$19", "Gin, Campari, vermouth, orange oil.", "/images/MaisonNoir/menu/cocktails/velvet-negroni.webp"],
+      ["Charcoal Whiskey Sour", "$18", "Whiskey, lemon, egg white, activated charcoal.", "/images/MaisonNoir/menu/cocktails/charcoal-whiskey-sour.webp"],
+      ["Pearl Gimlet", "$17", "Gin, lime cordial, basil, mineral salt.", "/images/MaisonNoir/menu/cocktails/pearl-gimlet.webp"],
+      ["Smoked Boulevardier", "$21", "Bourbon, Campari, vermouth, oak smoke.", "/images/MaisonNoir/menu/cocktails/smoked-boulevardier.webp"],
+      ["Noir Espresso Martini", "$20", "Vodka, espresso, coffee liqueur, vanilla.", "/images/MaisonNoir/menu/cocktails/noir-espresso-martini.webp"],
+      ["Amber Spritz", "$17", "Aperitivo, sparkling wine, citrus.", "/images/MaisonNoir/menu/cocktails/amber-spritz.webp"],
+      ["Cognac Sidecar", "$22", "Cognac, orange liqueur, lemon, sugared rim.", "/images/MaisonNoir/menu/cocktails/cognac-sidecar.webp"],
+      ["After Midnight", "$23", "Dark rum, amaro, cacao, bitters.", "/images/MaisonNoir/menu/cocktails/after-midnight.webp"],
     ],
   };
 
@@ -118,6 +118,39 @@
     Desserts: "The final memory.",
     Cocktails: "Poured after dark.",
   };
+
+  const chefRoute = [
+    {
+      category: "Starters",
+      dish: "Bone Marrow Toast",
+      label: "Opening Signal",
+      note: "Smoke, salt, acid",
+    },
+    {
+      category: "Steaks",
+      dish: "45-Day Dry-Aged Ribeye",
+      label: "Fire Course",
+      note: "Dry-aged, marrow butter",
+    },
+    {
+      category: "Sides",
+      dish: "Black Truffle Fries",
+      label: "Table Course",
+      note: "Truffle, parmesan, texture",
+    },
+    {
+      category: "Desserts",
+      dish: "Dark Chocolate Torte",
+      label: "Final Memory",
+      note: "Chocolate, espresso, salt",
+    },
+    {
+      category: "Cocktails",
+      dish: "The Noir Old Fashioned",
+      label: "Last Pour",
+      note: "Bourbon, cacao, orange oil",
+    },
+  ];
 
   const categoryHeroMotion = {
     Starters: {
@@ -758,6 +791,7 @@
     return (
       <motion.div
         ref={stageRef}
+        data-course-hero
         onMouseMove={(event) => onPointerMove(category, event)}
         onMouseLeave={onPointerLeave}
         initial={{ opacity: 0, y: 90, scale: 0.965 }}
@@ -847,7 +881,7 @@
             src={image.image}
             alt={image.title}
             onError={(event) => {
-              event.currentTarget.src = "/images/MaisonNoir/steaks/45-day-dry-aged-ribeye.webp";
+              event.currentTarget.src = "/images/MaisonNoir/menu/steaks/45-day-dry-aged-ribeye.webp";
             }}
             className="aspect-[16/11] w-full object-cover brightness-110 contrast-105"
           />
@@ -870,7 +904,7 @@
             src={image.image}
             alt={image.title}
             onError={(event) => {
-              event.currentTarget.src = "/images/MaisonNoir/steaks/45-day-dry-aged-ribeye.webp";
+              event.currentTarget.src = "/images/MaisonNoir/menu/steaks/45-day-dry-aged-ribeye.webp";
             }}
             className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.055] ${
               category === "Desserts" ? "aspect-square" : ""
@@ -1365,6 +1399,214 @@
     );
   }
 
+
+
+  function SelectedDishShowcase({
+    category,
+    selectedImage,
+    selectedName,
+    selectedPrice,
+    selectedDesc,
+    fallbackImage,
+    cardOffset,
+    cardRef,
+  }) {
+    const stage = categoryHeroStage[category] || categoryHeroStage.Starters;
+    const detail = categoryHeroDetails[category] || categoryHeroDetails.Starters;
+    const portal = categoryPortalFX[category] || categoryPortalFX.Starters;
+    const atmosphere =
+      categorySectionAtmospheres[category] || categorySectionAtmospheres.Starters;
+
+    const selectedIndex = Math.max(
+      menuItems[category].findIndex((item) => item[0] === selectedName),
+      0
+    );
+
+    const experienceLabels = {
+      Starters: ["Opening bite", "Smoke finish", "Acid lift"],
+      Steaks: ["Open flame", "Marrow butter", "Dry-aged"],
+      Seafood: ["Cold water", "Butter-poached", "Clean finish"],
+      Sides: ["Shared plate", "Table classic", "Texture"],
+      Desserts: ["Slow finish", "Cream & bitter", "Final memory"],
+      Cocktails: ["Low light", "Oak smoke", "Gold pour"],
+    };
+
+    const notes = experienceLabels[category] || stage.notes || [];
+
+    return (
+      <div className="hidden lg:block lg:col-span-5 relative self-start">
+        <motion.div
+          ref={cardRef}
+          style={{ transform: `translateY(${cardOffset}px)` }}
+          className="group/showcase relative overflow-visible transition-transform duration-300 ease-out will-change-transform"
+        >
+          <div
+            style={{ background: portal.glow }}
+            className="pointer-events-none absolute -inset-6 rounded-[3rem] opacity-55 blur-[34px] transition-opacity duration-500 group-hover/showcase:opacity-100"
+          />
+
+          <div className="relative max-h-[calc(100vh-6rem)] overflow-y-auto rounded-[2.4rem] border border-white/10 bg-black/80 shadow-[0_60px_140px_-70px_rgba(201,162,91,0.8)] backdrop-blur-md [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div
+              style={{ background: atmosphere.base }}
+              className="pointer-events-none absolute inset-0 opacity-60"
+            />
+
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.1),transparent_38%),linear-gradient(180deg,transparent,rgba(0,0,0,0.78)_72%)]" />
+
+            <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full border border-[#C9A25B]/15" />
+            <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full border border-white/10" />
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`${category}-${selectedName}-showcase`}
+                initial={{ opacity: 0, y: 18, scale: 0.99 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -14, scale: 0.99 }}
+                transition={{ duration: 0.54, ease: [0.22, 1, 0.36, 1] }}
+                className="relative z-10"
+              >
+                <div className="relative p-3 pb-0 xl:p-4 xl:pb-0">
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.94, rotate: -1.5 }}
+                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                    transition={{ duration: 0.62, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+                    className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-black shadow-[0_40px_100px_-58px_rgba(201,162,91,0.85)]"
+                  >
+                    <img
+                      src={selectedImage}
+                      alt={selectedName}
+                      onError={(e) => {
+                        e.currentTarget.src = fallbackImage;
+                      }}
+                      className="h-[300px] max-h-[38vh] w-full object-cover brightness-110 contrast-110 transition-transform duration-500 ease-out xl:h-[340px] 2xl:h-[380px]"
+                    />
+
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/88 via-black/18 to-black/10" />
+
+                    <motion.div
+                      initial={{ x: "-120%", opacity: 0 }}
+                      animate={{ x: "120%", opacity: [0, 0.75, 0] }}
+                      transition={{ duration: 1.05, delay: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                      className="absolute inset-y-0 w-1/3 rotate-12 bg-gradient-to-r from-transparent via-[#F6D38B]/25 to-transparent blur-sm"
+                    />
+
+                    <div className="absolute left-5 top-5 rounded-full border border-white/10 bg-black/45 px-4 py-2 text-[10px] uppercase tracking-[0.3em] text-white/65 backdrop-blur-xl">
+                      Selection {String(selectedIndex + 1).padStart(2, "0")}
+                    </div>
+
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.9 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ duration: 0.48, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                      className="absolute right-4 top-4 rounded-full border border-[#C9A25B]/35 bg-[#C9A25B] px-4 py-2.5 text-black shadow-[0_20px_55px_-24px_rgba(201,162,91,0.95)]"
+                    >
+                      <span className="block text-[9px] uppercase tracking-[0.24em] opacity-70">
+                        Course
+                      </span>
+                      <span className="block font-serif text-2xl leading-none xl:text-3xl">
+                        {selectedPrice}
+                      </span>
+                    </motion.div>
+
+                    <div className="absolute bottom-4 left-4 right-4 xl:bottom-5 xl:left-5 xl:right-5">
+                      <motion.p
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                        className="mb-2 text-[10px] uppercase tracking-[0.32em] text-[#C9A25B]"
+                      >
+                        {category} / {detail.label}
+                      </motion.p>
+
+                      <motion.h3
+                        initial={{ opacity: 0, y: 18 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.56, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                        className="font-serif text-3xl leading-[0.95] text-white xl:text-4xl"
+                      >
+                        {selectedName}
+                      </motion.h3>
+                    </div>
+                  </motion.div>
+                </div>
+
+                <div className="relative px-5 pb-5 pt-4 xl:px-6 xl:pb-6 xl:pt-5">
+                  <motion.div
+                    initial={{ scaleX: 0, opacity: 0 }}
+                    animate={{ scaleX: 1, opacity: 1 }}
+                    transition={{ duration: 0.55, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                    className="mb-4 h-px w-full origin-left bg-gradient-to-r from-transparent via-[#C9A25B]/75 to-transparent"
+                  />
+
+                  <motion.p
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.48, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                    className="text-sm leading-relaxed text-white/62 xl:text-base"
+                  >
+                    {selectedDesc}
+                  </motion.p>
+
+                  <div className="mt-4 grid grid-cols-3 gap-2">
+                    {notes.map((note, index) => (
+                      <motion.div
+                        key={`${selectedName}-${note}`}
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.42, delay: 0.36 + index * 0.06, ease: [0.22, 1, 0.36, 1] }}
+                        className="rounded-2xl border border-white/10 bg-white/[0.035] px-2.5 py-2.5 text-center xl:px-3 xl:py-3"
+                      >
+                        <span className="block text-[8px] uppercase tracking-[0.24em] text-white/28">
+                          Note
+                        </span>
+                        <span className="mt-1 block text-xs leading-tight text-white/62">
+                          {note}
+                        </span>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  <div className="mt-4 flex items-center justify-between rounded-2xl border border-white/10 bg-black/35 px-4 py-2.5 xl:py-3">
+                    <div>
+                      <p className="text-[9px] uppercase tracking-[0.28em] text-white/35">
+                        Mood
+                      </p>
+                      <p className="mt-1 text-sm text-white/62">{detail.mood}</p>
+                    </div>
+
+                    <div className="h-10 w-px bg-gradient-to-b from-transparent via-[#C9A25B]/50 to-transparent" />
+
+                    <div className="text-right">
+                      <p className="text-[9px] uppercase tracking-[0.28em] text-white/35">
+                        Route
+                      </p>
+                      <p className="mt-1 text-sm text-[#C9A25B]">Chef selected</p>
+                    </div>
+                  </div>
+
+                  <motion.button
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    whileHover={{
+                      scale: 1.025,
+                      boxShadow: "0 22px 70px -28px rgba(201, 162, 91, 0.95)",
+                    }}
+                    whileTap={{ scale: 0.985 }}
+                    transition={{ duration: 0.42, delay: 0.46, ease: [0.22, 1, 0.36, 1] }}
+                    className="mt-4 w-full rounded-full border border-[#C9A25B]/35 bg-[#C9A25B] py-3 text-base font-medium text-black transition-colors hover:bg-[#d6b36d] xl:py-3.5"
+                  >
+                    Reserve This Dish
+                  </motion.button>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+
   export default function FullMenu() {
     const [active, setActive] = useState("Starters");
 
@@ -1378,6 +1620,10 @@
     }));
 
     const [showFixedBar, setShowFixedBar] = useState(false);
+    const [showBackToTop, setShowBackToTop] = useState(false);
+    const [chefRouteActive, setChefRouteActive] = useState(false);
+    const [chefRouteStep, setChefRouteStep] = useState(null);
+    const [chefRouteCompleted, setChefRouteCompleted] = useState(false);
     const [mounted, setMounted] = useState(false);
     const [cardOffsets, setCardOffsets] = useState({});
     const [heroPointers, setHeroPointers] = useState({});
@@ -1397,8 +1643,31 @@
     const sectionRefs = useRef({});
     const menuGridRefs = useRef({});
     const cardRefs = useRef({});
+    const activeRef = useRef("Starters");
+    const showFixedBarRef = useRef(false);
+    const showBackToTopRef = useRef(false);
+    const stickyRafRef = useRef(null);
+    const heroPointerRafRef = useRef(null);
+    const dishPreviewRafRef = useRef(null);
+    const chefRouteTimersRef = useRef([]);
+
+    const clearChefRouteTimers = useCallback(() => {
+      chefRouteTimersRef.current.forEach((timer) => window.clearTimeout(timer));
+      chefRouteTimersRef.current = [];
+    }, []);
+
+    const stopChefRoute = useCallback(({ resetStep = true } = {}) => {
+      clearChefRouteTimers();
+      setChefRouteActive(false);
+      setChefRouteCompleted(false);
+
+      if (resetStep) {
+        setChefRouteStep(null);
+      }
+    }, [clearChefRouteTimers]);
 
     const scrollToCategory = (category) => {
+      activeRef.current = category;
       setActive(category);
 
       const el = sectionRefs.current[category];
@@ -1410,6 +1679,111 @@
         top: y,
         behavior: "smooth",
       });
+    };
+
+    const scrollToTop = () => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    };
+
+    const scrollToMenuTop = () => {
+      const el = fullMenuRef.current;
+
+      if (!el) {
+        scrollToTop();
+        return;
+      }
+
+      const offset = window.innerWidth >= 1024 ? 96 : 76;
+      const y = Math.max(el.getBoundingClientRect().top + window.scrollY - offset, 0);
+
+      activeRef.current = "Starters";
+      setActive("Starters");
+
+      window.scrollTo({
+        top: y,
+        behavior: "smooth",
+      });
+    };
+
+    const selectChefRouteStep = (step, index) => {
+      const item =
+        menuItems[step.category]?.find((menuItem) => menuItem[0] === step.dish) ||
+        menuItems[step.category]?.[0];
+
+      if (!item) return;
+
+      activeRef.current = step.category;
+      setActive(step.category);
+      setChefRouteStep(index);
+      setSelectedByCategory((prev) => ({
+        ...prev,
+        [step.category]: item,
+      }));
+      setDishPreview((prev) => ({
+        ...prev,
+        visible: false,
+      }));
+
+      const sectionEl = sectionRefs.current[step.category];
+      const heroEl = sectionEl?.querySelector("[data-course-hero]");
+      const targetEl = heroEl || sectionEl;
+
+      if (!targetEl) return;
+
+      const offset = window.innerWidth >= 1024 ? 108 : 86;
+      const y = Math.max(
+        targetEl.getBoundingClientRect().top + window.scrollY - offset,
+        0
+      );
+
+      window.scrollTo({
+        top: y,
+        behavior: "smooth",
+      });
+    };
+
+    const startChefRoute = () => {
+      clearChefRouteTimers();
+      setChefRouteCompleted(false);
+      setChefRouteActive(true);
+      setChefRouteStep(0);
+      setDishPreview((prev) => ({
+        ...prev,
+        visible: false,
+      }));
+
+      const stepDelay = 2050;
+
+      chefRoute.forEach((step, index) => {
+        const timer = window.setTimeout(() => {
+          selectChefRouteStep(step, index);
+        }, index * stepDelay);
+
+        chefRouteTimersRef.current.push(timer);
+      });
+
+      const finishTimer = window.setTimeout(() => {
+        setChefRouteActive(false);
+        setChefRouteCompleted(true);
+        chefRouteTimersRef.current = [];
+
+        const returnTimer = window.setTimeout(() => {
+          scrollToMenuTop();
+        }, 520);
+
+        const hideTimer = window.setTimeout(() => {
+          setChefRouteCompleted(false);
+          setChefRouteStep(null);
+        }, 3600);
+
+        chefRouteTimersRef.current.push(returnTimer);
+        chefRouteTimersRef.current.push(hideTimer);
+      }, chefRoute.length * stepDelay + 450);
+
+      chefRouteTimersRef.current.push(finishTimer);
     };
 
 
@@ -1435,12 +1809,21 @@
         y = 18;
       }
 
-      setDishPreview({
+      const nextPreview = {
         visible: true,
         x,
         y,
         category,
         item,
+      };
+
+      if (dishPreviewRafRef.current) {
+        window.cancelAnimationFrame(dishPreviewRafRef.current);
+      }
+
+      dishPreviewRafRef.current = window.requestAnimationFrame(() => {
+        setDishPreview(nextPreview);
+        dishPreviewRafRef.current = null;
       });
     };
 
@@ -1449,6 +1832,9 @@
     const handleDishSelect = (category, item, event) => {
       const rect = event.currentTarget.getBoundingClientRect();
 
+      stopChefRoute();
+
+      activeRef.current = category;
       setActive(category);
       setSelectedByCategory((prev) => ({
         ...prev,
@@ -1479,15 +1865,48 @@
       const x = ((event.clientX - rect.left) / rect.width) * 100;
       const y = ((event.clientY - rect.top) / rect.height) * 100;
 
-      setHeroPointers((prev) => ({
-        ...prev,
-        [category]: { x, y },
-      }));
+      const nextPointer = { x, y };
+
+      if (heroPointerRafRef.current) {
+        window.cancelAnimationFrame(heroPointerRafRef.current);
+      }
+
+      heroPointerRafRef.current = window.requestAnimationFrame(() => {
+        setHeroPointers((prev) => ({
+          ...prev,
+          [category]: nextPointer,
+        }));
+        heroPointerRafRef.current = null;
+      });
     };
 
     useEffect(() => {
       setMounted(true);
     }, []);
+
+    useEffect(() => {
+      if (!chefRouteActive) return undefined;
+
+      const interruptChefRoute = () => {
+        stopChefRoute();
+      };
+
+      const handleChefRouteKeydown = (event) => {
+        if (["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "].includes(event.key)) {
+          interruptChefRoute();
+        }
+      };
+
+      window.addEventListener("wheel", interruptChefRoute, { passive: true });
+      window.addEventListener("touchmove", interruptChefRoute, { passive: true });
+      window.addEventListener("keydown", handleChefRouteKeydown);
+
+      return () => {
+        window.removeEventListener("wheel", interruptChefRoute);
+        window.removeEventListener("touchmove", interruptChefRoute);
+        window.removeEventListener("keydown", handleChefRouteKeydown);
+      };
+    }, [chefRouteActive, stopChefRoute]);
     useEffect(() => {
       const updateStickyState = () => {
         const inlineBar = inlineBarRef.current;
@@ -1499,7 +1918,18 @@
         const endRect = end.getBoundingClientRect();
 
         const shouldShow = barRect.top <= 0 && endRect.top > window.innerHeight * 0.25;
-        setShowFixedBar(shouldShow);
+
+        if (showFixedBarRef.current !== shouldShow) {
+          showFixedBarRef.current = shouldShow;
+          setShowFixedBar(shouldShow);
+        }
+
+        const shouldShowBackToTop = window.scrollY > 760;
+
+        if (showBackToTopRef.current !== shouldShowBackToTop) {
+          showBackToTopRef.current = shouldShowBackToTop;
+          setShowBackToTop(shouldShowBackToTop);
+        }
 
         let current = "Starters";
 
@@ -1512,11 +1942,15 @@
           }
         });
 
-        setActive(current);
+        if (activeRef.current !== current) {
+          activeRef.current = current;
+          setActive(current);
+        }
 
         if (window.innerWidth >= 1024) {
           const nextOffsets = {};
-          const topOffset = 96;
+          const topOffset = 76;
+          const cardFollowSpeed = 0.72;
 
           categories.forEach((category) => {
             const grid = menuGridRefs.current[category];
@@ -1529,32 +1963,71 @@
             const cardHeight = card.offsetHeight;
             const maxOffset = Math.max(gridHeight - cardHeight, 0);
             const rawOffset = window.scrollY + topOffset - gridTop;
+            const easedOffset = rawOffset * cardFollowSpeed;
 
-            nextOffsets[category] = Math.min(Math.max(rawOffset, 0), maxOffset);
+            nextOffsets[category] = Math.min(Math.max(easedOffset, 0), maxOffset);
           });
 
           setCardOffsets((prev) => {
-            const prevString = JSON.stringify(prev);
-            const nextString = JSON.stringify(nextOffsets);
+            let changed = false;
+            const merged = { ...prev };
 
-            return prevString === nextString ? prev : nextOffsets;
+            categories.forEach((category) => {
+              const nextValue = nextOffsets[category] || 0;
+              const previousValue = prev[category] || 0;
+
+              if (Math.abs(nextValue - previousValue) > 1.25) {
+                changed = true;
+                merged[category] = nextValue;
+              }
+            });
+
+            return changed ? merged : prev;
           });
         } else {
-          setCardOffsets({});
+          setCardOffsets((prev) => {
+            return Object.keys(prev).length ? {} : prev;
+          });
         }
+      };
+
+      const scheduleStickyUpdate = () => {
+        if (stickyRafRef.current) return;
+
+        stickyRafRef.current = window.requestAnimationFrame(() => {
+          stickyRafRef.current = null;
+          updateStickyState();
+        });
       };
 
       updateStickyState();
 
-      document.addEventListener("scroll", updateStickyState, true);
-      window.addEventListener("resize", updateStickyState);
+      window.addEventListener("scroll", scheduleStickyUpdate, { passive: true });
+      window.addEventListener("resize", scheduleStickyUpdate);
 
       return () => {
-        document.removeEventListener("scroll", updateStickyState, true);
-        window.removeEventListener("resize", updateStickyState);
-      };
-    }, []);
+        if (stickyRafRef.current) {
+          window.cancelAnimationFrame(stickyRafRef.current);
+        }
 
+        if (heroPointerRafRef.current) {
+          window.cancelAnimationFrame(heroPointerRafRef.current);
+        }
+
+        if (dishPreviewRafRef.current) {
+          window.cancelAnimationFrame(dishPreviewRafRef.current);
+        }
+
+        clearChefRouteTimers();
+
+        window.removeEventListener("scroll", scheduleStickyUpdate);
+        window.removeEventListener("resize", scheduleStickyUpdate);
+      };
+    }, [clearChefRouteTimers]);
+
+
+    const currentChefRouteStep =
+      chefRouteStep !== null ? chefRoute[chefRouteStep] : chefRoute[0];
 
     const fixedBar =
       mounted && showFixedBar
@@ -1569,6 +2042,103 @@
             >
               <CategoryBar active={active} onSelect={scrollToCategory} />
             </motion.div>
+          </AnimatePresence>,
+          document.body
+        )
+        : null;
+
+    const backToTopPortal =
+      mounted
+        ? createPortal(
+          <AnimatePresence>
+            {showBackToTop ? (
+              <motion.button
+                type="button"
+                aria-label="Back to top"
+                onClick={scrollToTop}
+                initial={{ opacity: 0, y: 18, scale: 0.92 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 18, scale: 0.92 }}
+                whileHover={{ y: -3, scale: 1.03 }}
+                whileTap={{ scale: 0.96 }}
+                transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+                className="group fixed bottom-6 right-6 z-[99998] flex h-16 w-16 items-center justify-center rounded-full border border-[#C9A25B]/45 bg-black/80 text-[#C9A25B] shadow-[0_22px_70px_-32px_rgba(201,162,91,0.9)] backdrop-blur-xl transition-colors hover:border-[#C9A25B]/85 hover:bg-[#C9A25B] hover:text-black md:bottom-8 md:right-8"
+              >
+                <span className="absolute inset-1 rounded-full border border-[#C9A25B]/20 transition-colors group-hover:border-black/20" />
+                <span className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_50%_25%,rgba(201,162,91,0.22),transparent_55%)] opacity-100 transition-opacity group-hover:opacity-0" />
+
+                <span className="relative flex flex-col items-center justify-center leading-none">
+                  <span className="mb-0.5 text-[15px] leading-none transition-transform duration-300 group-hover:-translate-y-0.5">
+                    ↑
+                  </span>
+                  <span className="font-serif text-[18px] leading-none tracking-[-0.08em]">
+                    MN
+                  </span>
+                  <span className="mt-1 text-[6px] uppercase tracking-[0.22em] opacity-55">
+                    Top
+                  </span>
+                </span>
+              </motion.button>
+            ) : null}
+          </AnimatePresence>,
+          document.body
+        )
+        : null;
+
+    const chefRoutePortal =
+      mounted
+        ? createPortal(
+          <AnimatePresence>
+            {chefRouteActive || chefRouteCompleted ? (
+              <motion.div
+                initial={{ opacity: 0, y: 24, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 24, scale: 0.96 }}
+                transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                className="fixed bottom-6 left-1/2 z-[99997] hidden w-[min(92vw,620px)] -translate-x-1/2 rounded-full border border-[#C9A25B]/30 bg-black/[0.82] px-4 py-3 shadow-[0_26px_90px_-38px_rgba(201,162,91,0.9)] backdrop-blur-2xl md:block"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#C9A25B]/35 bg-[#C9A25B] text-black">
+                    <span className="font-serif text-lg leading-none">MN</span>
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-4">
+                      <p className="truncate text-[10px] uppercase tracking-[0.32em] text-[#C9A25B]">
+                        {chefRouteCompleted ? "Chef’s Route Complete" : "Chef’s Route"}
+                      </p>
+
+                      <p className="shrink-0 text-[10px] uppercase tracking-[0.24em] text-white/35">
+                        {chefRouteStep !== null
+                          ? `${String(chefRouteStep + 1).padStart(2, "0")} / ${String(chefRoute.length).padStart(2, "0")}`
+                          : `00 / ${String(chefRoute.length).padStart(2, "0")}`}
+                      </p>
+                    </div>
+
+                    <p className="mt-1 truncate font-serif text-xl leading-tight text-white">
+                      {currentChefRouteStep?.dish}
+                    </p>
+
+                    <p className="mt-1 truncate text-xs text-white/45">
+                      {currentChefRouteStep?.label} · {currentChefRouteStep?.note}
+                    </p>
+                  </div>
+
+                  <div className="hidden items-center gap-1.5 lg:flex">
+                    {chefRoute.map((step, index) => (
+                      <span
+                        key={`${step.category}-${step.dish}-progress`}
+                        className={`h-1.5 rounded-full transition-all duration-300 ${
+                          chefRouteStep !== null && index <= chefRouteStep
+                            ? "w-7 bg-[#C9A25B]"
+                            : "w-2 bg-white/15"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            ) : null}
           </AnimatePresence>,
           document.body
         )
@@ -1673,12 +2243,44 @@
         className="relative bg-[#050404] px-6 py-24 md:py-36 overflow-visible border-t border-white/10"
       >
         {fixedBar}
+        {backToTopPortal}
+        {chefRoutePortal}
         {dishPreviewPortal}
 
         <SectionGlow />
 
-        <div className="relative max-w-7xl mx-auto">
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-10 mb-14">
+        <div className="pointer-events-none absolute left-0 right-0 top-0 z-0 h-[54rem] overflow-hidden border-b border-white/10">
+          <video
+            className="absolute inset-0 h-full w-full object-cover object-center opacity-75 saturate-[1.08] contrast-[1.08] brightness-[1.18]"
+            src="/images/MaisonNoir/videos/hero/chef-grilling-steak.mp4"
+            poster="/images/MaisonNoir/branding/hero.webp"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+          />
+
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_38%,rgba(201,162,91,0.18),transparent_34%),radial-gradient(circle_at_84%_62%,rgba(255,115,42,0.14),transparent_34%)]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#050404]/88 via-[#050404]/38 to-[#050404]/10" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#050404]/42 via-transparent to-[#050404]/92" />
+          <div className="absolute inset-0 shadow-[inset_0_0_120px_rgba(0,0,0,0.78)]" />
+
+          <motion.div
+            initial={{ x: "-120%", opacity: 0 }}
+            whileInView={{ x: "120%", opacity: [0, 0.82, 0] }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 2.8, delay: 0.35, ease: "easeInOut" }}
+            className="absolute left-[-30%] top-[46%] h-72 w-[160%] rotate-[-12deg] bg-gradient-to-r from-transparent via-[#F6D38B]/12 to-transparent blur-xl"
+          />
+
+          <div className="absolute right-10 top-32 hidden rounded-full border border-white/10 bg-black/30 px-4 py-2 text-[9px] uppercase tracking-[0.34em] text-white/38 backdrop-blur-xl lg:block">
+            Chef in motion / fire table
+          </div>
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto">
+          <div className="flex min-h-[34rem] flex-col justify-end gap-10 pb-16 pt-28 lg:flex-row lg:items-end lg:justify-between">
             <SectionHeader
               eyebrow="The Full Menu"
               title={
@@ -1691,13 +2293,34 @@
               description="Browse the full Maison Noir menu — refined, seasonal, and built around fire, patience, and restraint."
             />
 
-            <LuxuryButton href="#reserve" variant="ghost">
-              Reserve After Viewing
-            </LuxuryButton>
+            <div className="flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
+              <motion.button
+                type="button"
+                onClick={startChefRoute}
+                disabled={chefRouteActive}
+                whileHover={chefRouteActive ? undefined : { y: -2, scale: 1.015 }}
+                whileTap={chefRouteActive ? undefined : { scale: 0.985 }}
+                className={`group relative overflow-hidden rounded-full border px-6 py-3 text-sm font-medium transition-all duration-300 ${
+                  chefRouteActive
+                    ? "cursor-not-allowed border-[#C9A25B]/30 bg-[#C9A25B]/20 text-[#C9A25B]/70"
+                    : "border-[#C9A25B]/45 bg-[#C9A25B] text-black shadow-[0_20px_70px_-36px_rgba(201,162,91,0.9)] hover:bg-[#d6b36d]"
+                }`}
+              >
+                <span className="absolute inset-y-0 left-0 w-1/3 -translate-x-full rotate-12 bg-gradient-to-r from-transparent via-white/35 to-transparent blur-sm transition-transform duration-700 group-hover:translate-x-[260%]" />
+                <span className="relative flex items-center justify-center gap-2">
+                  <span className="font-serif text-lg leading-none">MN</span>
+                  {chefRouteActive ? "Guiding Chef’s Route" : "Experience Chef’s Route"}
+                </span>
+              </motion.button>
+
+              <LuxuryButton href="#reserve" variant="ghost">
+                Reserve After Viewing
+              </LuxuryButton>
+            </div>
           </div>
         </div>
 
-        <div ref={inlineBarRef} className="relative z-20 -mx-6">
+        <div ref={inlineBarRef} className="relative z-20 -mx-6 border-t border-white/10 bg-[#050404]/70 backdrop-blur-xl">
           <CategoryBar active={active} onSelect={scrollToCategory} />
         </div>
 
@@ -1709,7 +2332,7 @@
               const selectedImage =
                 selected?.[3] ||
                 featuredImages[category]?.image ||
-                "/images/MaisonNoir/ribeye.webp";
+                "/images/MaisonNoir/menu/steaks/45-day-dry-aged-ribeye.webp";
               const selectedName = selected?.[0] || featuredImages[category].title;
               const selectedPrice = selected?.[1] || "";
               const selectedDesc = selected?.[2] || featuredImages[category].subtitle;
@@ -1723,7 +2346,11 @@
                     sectionRefs.current[category] = el;
                   }}
                   data-category={category}
-                  className="relative isolate overflow-visible scroll-mt-28 rounded-[2rem] border border-white/10 bg-black/20 p-6 md:p-10"
+                  className={`relative isolate overflow-visible scroll-mt-28 rounded-[2rem] border border-white/10 bg-black/20 p-6 transition-shadow duration-500 md:p-10 ${
+                    chefRouteActive && currentChefRouteStep?.category === category
+                      ? "shadow-[0_0_0_1px_rgba(201,162,91,0.28),0_38px_140px_-80px_rgba(201,162,91,0.95)]"
+                      : ""
+                  }`}
                 >
                   <CategoryAtmosphereLayer category={category} />
 
@@ -1736,6 +2363,21 @@
                       <h3 className="font-serif text-5xl md:text-6xl mb-8">
                         {categoryHeadlines[category]}
                       </h3>
+
+                      <AnimatePresence>
+                        {chefRouteActive && currentChefRouteStep?.category === category ? (
+                          <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+                            className="mb-6 inline-flex items-center gap-3 rounded-full border border-[#C9A25B]/30 bg-[#C9A25B]/10 px-4 py-2 text-[10px] uppercase tracking-[0.28em] text-[#C9A25B]"
+                          >
+                            <span className="h-1.5 w-1.5 rounded-full bg-[#C9A25B] shadow-[0_0_18px_rgba(201,162,91,0.9)]" />
+                            Chef’s Route · {currentChefRouteStep.label}
+                          </motion.div>
+                        ) : null}
+                      </AnimatePresence>
 
                       <CategoryHeroStage
                         category={category}
@@ -1762,14 +2404,18 @@
                         {menuItems[category].map((item, index) => {
                           const [name, price, desc] = item;
                           const isSelected = selected?.[0] === name;
+                          const isChefRouteTarget =
+                            chefRouteActive &&
+                            currentChefRouteStep?.category === category &&
+                            currentChefRouteStep?.dish === name;
                           const rowDelay = Math.min(index * 0.055, 0.34);
 
                           return (
                             <motion.button
                               key={name}
                               type="button"
-                              initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
-                              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                              initial={{ opacity: 0, y: 24 }}
+                              whileInView={{ opacity: 1, y: 0 }}
                               viewport={{ once: true, amount: 0.28 }}
                               whileHover={{ x: 6 }}
                               whileTap={{ scale: 0.992 }}
@@ -1787,11 +2433,24 @@
                                 }));
                               }}
                               onClick={(event) => handleDishSelect(category, item, event)}
-                              className={`relative w-full text-left grid sm:grid-cols-[1fr_auto] gap-4 py-6 group overflow-hidden transition-all duration-300 ease-out will-change-transform ${isSelected
-                                ? "rounded-2xl bg-white/[0.045] px-5 border border-[#C9A25B]/35 shadow-[0_24px_80px_-58px_rgba(201,162,91,0.8)]"
+                              className={`relative w-full text-left grid sm:grid-cols-[1fr_auto] gap-4 py-6 group overflow-hidden transition-all duration-300 ease-out ${isSelected
+                                ? `rounded-2xl bg-white/[0.045] px-5 border border-[#C9A25B]/35 shadow-[0_24px_80px_-58px_rgba(201,162,91,0.8)] ${isChefRouteTarget ? "ring-1 ring-[#C9A25B]/45" : ""}`
                                 : "border-b border-white/10 hover:px-4 hover:bg-white/[0.02]"
                                 }`}
                             >
+                              <AnimatePresence>
+                                {isChefRouteTarget ? (
+                                  <motion.span
+                                    initial={{ opacity: 0, scale: 0.88 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.88 }}
+                                    className="absolute right-4 top-4 z-20 rounded-full border border-[#C9A25B]/35 bg-[#C9A25B] px-3 py-1 text-[8px] uppercase tracking-[0.2em] text-black"
+                                  >
+                                    Route
+                                  </motion.span>
+                                ) : null}
+                              </AnimatePresence>
+
                               <motion.span
                                 aria-hidden="true"
                                 animate={{ opacity: isSelected ? 1 : 0 }}
@@ -1885,189 +2544,19 @@
                         })}
                       </div>
 
-                      <div className="hidden lg:block lg:col-span-5 relative">
-                        <div
-                          ref={(el) => {
-                            cardRefs.current[category] = el;
-                          }}
-                          style={{ transform: `translateY(${cardOffset}px)` }}
-                          className="rounded-[2rem] overflow-hidden border border-white/10 bg-black backdrop-blur-xl shadow-[0_50px_120px_-55px_rgba(201,162,91,0.45)] transition-transform duration-150 ease-out will-change-transform"
-                        >
-                          <AnimatePresence mode="wait">
-                            <motion.div
-                              key={`${category}-${selectedName}-image`}
-                              initial={{ opacity: 0, scale: 1.035 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              exit={{ opacity: 0, scale: 0.985 }}
-                              transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-                              className="relative"
-                            >
-                              <img
-                                src={selectedImage}
-                                alt={selectedName}
-                                onError={(e) => {
-                                  e.currentTarget.src = featuredImages[category].image;
-                                }}
-                                className="w-full aspect-[16/10] object-cover brightness-110 contrast-105"
-                              />
+                      <SelectedDishShowcase
+                        category={category}
+                        selectedImage={selectedImage}
+                        selectedName={selectedName}
+                        selectedPrice={selectedPrice}
+                        selectedDesc={selectedDesc}
+                        fallbackImage={featuredImages[category].image}
+                        cardOffset={cardOffset}
+                        cardRef={(el) => {
+                          cardRefs.current[category] = el;
+                        }}
+                      />
 
-                              <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/55 to-transparent" />
-                            </motion.div>
-                          </AnimatePresence>
-
-                          <motion.div
-                            key={`${category}-${selectedName}-divider`}
-                            initial={{ scaleX: 0, opacity: 0 }}
-                            animate={{ scaleX: 1, opacity: 1 }}
-                            transition={{
-                              duration: 0.55,
-                              delay: 0.12,
-                              ease: [0.22, 1, 0.36, 1],
-                            }}
-                            className="h-px w-full origin-left bg-gradient-to-r from-transparent via-[#C9A25B]/70 to-transparent"
-                          />
-
-                          <motion.div
-                            key={`${category}-${selectedName}-content`}
-                            initial={{ opacity: 0, y: 18 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.48, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-                            className="p-6"
-                          >
-                            <div className="flex items-start justify-between gap-5">
-                              <motion.div
-                                key={`${category}-${selectedName}-title`}
-                                initial={{ opacity: 0, y: 16 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{
-                                  duration: 0.48,
-                                  delay: 0.12,
-                                  ease: [0.22, 1, 0.36, 1],
-                                }}
-                              >
-                                <motion.p
-                                  initial={{ opacity: 0, y: 6 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{
-                                    duration: 0.36,
-                                    delay: 0.14,
-                                    ease: [0.22, 1, 0.36, 1],
-                                  }}
-                                  className="uppercase tracking-[0.35em] text-[11px] text-[#C9A25B] mb-2"
-                                >
-                                  {category}
-                                </motion.p>
-
-                                <motion.h3
-                                  initial={{ opacity: 0, y: 10 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{
-                                    duration: 0.46,
-                                    delay: 0.18,
-                                    ease: [0.22, 1, 0.36, 1],
-                                  }}
-                                  className="font-serif text-3xl leading-tight"
-                                >
-                                  {selectedName}
-                                </motion.h3>
-                              </motion.div>
-
-                              <motion.div
-                                key={`${category}-${selectedName}-price`}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.42, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-                                className="font-serif text-4xl text-[#C9A25B]"
-                              >
-                                {selectedPrice}
-                              </motion.div>
-                            </div>
-
-                            <motion.p
-                              key={`${category}-${selectedName}-desc`}
-                              initial={{ opacity: 0, y: 12 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ duration: 0.44, delay: 0.24, ease: [0.22, 1, 0.36, 1] }}
-                              className="mt-4 text-white/60 leading-relaxed text-base"
-                            >
-                              {selectedDesc}
-                            </motion.p>
-
-                            <motion.div
-                              className="mt-6 flex flex-wrap gap-3"
-                              initial="hidden"
-                              animate="show"
-                              variants={{
-                                hidden: {},
-                                show: {
-                                  transition: {
-                                    staggerChildren: 0.08,
-                                    delayChildren: 0.30,
-                                  },
-                                },
-                              }}
-                            >
-                              {[
-                                {
-                                  text: "House Signature",
-                                  className:
-                                    "rounded-full border border-[#C9A25B]/25 px-4 py-2 text-sm text-[#C9A25B]",
-                                },
-                                {
-                                  text: "Open Flame",
-                                  className:
-                                    "rounded-full border border-white/10 px-4 py-2 text-sm text-white/60",
-                                },
-                                {
-                                  text: "Chef Recommended",
-                                  className:
-                                    "rounded-full border border-white/10 px-4 py-2 text-sm text-white/60",
-                                },
-                              ].map((badge) => (
-                                <motion.span
-                                  key={badge.text}
-                                  variants={{
-                                    hidden: {
-                                      opacity: 0,
-                                      y: 8,
-                                    },
-                                    show: {
-                                      opacity: 1,
-                                      y: 0,
-                                    },
-                                  }}
-                                  transition={{
-                                    duration: 0.35,
-                                    ease: [0.22, 1, 0.36, 1],
-                                  }}
-                                  className={badge.className}
-                                >
-                                  {badge.text}
-                                </motion.span>
-                              ))}
-                            </motion.div>
-
-                            <motion.button
-                              key={`${category}-${selectedName}-button`}
-                              initial={{ opacity: 0, y: 14 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              whileHover={{
-                                scale: 1.025,
-                                boxShadow: "0 18px 55px -22px rgba(201, 162, 91, 0.85)",
-                              }}
-                              whileTap={{ scale: 0.985 }}
-                              transition={{
-                                duration: 0.42,
-                                delay: 0.42,
-                                ease: [0.22, 1, 0.36, 1],
-                              }}
-                              className="mt-6 w-full rounded-full bg-[#C9A25B] py-3 text-base font-medium text-black transition-colors hover:bg-[#d6b36d]"
-                            >
-                              Reserve This Dish
-                            </motion.button>
-                          </motion.div>
-                        </div>
-                      </div>
                     </div>
                   </div>
                 </section>

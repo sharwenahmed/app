@@ -54,7 +54,7 @@ export default function ChefCraft() {
             <img
               loading="lazy"
               decoding="async"
-              src="/images/MaisonNoir/chef.webp"
+              src="/images/MaisonNoir/gallery/chef.webp"
               alt="Chef"
               className="w-full h-[760px] object-cover"
             />

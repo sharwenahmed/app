@@ -64,7 +64,7 @@ export default function Philosophy() {
         >
           <div className="relative rounded-[2.5rem] overflow-hidden border border-white/10 bg-white/[0.03] shadow-[0_40px_120px_-50px_rgba(201,162,91,0.35)]">
             <img
-              src="/images/MaisonNoir/interior.webp"
+              src="/images/MaisonNoir/gallery/interior.webp"
               alt="Maison Noir dining room"
               className="w-full aspect-[4/5] object-cover opacity-85 hover:scale-105 transition duration-[1200ms]"
             />
