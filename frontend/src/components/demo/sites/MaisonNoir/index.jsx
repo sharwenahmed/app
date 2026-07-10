@@ -2,6 +2,7 @@ import Navbar from "./Navbar";
 import Hero from "./Hero";
 import OpeningArrivalGate from "./OpeningArrivalGate";
 import SignatureMenu from "./SignatureMenu";
+import { FoodFilmRunway } from "./FoodFilmRunway";
 import Philosophy from "./Philosophy";
 import ChefCraft from "./ChefCraft";
 import PrivateDining from "./PrivateDining";
@@ -168,6 +169,8 @@ export default function MaisonNoir() {
 
         <SceneChapter sceneId="menu">
           <SignatureMenu />
+
+          <FoodFilmRunway />
         </SceneChapter>
 
         <SignatureToFullMenuTransition />
