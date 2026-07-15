@@ -162,7 +162,7 @@ export default function SignatureMenu() {
   return (
     <section
       id="menu"
-      className="relative overflow-hidden border-t border-white/10 bg-[#060403] px-6 py-24 md:py-36"
+      className="relative isolate overflow-hidden border-t border-white/10 bg-[#060403] px-6 py-24 md:py-36"
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(201,162,91,0.08),transparent_42%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_82%,rgba(74,20,24,0.28),transparent_38%)]" />
@@ -201,12 +201,12 @@ export default function SignatureMenu() {
           />
         ))}
 
-      <div className="relative mx-auto max-w-7xl">
+      <div className="relative z-10 mx-auto max-w-7xl">
         <motion.div
           initial={reduce ? false : { opacity: 1 }}
           whileInView={reduce ? {} : { opacity: 1 }}
           viewport={{ once: true, amount: 0.45 }}
-          className="mx-auto mb-20 max-w-5xl text-center md:mb-28"
+          className="relative z-0 mx-auto mb-14 max-w-5xl text-center md:mb-20 lg:mb-24"
         >
           <p className="mb-7 text-xs uppercase tracking-[0.56em] text-[#C9A25B]">
             <LetterReveal
@@ -243,7 +243,7 @@ export default function SignatureMenu() {
           </p>
         </motion.div>
 
-        <div className="grid items-center gap-16 lg:grid-cols-12 lg:gap-20">
+        <div className="relative z-20 grid items-center gap-16 lg:grid-cols-12 lg:gap-20">
           <div className="order-2 lg:order-1 lg:col-span-5">
             <div className="mb-10 flex items-center gap-5">
               <AnimatePresence mode="wait">
@@ -387,14 +387,14 @@ export default function SignatureMenu() {
           <div
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
-            className="order-1 lg:order-2 lg:col-span-7"
+            className="relative z-30 order-1 lg:order-2 lg:col-span-7"
           >
             <motion.div
               initial={reduce ? false : { opacity: 0, y: 60, scale: 0.96 }}
               whileInView={reduce ? {} : { opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true, amount: 0.45 }}
               transition={{ duration: 1.35, ease: [0.22, 1, 0.36, 1] }}
-              className="relative"
+              className="relative z-30"
             >
               <div className="pointer-events-none absolute -inset-8 rounded-[3rem] bg-[radial-gradient(circle_at_50%_50%,rgba(201,162,91,0.18),transparent_64%)] blur-2xl" />
 

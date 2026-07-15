@@ -1,6 +1,29 @@
 import React, { useRef } from "react";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { ArrowUpRight, Users, Wine } from "lucide-react";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
+import { ArrowUpRight, Users, Wine, Utensils } from "lucide-react";
+
+const privateFormats = [
+  {
+    title: "Private Room",
+    detail: "Up to 14 guests",
+    copy: "A candlelit room for anniversaries, birthdays, and executive dinners.",
+  },
+  {
+    title: "Chef’s Table",
+    detail: "6–8 guests",
+    copy: "A closer view of the kitchen, built around a guided tasting menu.",
+  },
+  {
+    title: "Full Evening",
+    detail: "By request",
+    copy: "For brand dinners, celebrations, and private restaurant buyouts.",
+  },
+];
 
 export default function PrivateDining() {
   const ref = useRef(null);
@@ -11,103 +34,177 @@ export default function PrivateDining() {
     offset: ["start end", "end start"],
   });
 
-  const imageScale = useTransform(scrollYProgress, [0, 1], [1.08, 1]);
-  const imageY = useTransform(scrollYProgress, [0, 1], [-40, 40]);
-  const textY = useTransform(scrollYProgress, [0, 1], [60, -30]);
+  const imageScale = useTransform(scrollYProgress, [0, 1], [1.06, 1]);
+  const imageY = useTransform(scrollYProgress, [0, 1], [-24, 28]);
 
   return (
     <section
       id="private"
       ref={ref}
-      className="relative bg-[#060303] px-6 py-32 md:py-44 overflow-hidden border-t border-white/10"
+      className="relative overflow-hidden border-t border-white/10 bg-[#060303] px-6 py-24 md:py-32"
     >
-      <div className="absolute left-[-180px] top-20 w-[520px] h-[520px] rounded-full bg-[#4A1418]/25 blur-[150px]" />
-      <div className="absolute right-[-180px] bottom-10 w-[520px] h-[520px] rounded-full bg-[#C9A25B]/10 blur-[150px]" />
+      <div className="pointer-events-none absolute left-[-180px] top-20 h-[520px] w-[520px] rounded-full bg-[#4A1418]/25 blur-[150px]" />
+      <div className="pointer-events-none absolute right-[-180px] bottom-10 h-[520px] w-[520px] rounded-full bg-[#C9A25B]/10 blur-[150px]" />
 
-      <div className="relative max-w-7xl mx-auto">
-        <motion.div
-          style={reduce ? undefined : { y: textY }}
-          className="max-w-5xl mb-20"
-        >
-          <p className="text-[#C9A25B] tracking-[0.35em] uppercase text-xs mb-6">
-            Private Dining
+      <div className="relative mx-auto max-w-7xl">
+        <div className="mb-14 grid gap-10 lg:grid-cols-12 lg:items-end">
+          <motion.div
+            initial={reduce ? false : { opacity: 0, y: 34 }}
+            whileInView={reduce ? {} : { opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.35 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:col-span-8"
+          >
+            <p className="mb-6 text-xs uppercase tracking-[0.35em] text-[#C9A25B]">
+              Private Dining
+            </p>
+
+            <h2 className="font-serif text-[clamp(4rem,9vw,8rem)] leading-[0.86] tracking-[-0.06em] text-white">
+              A room reserved
+              <br />
+              for the unforgettable.
+            </h2>
+          </motion.div>
+
+          <motion.div
+            initial={reduce ? false : { opacity: 0, y: 34 }}
+            whileInView={reduce ? {} : { opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.35 }}
+            transition={{ duration: 0.8, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:col-span-4"
+          >
+            <p className="text-lg leading-8 text-white/58">
+              Behind a velvet partition, Maison Noir hosts intimate dinners,
+              business evenings, anniversaries, and tasting menus designed
+              around the table.
+            </p>
+          </motion.div>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-12">
+          <motion.div
+            initial={reduce ? false : { opacity: 0, y: 46, scale: 0.98 }}
+            whileInView={reduce ? {} : { opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.95, ease: [0.22, 1, 0.36, 1] }}
+            className="relative overflow-hidden rounded-[2.75rem] border border-white/10 bg-black/40 shadow-[0_60px_140px_-70px_rgba(201,162,91,0.45)] lg:col-span-8"
+          >
+            <div className="relative h-[560px] overflow-hidden md:h-[640px]">
+              <motion.img
+                src="/images/MaisonNoir/gallery/private-dining-room.webp"
+                alt="Private dining room at Maison Noir"
+                style={reduce ? undefined : { scale: imageScale, y: imageY }}
+                className="absolute inset-0 h-full w-full object-cover opacity-90 will-change-transform"
+              />
+
+              <div className="absolute inset-0 bg-gradient-to-r from-black/72 via-black/34 to-black/10" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/88 via-black/8 to-black/28" />
+              <div className="absolute inset-0 shadow-[inset_0_0_160px_rgba(0,0,0,0.88)]" />
+
+              <div className="absolute bottom-7 left-7 right-7 md:bottom-10 md:left-10 md:right-10">
+                <div className="max-w-xl rounded-[2rem] border border-white/10 bg-black/58 p-6 backdrop-blur-xl md:p-7">
+                  <p className="mb-4 text-[10px] uppercase tracking-[0.35em] text-[#C9A25B]">
+                    The Velvet Room
+                  </p>
+
+                  <p className="font-serif text-3xl leading-tight text-white md:text-4xl">
+                    Candlelight, cellar pairings, and a table set away from the
+                    room.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          <div className="grid gap-4 lg:col-span-4">
+            <motion.div
+              initial={reduce ? false : { opacity: 0, y: 28 }}
+              whileInView={reduce ? {} : { opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.7, delay: 0.05 }}
+              className="rounded-[2rem] border border-white/10 bg-white/[0.035] p-7"
+            >
+              <Users className="mb-5 h-5 w-5 text-[#C9A25B]" />
+              <div className="font-serif text-6xl leading-none text-white">
+                14
+              </div>
+              <p className="mt-3 text-white/50">Seats in the private room</p>
+            </motion.div>
+
+            <motion.div
+              initial={reduce ? false : { opacity: 0, y: 28 }}
+              whileInView={reduce ? {} : { opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.7, delay: 0.12 }}
+              className="rounded-[2rem] border border-white/10 bg-white/[0.035] p-7"
+            >
+              <Wine className="mb-5 h-5 w-5 text-[#C9A25B]" />
+              <div className="font-serif text-6xl leading-none text-white">
+                120+
+              </div>
+              <p className="mt-3 text-white/50">Cellar-selected pairings</p>
+            </motion.div>
+
+            <motion.div
+              initial={reduce ? false : { opacity: 0, y: 28 }}
+              whileInView={reduce ? {} : { opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.7, delay: 0.18 }}
+              className="rounded-[2rem] border border-[#C9A25B]/20 bg-[#C9A25B]/8 p-7"
+            >
+              <Utensils className="mb-5 h-5 w-5 text-[#C9A25B]" />
+              <div className="font-serif text-6xl leading-none text-white">
+                3
+              </div>
+              <p className="mt-3 text-white/50">Private dining formats</p>
+            </motion.div>
+          </div>
+        </div>
+
+        <div className="mt-6 grid gap-4 lg:grid-cols-3">
+          {privateFormats.map((format, index) => (
+            <motion.div
+              key={format.title}
+              initial={reduce ? false : { opacity: 0, y: 30 }}
+              whileInView={reduce ? {} : { opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.35 }}
+              transition={{
+                duration: 0.7,
+                delay: index * 0.08,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="rounded-[2rem] border border-white/10 bg-black/35 p-7 transition duration-500 hover:-translate-y-1 hover:border-[#C9A25B]/35"
+            >
+              <p className="mb-4 text-[10px] uppercase tracking-[0.32em] text-[#C9A25B]">
+                {format.detail}
+              </p>
+
+              <h3 className="font-serif text-3xl leading-tight text-white">
+                {format.title}
+              </h3>
+
+              <p className="mt-4 leading-7 text-white/50">{format.copy}</p>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="mt-10 flex flex-col items-start justify-between gap-6 border-t border-white/10 pt-8 md:flex-row md:items-center">
+          <p className="max-w-2xl text-white/45">
+            Private dining is available by request. Our team will help shape the
+            evening around the occasion, menu, wine, and pacing of service.
           </p>
 
-          <h2 className="font-serif text-6xl md:text-8xl lg:text-9xl leading-[0.86] tracking-tight">
-            A room reserved
-            <br />
-            for the unforgettable.
-          </h2>
-        </motion.div>
-
-        <div className="relative rounded-[2.75rem] overflow-hidden border border-white/10 min-h-[760px] shadow-[0_60px_140px_-70px_rgba(201,162,91,0.45)]">
-          <motion.img
-            src="/images/MaisonNoir/gallery/privateDining.webp"
-            alt="Private dining room at Maison Noir"
-            style={reduce ? undefined : { scale: imageScale, y: imageY }}
-            className="absolute inset-0 w-full h-full object-cover opacity-90 will-change-transform"
-          />
-
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-black/10" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/20" />
-
-          <div className="relative z-10 min-h-[760px] p-8 md:p-12 lg:p-16 flex flex-col justify-end">
-            <div className="max-w-xl">
-              <motion.p
-                initial={reduce ? false : { opacity: 0, y: 24 }}
-                whileInView={reduce ? {} : { opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.7 }}
-                className="text-white/70 text-lg leading-relaxed"
-              >
-                Behind a velvet partition, Maison Noir hosts intimate dinners,
-                business evenings, anniversaries, and tasting menus designed
-                around the table.
-              </motion.p>
-
-              <div className="mt-10 grid sm:grid-cols-2 gap-4">
-                <motion.div
-                  initial={reduce ? false : { opacity: 0, y: 28 }}
-                  whileInView={reduce ? {} : { opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.4 }}
-                  transition={{ duration: 0.7, delay: 0.1 }}
-                  className="rounded-3xl border border-white/10 bg-black/55 backdrop-blur-xl p-6"
-                >
-                  <Users className="w-5 h-5 text-[#C9A25B] mb-4" />
-                  <div className="font-serif text-5xl">14</div>
-                  <p className="text-white/50 mt-2">
-                    Seats in the private room
-                  </p>
-                </motion.div>
-
-                <motion.div
-                  initial={reduce ? false : { opacity: 0, y: 28 }}
-                  whileInView={reduce ? {} : { opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.4 }}
-                  transition={{ duration: 0.7, delay: 0.2 }}
-                  className="rounded-3xl border border-white/10 bg-black/55 backdrop-blur-xl p-6"
-                >
-                  <Wine className="w-5 h-5 text-[#C9A25B] mb-4" />
-                  <div className="font-serif text-5xl">120+</div>
-                  <p className="text-white/50 mt-2">
-                    Cellar-selected pairings
-                  </p>
-                </motion.div>
-              </div>
-
-              <motion.a
-                href="#reserve"
-                initial={reduce ? false : { opacity: 0, y: 28 }}
-                whileInView={reduce ? {} : { opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.7, delay: 0.3 }}
-                className="mt-10 inline-flex items-center gap-2 rounded-full bg-[#C9A25B] px-7 py-4 text-black font-medium hover:bg-[#e0bd73] hover:-translate-y-1 transition"
-              >
-                Request Private Room
-                <ArrowUpRight className="w-4 h-4" />
-              </motion.a>
-            </div>
-          </div>
+          <motion.a
+            href="#reserve"
+            initial={reduce ? false : { opacity: 0, y: 24 }}
+            whileInView={reduce ? {} : { opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="inline-flex items-center gap-2 rounded-full bg-[#C9A25B] px-7 py-4 font-medium text-black transition hover:-translate-y-1 hover:bg-[#e0bd73]"
+          >
+            Request Private Dining
+            <ArrowUpRight className="h-4 w-4" />
+          </motion.a>
         </div>
       </div>
     </section>
