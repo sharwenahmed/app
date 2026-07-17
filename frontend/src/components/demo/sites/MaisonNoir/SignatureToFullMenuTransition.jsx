@@ -15,8 +15,8 @@ export default function SignatureToFullMenuTransition() {
 
   const reduce = useReducedMotion();
 
-  const [isLocked, setIsLocked] = useState(false);
   const [hasCompleted, setHasCompleted] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
 
   const rawProgress = useMotionValue(0);
 
@@ -65,20 +65,20 @@ export default function SignatureToFullMenuTransition() {
   const snapToGate = useCallback(() => {
     const section = sectionRef.current;
     if (!section) return;
-  
+
     const rect = section.getBoundingClientRect();
     const targetY = window.scrollY + rect.top;
-  
+
     window.scrollTo({
       top: targetY,
       behavior: "auto",
     });
   }, []);
-  
+
   const updateGateProgress = useCallback(
     (delta) => {
       if (hasCompleted) return;
-  
+
       setIsLocked(true);
       snapToGate();
   

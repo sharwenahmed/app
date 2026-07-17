@@ -66,7 +66,7 @@ export default function Philosophy() {
             <img
               src="/images/MaisonNoir/gallery/interior.webp"
               alt="Maison Noir dining room"
-              className="w-full aspect-[4/5] object-cover opacity-85 hover:scale-105 transition duration-[1200ms]"
+              className="w-full aspect-[4/5] object-cover opacity-85 hover:scale-105 transition [transition-duration:1200ms]"
             />
 
             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent" />

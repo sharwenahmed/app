@@ -213,12 +213,6 @@ export default function Hero() {
   const statsOpacity = useTransform(heroProgress, [0.84, 0.96], [0, 1]);
   const statsY = useTransform(heroProgress, [0.84, 0.96], [28, 0]);
 
-  const systemCardsOpacity = useTransform(heroProgress, [0.42, 0.7], [0, 1]);
-  const systemCardsY = useTransform(heroProgress, [0.42, 0.7], [36, 0]);
-
-  const bottomStripOpacity = useTransform(heroProgress, [0.88, 1], [0, 1]);
-  const bottomStripY = useTransform(heroProgress, [0.88, 1], [28, 0]);
-
   const scrollCueOpacity = useTransform(heroProgress, [0, 0.82, 1], [1, 0.7, 0]);
   const scrollCueY = useTransform(heroProgress, [0, 1], [0, 18]);
 
@@ -391,70 +385,6 @@ export default function Hero() {
         className="pointer-events-none absolute bottom-8 right-8 top-8 z-20 hidden w-px origin-bottom bg-gradient-to-b from-transparent via-[#C9A25B]/45 to-transparent md:block"
       />
 
-      {/* Top system UI */}
-      <div className="absolute left-5 right-5 top-6 z-30 hidden items-center justify-between text-[10px] uppercase tracking-[0.32em] text-white/42 md:flex">
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: -12 }}
-          animate={reduce ? {} : { opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.25 }}
-          className="rounded-full border border-white/10 bg-black/28 px-4 py-2 backdrop-blur-xl"
-        >
-          Preparing the room...
-        </motion.div>
-
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: -12 }}
-          animate={reduce ? {} : { opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.35 }}
-          className="flex items-center gap-4"
-        >
-          <span>Tonight / 07:30 PM</span>
-          <span className="h-px w-12 bg-[#C9A25B]/45" />
-          <span>Halifax</span>
-        </motion.div>
-      </div>
-
-      {/* Left side vertical label */}
-      <div className="absolute left-9 top-1/2 z-30 hidden -translate-y-1/2 flex-col items-center gap-5 md:flex">
-        <div className="h-20 w-px bg-gradient-to-b from-transparent via-[#C9A25B]/55 to-transparent" />
-        <div className="[writing-mode:vertical-rl] rotate-180 text-[10px] uppercase tracking-[0.38em] text-white/38">
-          Maison Noir / Opening Scene
-        </div>
-        <div className="h-20 w-px bg-gradient-to-b from-transparent via-[#C9A25B]/35 to-transparent" />
-      </div>
-
-      {/* Right system cards */}
-      <motion.div
-        style={
-          reduce
-            ? undefined
-            : {
-                opacity: systemCardsOpacity,
-                y: systemCardsY,
-                filter: contentFilter,
-              }
-        }
-        className="absolute right-8 top-[28%] z-30 hidden w-56 space-y-3 lg:block"
-      >
-        {[
-          ["Table", "01"],
-          ["Course", "00 / 06"],
-          ["Fire Level", "Low Ember"],
-        ].map(([label, value]) => (
-          <div
-            key={label}
-            className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 backdrop-blur-xl"
-          >
-            <p className="text-[9px] uppercase tracking-[0.3em] text-white/32">
-              {label}
-            </p>
-            <p className="mt-1 font-serif text-2xl leading-none text-[#C9A25B]">
-              {value}
-            </p>
-          </div>
-        ))}
-      </motion.div>
-
       {/* Main content */}
       <motion.div
         style={
@@ -564,29 +494,6 @@ export default function Hero() {
 
           <span className="hidden sm:inline">Open Flame Dining</span>
         </motion.div>
-      </motion.div>
-
-      {/* Bottom chapter strip */}
-      <motion.div
-        style={reduce ? undefined : { opacity: bottomStripOpacity, y: bottomStripY }}
-        className="absolute bottom-8 left-5 right-5 z-30 hidden items-end justify-between md:flex"
-      >
-        <div className="rounded-2xl border border-white/10 bg-black/28 px-4 py-3 backdrop-blur-xl">
-          <p className="text-[9px] uppercase tracking-[0.32em] text-white/34">
-            Tonight’s Atmosphere
-          </p>
-          <p className="mt-1 font-serif text-xl text-white">
-            Black velvet / gold fire
-          </p>
-        </div>
-
-        <div className="flex items-center gap-4 rounded-full border border-white/10 bg-black/28 px-5 py-3 text-[10px] uppercase tracking-[0.3em] text-white/42 backdrop-blur-xl">
-          <span>Arrival</span>
-          <span className="h-px w-8 bg-[#C9A25B]/50" />
-          <span>Fire</span>
-          <span className="h-px w-8 bg-[#C9A25B]/30" />
-          <span>After Dark</span>
-        </div>
       </motion.div>
 
       {/* Scroll cue */}

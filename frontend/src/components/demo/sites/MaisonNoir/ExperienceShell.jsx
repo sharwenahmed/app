@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion, useScroll, useSpring } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
 
 const defaultScenes = [
   {
@@ -155,11 +154,6 @@ export default function ExperienceShell({ children, scenes = defaultScenes }) {
     [activeId, scenes]
   );
 
-  const activeIndex = useMemo(
-    () => Math.max(scenes.findIndex((scene) => scene.id === activeId), 0),
-    [activeId, scenes]
-  );
-
   const updateActiveScene = useCallback(() => {
     const trigger = window.innerHeight * 0.42;
     let nextScene = scenes[0];
@@ -215,6 +209,8 @@ export default function ExperienceShell({ children, scenes = defaultScenes }) {
     window.scrollTo({ top: y, behavior: "smooth" });
   };
 
+  const showSceneChrome = activeScene.id !== "top";
+
   return (
     <div className="relative overflow-hidden bg-[#050505]">
       <motion.div
@@ -266,21 +262,23 @@ export default function ExperienceShell({ children, scenes = defaultScenes }) {
       </AnimatePresence>
 
       <AnimatePresence mode="wait">
-        <motion.div
-          key={`scene-title-${activeScene.id}`}
-          initial={reduce ? { opacity: 0 } : { opacity: 0, y: 22, filter: "blur(8px)" }}
-          animate={reduce ? { opacity: 0 } : { opacity: [0, 0.9, 0], y: [22, 0, -18], filter: ["blur(8px)", "blur(0px)", "blur(6px)"] }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.45, ease: [0.22, 1, 0.36, 1] }}
-          className="pointer-events-none fixed left-1/2 top-1/2 z-[46] hidden -translate-x-1/2 -translate-y-1/2 text-center md:block"
-        >
-          <p className="mb-3 text-[10px] uppercase tracking-[0.42em] text-[#C9A25B]">
-            Scene {activeScene.number} / {String(scenes.length).padStart(2, "0")}
-          </p>
-          <p className="font-serif text-5xl leading-none text-white lg:text-7xl">
-            {activeScene.title}
-          </p>
-        </motion.div>
+        {showSceneChrome ? (
+          <motion.div
+            key={`scene-title-${activeScene.id}`}
+            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 22, filter: "blur(8px)" }}
+            animate={reduce ? { opacity: 0 } : { opacity: [0, 0.9, 0], y: [22, 0, -18], filter: ["blur(8px)", "blur(0px)", "blur(6px)"] }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.45, ease: [0.22, 1, 0.36, 1] }}
+            className="pointer-events-none fixed left-1/2 top-1/2 z-[46] hidden -translate-x-1/2 -translate-y-1/2 text-center md:block"
+          >
+            <p className="mb-3 text-[10px] uppercase tracking-[0.42em] text-[#C9A25B]">
+              Scene {activeScene.number} / {String(scenes.length).padStart(2, "0")}
+            </p>
+            <p className="font-serif text-5xl leading-none text-white lg:text-7xl">
+              {activeScene.title}
+            </p>
+          </motion.div>
+        ) : null}
       </AnimatePresence>
 
       <div className="pointer-events-none fixed left-5 top-1/2 z-[70] hidden -translate-y-1/2 md:block">
@@ -310,79 +308,65 @@ export default function ExperienceShell({ children, scenes = defaultScenes }) {
         </div>
       </div>
 
-      <motion.div
-        initial={reduce ? false : { opacity: 0, y: -18 }}
-        animate={reduce ? {} : { opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        className="pointer-events-none fixed left-5 right-5 top-5 z-[80] hidden items-center justify-between md:flex"
-      >
-        <div className="rounded-full border border-white/10 bg-black/30 px-4 py-2 text-[10px] uppercase tracking-[0.34em] text-white/45 backdrop-blur-2xl">
-          Maison Noir / Experience
-        </div>
+      {showSceneChrome ? (
+        <motion.div
+          initial={reduce ? false : { opacity: 0, y: -18 }}
+          animate={reduce ? {} : { opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          className="pointer-events-none fixed left-5 right-5 top-5 z-[80] hidden items-center justify-between md:flex"
+        >
+          <div className="rounded-full border border-white/10 bg-black/30 px-4 py-2 text-[10px] uppercase tracking-[0.34em] text-white/45 backdrop-blur-2xl">
+            Maison Noir / Experience
+          </div>
 
-        <div className="flex items-center gap-3 rounded-full border border-white/10 bg-black/30 px-4 py-2 text-[10px] uppercase tracking-[0.3em] text-white/45 backdrop-blur-2xl">
-          <span className="text-[#C9A25B]">Scene {activeScene.number}</span>
-          <span className="h-px w-8 bg-[#C9A25B]/45" />
-          <span>{activeScene.title}</span>
-        </div>
-      </motion.div>
+          <div className="flex items-center gap-3 rounded-full border border-white/10 bg-black/30 px-4 py-2 text-[10px] uppercase tracking-[0.3em] text-white/45 backdrop-blur-2xl">
+            <span className="text-[#C9A25B]">Scene {activeScene.number}</span>
+            <span className="h-px w-8 bg-[#C9A25B]/45" />
+            <span>{activeScene.title}</span>
+          </div>
+        </motion.div>
+      ) : null}
 
-      <div className="pointer-events-none fixed bottom-5 left-5 right-5 z-[80] hidden items-end justify-between md:flex">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={`hud-left-${activeScene.id}`}
-            initial={reduce ? { opacity: 1 } : { opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={reduce ? { opacity: 0 } : { opacity: 0, y: -12 }}
-            transition={{ duration: reduce ? 0 : 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="rounded-2xl border border-white/10 bg-black/34 px-4 py-3 backdrop-blur-2xl"
-          >
-            <p className="text-[9px] uppercase tracking-[0.3em] text-white/35">
-              {activeScene.label}
-            </p>
-            <p className="mt-1 font-serif text-xl text-white">{activeScene.mood}</p>
-          </motion.div>
-        </AnimatePresence>
-
-        <div className="pointer-events-auto flex items-center gap-3 rounded-full border border-white/10 bg-black/34 px-4 py-3 backdrop-blur-2xl">
-          <span className="text-[9px] uppercase tracking-[0.3em] text-white/35">
-            {String(activeIndex + 1).padStart(2, "0")} / {String(scenes.length).padStart(2, "0")}
-          </span>
-          <div className="h-px w-16 bg-white/10">
+      {showSceneChrome ? (
+        <div className="pointer-events-none fixed bottom-5 left-5 right-5 z-[80] hidden items-end justify-between md:flex">
+          <AnimatePresence mode="wait">
             <motion.div
-              layout
-              className="h-px bg-[#C9A25B]"
-              style={{ width: `${((activeIndex + 1) / scenes.length) * 100}%` }}
-            />
-          </div>
-          <button
-            type="button"
-            onClick={() => scrollToScene("reserve")}
-            className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.26em] text-[#C9A25B] transition-colors hover:text-white"
-          >
-            Reserve
-            <ArrowUpRight className="h-3.5 w-3.5" />
-          </button>
-        </div>
-      </div>
+              key={`hud-left-${activeScene.id}`}
+              initial={reduce ? { opacity: 1 } : { opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduce ? { opacity: 0 } : { opacity: 0, y: -12 }}
+              transition={{ duration: reduce ? 0 : 0.45, ease: [0.22, 1, 0.36, 1] }}
+              className="rounded-2xl border border-white/10 bg-black/34 px-4 py-3 backdrop-blur-2xl"
+            >
+              <p className="text-[9px] uppercase tracking-[0.3em] text-white/35">
+                {activeScene.label}
+              </p>
+              <p className="mt-1 font-serif text-xl text-white">{activeScene.mood}</p>
+            </motion.div>
+          </AnimatePresence>
 
-      <div className="pointer-events-none fixed bottom-4 left-4 right-4 z-[80] md:hidden">
-        <div className="flex items-center justify-between rounded-full border border-white/10 bg-black/45 px-4 py-3 backdrop-blur-2xl">
-          <div>
-            <p className="text-[8px] uppercase tracking-[0.26em] text-white/35">
-              Scene {activeScene.number}
-            </p>
-            <p className="font-serif text-base leading-none text-white">{activeScene.title}</p>
-          </div>
-          <button
-            type="button"
-            onClick={() => scrollToScene("reserve")}
-            className="pointer-events-auto rounded-full border border-[#C9A25B]/35 px-3 py-2 text-[9px] uppercase tracking-[0.22em] text-[#C9A25B]"
-          >
-            Reserve
-          </button>
         </div>
-      </div>
+      ) : null}
+
+      {showSceneChrome ? (
+        <div className="pointer-events-none fixed bottom-4 left-4 right-4 z-[80] md:hidden">
+          <div className="flex items-center justify-between rounded-full border border-white/10 bg-black/45 px-4 py-3 backdrop-blur-2xl">
+            <div>
+              <p className="text-[8px] uppercase tracking-[0.26em] text-white/35">
+                Scene {activeScene.number}
+              </p>
+              <p className="font-serif text-base leading-none text-white">{activeScene.title}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => scrollToScene("reserve")}
+              className="pointer-events-auto rounded-full border border-[#C9A25B]/35 px-3 py-2 text-[9px] uppercase tracking-[0.22em] text-[#C9A25B]"
+            >
+              Reserve
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       <div className="relative z-10">{children}</div>
     </div>

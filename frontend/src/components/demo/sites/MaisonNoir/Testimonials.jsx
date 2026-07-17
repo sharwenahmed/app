@@ -1,89 +1,294 @@
-import React, { useState } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Star } from "lucide-react";
+import React from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { Quote, Star } from "lucide-react";
 
 const testimonials = [
   {
     quote:
-      "One of the finest dining experiences in Halifax. Quiet, cinematic, and impossibly well executed.",
+      "The room felt private without ever feeling hidden. Every course arrived with the kind of timing you only notice when it is perfect.",
+    source: "Amelia R.",
+    detail: "Anniversary Dinner",
+    note: "Velvet Room",
+  },
+  {
+    quote:
+      "Maison Noir does not rush the evening. The fire, the wine, the silence between courses — everything felt intentional.",
     source: "The Coast Magazine",
     detail: "Restaurant Review",
+    note: "Editor’s Choice",
   },
   {
     quote:
-      "Maison Noir feels less like dinner and more like an evening you remember months later.",
+      "We booked the private room for a client dinner and it felt effortless. Polished service, beautiful pacing, and no detail out of place.",
+    source: "Julian M.",
+    detail: "Executive Dinner",
+    note: "Private Dining",
+  },
+  {
+    quote:
+      "The steak was memorable, but the atmosphere is what stayed with us. Dark, warm, cinematic, and completely unlike anywhere else in the city.",
     source: "Halifax Dining Journal",
-    detail: "Editor's Choice",
+    detail: "Guest Experience",
+    note: "Main Dining Room",
   },
   {
     quote:
-      "The service, the wine, the fire, the room — every detail feels intentional.",
-    source: "Guest Review",
-    detail: "Private Dining",
+      "It felt like the entire evening had been choreographed. Not theatrical, not loud — just perfectly paced.",
+    source: "Maya S.",
+    detail: "Birthday Dinner",
+    note: "Chef’s Table",
+  },
+  {
+    quote:
+      "The wine pairing changed the whole meal. Each pour felt like it belonged exactly where it arrived.",
+    source: "Daniel K.",
+    detail: "Wine Pairing",
+    note: "The Cellar",
+  },
+  {
+    quote:
+      "A rare restaurant where the service is present without interrupting the conversation. That takes real discipline.",
+    source: "Elaine W.",
+    detail: "Guest Review",
+    note: "Service",
+  },
+  {
+    quote:
+      "The dry-aged ribeye was exceptional, but the marrow butter made it unforgettable.",
+    source: "Marcus B.",
+    detail: "Signature Steak",
+    note: "Open Flame",
+  },
+  {
+    quote:
+      "Maison Noir understands restraint. Nothing felt overdone, and that made every detail feel more expensive.",
+    source: "Sofia L.",
+    detail: "Evening Review",
+    note: "Atmosphere",
+  },
+  {
+    quote:
+      "We came for dinner and ended up staying for nearly three hours. The room makes time slow down.",
+    source: "Priya N.",
+    detail: "Date Night",
+    note: "Dining Room",
+  },
+  {
+    quote:
+      "The private dining room was intimate, warm, and completely seamless for our team dinner.",
+    source: "Thomas A.",
+    detail: "Corporate Dinner",
+    note: "Private Room",
+  },
+  {
+    quote:
+      "Every plate had confidence. No unnecessary decoration, no noise — just fire, texture, and precision.",
+    source: "Nora C.",
+    detail: "Tasting Menu",
+    note: "Chef’s Table",
+  },
+  {
+    quote:
+      "The lighting alone changes the mood. It feels like stepping into a restaurant built for long conversations.",
+    source: "Victor H.",
+    detail: "Guest Review",
+    note: "Ambience",
+  },
+  {
+    quote:
+      "The cocktail service was quiet and beautiful. It felt like the evening began before the first course arrived.",
+    source: "Leah M.",
+    detail: "Cocktail Hour",
+    note: "The Pour",
+  },
+  {
+    quote:
+      "A polished, cinematic restaurant with the confidence to let silence do some of the work.",
+    source: "North End Dining Notes",
+    detail: "Feature Mention",
+    note: "Press",
+  },
+  {
+    quote:
+      "The dessert arrived like a final scene. Small, dark, rich, and exactly enough.",
+    source: "Camille T.",
+    detail: "Final Course",
+    note: "Dessert",
+  },
+  {
+    quote:
+      "The staff remembered our pacing. That is the kind of service you feel rather than notice.",
+    source: "Andrew P.",
+    detail: "Anniversary Dinner",
+    note: "Service",
+  },
+  {
+    quote:
+      "The room, the steak, the wine, the fire — everything felt connected.",
+    source: "Rachel D.",
+    detail: "Guest Review",
+    note: "Full Evening",
+  },
+  {
+    quote:
+      "Maison Noir feels like a restaurant designed for people who love restaurants.",
+    source: "Halifax Table Guide",
+    detail: "Dining Feature",
+    note: "Review",
+  },
+  {
+    quote:
+      "It was luxurious without being stiff. That balance is incredibly hard to get right.",
+    source: "Isabelle V.",
+    detail: "Private Celebration",
+    note: "Velvet Room",
   },
 ];
 
+function TestimonialCard({ testimonial }) {
+  return (
+    <article className="mx-3 flex h-[24rem] w-[min(26rem,82vw)] flex-none flex-col justify-between rounded-[2rem] border border-white/10 bg-white/[0.035] p-7 shadow-[0_45px_130px_-95px_rgba(201,162,91,0.8)] backdrop-blur-xl transition duration-500 hover:-translate-y-1 hover:border-[#C9A25B]/35 hover:bg-[#C9A25B]/[0.055]">
+      <div>
+        <div className="mb-8 flex items-center justify-between gap-4">
+          <div className="flex gap-1">
+            {[...Array(5)].map((_, index) => (
+              <Star
+                key={index}
+                className="h-3.5 w-3.5 fill-[#C9A25B] text-[#C9A25B]"
+              />
+            ))}
+          </div>
+
+          <Quote className="h-7 w-7 text-[#C9A25B]/45" />
+        </div>
+
+        <p className="font-serif text-2xl leading-tight tracking-[-0.035em] text-white md:text-3xl">
+          “{testimonial.quote}”
+        </p>
+      </div>
+
+      <div className="border-t border-white/10 pt-6">
+        <p className="text-[10px] uppercase tracking-[0.32em] text-[#C9A25B]">
+          {testimonial.source}
+        </p>
+
+        <div className="mt-3 flex items-center justify-between gap-4 text-sm">
+          <span className="text-white/48">{testimonial.detail}</span>
+          <span className="text-white/30">{testimonial.note}</span>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 export default function Testimonials() {
-  const [active, setActive] = useState(0);
   const reduce = useReducedMotion();
-  const item = testimonials[active];
+  const marqueeItems = [...testimonials, ...testimonials];
 
   return (
     <section
       id="testimonials"
-      className="relative bg-[#050505] px-6 py-32 md:py-44 overflow-hidden border-t border-white/10"
+      className="relative overflow-hidden border-t border-white/10 bg-[#050505] py-28 md:py-40"
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(201,162,91,0.12),transparent_45%)]" />
+      <style>
+        {`
+          @keyframes maison-noir-testimonials-marquee {
+            from {
+              transform: translate3d(0, 0, 0);
+            }
+            to {
+              transform: translate3d(-50%, 0, 0);
+            }
+          }
 
-      <div className="relative max-w-6xl mx-auto text-center">
-        <p className="text-[#C9A25B] tracking-[0.35em] uppercase text-xs mb-8">
-          The Room Remembers
-        </p>
+          .maison-noir-testimonials-track {
+            animation: maison-noir-testimonials-marquee var(--duration) linear infinite;
+          }
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={active}
-            initial={reduce ? false : { opacity: 0, y: 28, filter: "blur(8px)" }}
-            animate={reduce ? {} : { opacity: 1, y: 0, filter: "blur(0px)" }}
-            exit={reduce ? {} : { opacity: 0, y: -18, filter: "blur(6px)" }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="flex justify-center gap-1 mb-10">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className="w-5 h-5 fill-[#C9A25B] text-[#C9A25B]"
-                />
-              ))}
-            </div>
+          .maison-noir-testimonials-track:hover {
+            animation-play-state: paused;
+          }
+        `}
+      </style>
 
-            <blockquote className="font-serif text-5xl md:text-7xl lg:text-8xl leading-[0.9] tracking-tight">
-              “{item.quote}”
-            </blockquote>
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_38%,rgba(201,162,91,0.13),transparent_42%)]" />
+      <div className="pointer-events-none absolute left-[-180px] top-24 h-[520px] w-[520px] rounded-full bg-[#4A1418]/22 blur-[150px]" />
+      <div className="pointer-events-none absolute right-[-180px] bottom-10 h-[520px] w-[520px] rounded-full bg-[#C9A25B]/8 blur-[150px]" />
+      <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_180px_rgba(0,0,0,0.9)]" />
 
-            <div className="mt-12">
-              <div className="text-[#C9A25B] tracking-[0.25em] uppercase text-xs">
-                {item.source}
-              </div>
-              <div className="mt-3 text-white/45">
-                {item.detail}
-              </div>
-            </div>
-          </motion.div>
-        </AnimatePresence>
+      <div className="relative mx-auto mb-16 max-w-7xl px-6">
+        <motion.div
+          initial={reduce ? false : { opacity: 0, y: 34 }}
+          whileInView={reduce ? {} : { opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.35 }}
+          transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+          className="grid gap-10 lg:grid-cols-12 lg:items-end"
+        >
+          <div className="lg:col-span-8">
+            <p className="mb-6 text-xs uppercase tracking-[0.35em] text-[#C9A25B]">
+              The Room Remembers
+            </p>
 
-        <div className="mt-14 flex justify-center gap-3">
-          {testimonials.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setActive(index)}
-              className={`h-2.5 rounded-full transition-all ${
-                active === index
-                  ? "w-10 bg-[#C9A25B]"
-                  : "w-2.5 bg-white/20 hover:bg-white/40"
-              }`}
-              aria-label={`Show testimonial ${index + 1}`}
+            <h2 className="font-serif text-[clamp(4rem,9vw,8.6rem)] leading-[0.86] tracking-[-0.065em] text-white">
+              What lingers
+              <br />
+              after the last course.
+            </h2>
+          </div>
+
+          <div className="lg:col-span-4">
+            <p className="text-lg leading-8 text-white/55">
+              Notes from guests, private dining hosts, and reviewers who came
+              for dinner and left remembering the room.
+            </p>
+          </div>
+        </motion.div>
+      </div>
+
+      {reduce ? (
+        <div className="relative mx-auto grid max-w-7xl gap-5 px-6 md:grid-cols-2 lg:grid-cols-3">
+          {testimonials.map((testimonial) => (
+            <TestimonialCard
+              key={`${testimonial.source}-${testimonial.detail}`}
+              testimonial={testimonial}
             />
+          ))}
+        </div>
+      ) : (
+        <div className="relative">
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-24 bg-gradient-to-r from-[#050505] to-transparent md:w-44" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-24 bg-gradient-to-l from-[#050505] to-transparent md:w-44" />
+
+          <div
+            className="maison-noir-testimonials-track flex w-max will-change-transform"
+            style={{ "--duration": "95s" }}
+          >
+            {marqueeItems.map((testimonial, index) => (
+              <TestimonialCard
+                key={`${testimonial.source}-${testimonial.detail}-${index}`}
+                testimonial={testimonial}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="relative mx-auto mt-12 max-w-7xl px-6">
+        <div className="flex flex-wrap gap-3 border-t border-white/10 pt-8">
+          {[
+            "Open-fire signatures",
+            "Private dining",
+            "Cellar pairings",
+            "Slow luxury service",
+            "Anniversary dinners",
+            "Chef’s table",
+          ].map((note) => (
+            <span
+              key={note}
+              className="rounded-full border border-white/10 bg-white/[0.025] px-4 py-2 text-[10px] uppercase tracking-[0.24em] text-white/42"
+            >
+              {note}
+            </span>
           ))}
         </div>
       </div>

@@ -107,7 +107,13 @@ export default function SignatureMenu() {
   const [active, setActive] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isReserving, setIsReserving] = useState(false);
+  const sectionRef = useRef(null);
   const intervalRef = useRef(null);
+  const touchStartYRef = useRef(null);
+  const viewProgressRef = useRef(0);
+  const viewGateActiveRef = useRef(false);
+  const viewGateCompleteRef = useRef(false);
+  const releaseTimerRef = useRef(null);
   const reduce = useReducedMotion();
 
   const dish = dishes[active];
@@ -159,9 +165,181 @@ export default function SignatureMenu() {
     }, 2050);
   };
 
+  useEffect(() => {
+    if (reduce) return undefined;
+
+    const clamp = (value) => Math.min(Math.max(value, 0), 1);
+
+    const getTargetY = () => {
+      const section = sectionRef.current;
+      if (!section) return 0;
+
+      const offset = window.innerWidth >= 768 ? 28 : 12;
+      return Math.max(section.getBoundingClientRect().top + window.scrollY - offset, 0);
+    };
+
+    const lockToSignature = () => {
+      const targetY = getTargetY();
+
+      if (Math.abs(window.scrollY - targetY) > 1) {
+        window.scrollTo({
+          top: targetY,
+          behavior: "auto",
+        });
+      }
+    };
+
+    const releaseGate = () => {
+      viewGateActiveRef.current = false;
+      viewGateCompleteRef.current = true;
+      viewProgressRef.current = 1;
+
+      if (releaseTimerRef.current) {
+        window.clearTimeout(releaseTimerRef.current);
+        releaseTimerRef.current = null;
+      }
+    };
+
+    const activateGate = () => {
+      if (viewGateActiveRef.current || viewGateCompleteRef.current) return;
+
+      viewGateActiveRef.current = true;
+      viewProgressRef.current = 0;
+      lockToSignature();
+
+      if (releaseTimerRef.current) {
+        window.clearTimeout(releaseTimerRef.current);
+      }
+
+      releaseTimerRef.current = window.setTimeout(releaseGate, 1100);
+    };
+
+    const resetIfAbove = () => {
+      const section = sectionRef.current;
+      if (!section) return;
+
+      const rect = section.getBoundingClientRect();
+
+      if (rect.top > window.innerHeight * 0.72) {
+        viewGateActiveRef.current = false;
+        viewGateCompleteRef.current = false;
+        viewProgressRef.current = 0;
+
+        if (releaseTimerRef.current) {
+          window.clearTimeout(releaseTimerRef.current);
+          releaseTimerRef.current = null;
+        }
+      }
+    };
+
+    const isSignatureApproaching = () => {
+      const section = sectionRef.current;
+      if (!section) return false;
+
+      const rect = section.getBoundingClientRect();
+
+      const entryLine = Math.min(window.innerHeight * 0.46, 460);
+
+      return rect.top <= entryLine && rect.bottom >= window.innerHeight * 0.42;
+    };
+
+    const consumeForwardScroll = (delta) => {
+      lockToSignature();
+      viewProgressRef.current = clamp(viewProgressRef.current + delta / 1150);
+
+      if (viewProgressRef.current >= 1) {
+        releaseGate();
+      }
+    };
+
+    const handleWheel = (event) => {
+      if (!viewGateActiveRef.current) {
+        resetIfAbove();
+      }
+
+      const scrollingForward = event.deltaY > 0;
+
+      if (!scrollingForward || viewGateCompleteRef.current) return;
+      if (!viewGateActiveRef.current && !isSignatureApproaching()) return;
+
+      activateGate();
+
+      event.preventDefault();
+      event.stopPropagation();
+      consumeForwardScroll(event.deltaY);
+    };
+
+    const handleTouchStart = (event) => {
+      touchStartYRef.current = event.touches[0]?.clientY ?? null;
+    };
+
+    const handleTouchMove = (event) => {
+      if (!viewGateActiveRef.current) {
+        resetIfAbove();
+      }
+
+      const currentY = event.touches[0]?.clientY ?? null;
+      const startY = touchStartYRef.current;
+
+      if (currentY === null || startY === null) return;
+
+      const delta = startY - currentY;
+      const scrollingForward = delta > 0;
+
+      if (!scrollingForward || viewGateCompleteRef.current) {
+        touchStartYRef.current = currentY;
+        return;
+      }
+
+      if (!viewGateActiveRef.current && !isSignatureApproaching()) {
+        touchStartYRef.current = currentY;
+        return;
+      }
+
+      activateGate();
+
+      event.preventDefault();
+      consumeForwardScroll(delta * 2.6);
+      touchStartYRef.current = currentY;
+    };
+
+    const handleKeyDown = (event) => {
+      const forwardKeys = ["ArrowDown", "PageDown", " ", "End"];
+
+      if (!forwardKeys.includes(event.key)) return;
+      if (!viewGateActiveRef.current) {
+        resetIfAbove();
+      }
+
+      if (viewGateCompleteRef.current) return;
+      if (!viewGateActiveRef.current && !isSignatureApproaching()) return;
+
+      activateGate();
+      event.preventDefault();
+      consumeForwardScroll(390);
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      if (releaseTimerRef.current) {
+        window.clearTimeout(releaseTimerRef.current);
+      }
+
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [reduce]);
+
   return (
     <section
       id="menu"
+      ref={sectionRef}
       className="relative isolate overflow-hidden border-t border-white/10 bg-[#060403] px-6 py-24 md:py-36"
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(201,162,91,0.08),transparent_42%)]" />

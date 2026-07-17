@@ -12,16 +12,32 @@ const privateFormats = [
     title: "Private Room",
     detail: "Up to 14 guests",
     copy: "A candlelit room for anniversaries, birthdays, and executive dinners.",
+    media: {
+      type: "image",
+      src: "/images/MaisonNoir/gallery/private-dining-room.webp",
+      alt: "Private dining room with candlelit seating",
+    },
   },
   {
     title: "Chef’s Table",
     detail: "6–8 guests",
     copy: "A closer view of the kitchen, built around a guided tasting menu.",
+    media: {
+      type: "video",
+      src: "/images/MaisonNoir/videos/hero/chef-grilling-steak.mp4",
+      poster: "/images/MaisonNoir/branding/chef.webp",
+      alt: "Chef preparing dinner over open flame",
+    },
   },
   {
     title: "Full Evening",
     detail: "By request",
     copy: "For brand dinners, celebrations, and private restaurant buyouts.",
+    media: {
+      type: "image",
+      src: "/images/MaisonNoir/gallery/interior.webp",
+      alt: "Maison Noir dining room prepared for a private evening",
+    },
   },
 ];
 
@@ -173,17 +189,48 @@ export default function PrivateDining() {
                 delay: index * 0.08,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="rounded-[2rem] border border-white/10 bg-black/35 p-7 transition duration-500 hover:-translate-y-1 hover:border-[#C9A25B]/35"
+              className="group overflow-hidden rounded-[2rem] border border-white/10 bg-black/35 transition duration-500 hover:-translate-y-1 hover:border-[#C9A25B]/35"
             >
-              <p className="mb-4 text-[10px] uppercase tracking-[0.32em] text-[#C9A25B]">
-                {format.detail}
-              </p>
+              <div className="relative h-72 overflow-hidden border-b border-white/10">
+                {format.media.type === "video" ? (
+                  <video
+                    src={format.media.src}
+                    poster={format.media.poster}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    aria-label={format.media.alt}
+                    className="h-full w-full object-cover opacity-90 transition duration-700 group-hover:scale-105"
+                  />
+                ) : (
+                  <img
+                    src={format.media.src}
+                    alt={format.media.alt}
+                    onError={(event) => {
+                      event.currentTarget.src =
+                        "/images/MaisonNoir/gallery/private-dining-room.webp";
+                    }}
+                    className="h-full w-full object-cover opacity-90 transition duration-700 group-hover:scale-105"
+                  />
+                )}
 
-              <h3 className="font-serif text-3xl leading-tight text-white">
-                {format.title}
-              </h3>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/88 via-black/18 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-transparent to-transparent" />
 
-              <p className="mt-4 leading-7 text-white/50">{format.copy}</p>
+                <p className="absolute left-5 top-5 rounded-full border border-white/10 bg-black/35 px-4 py-2 text-[10px] uppercase tracking-[0.28em] text-[#C9A25B] backdrop-blur-xl">
+                  {format.detail}
+                </p>
+              </div>
+
+              <div className="p-7">
+                <h3 className="font-serif text-3xl leading-tight text-white">
+                  {format.title}
+                </h3>
+
+                <p className="mt-4 leading-7 text-white/50">{format.copy}</p>
+              </div>
             </motion.div>
           ))}
         </div>
