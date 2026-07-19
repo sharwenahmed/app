@@ -28,11 +28,6 @@ export default function SceneTransition({
   }, [progress, rawProgress]);
 
   const y = useTransform(smoothProgress, [0, 0.18, 0.86, 1], [26, 0, 0, -18]);
-  const filter = useTransform(
-    smoothProgress,
-    [0, 0.18, 0.86, 1],
-    ["blur(5px)", "blur(0px)", "blur(0px)", "blur(3px)"]
-  );
 
   return (
     <motion.div
@@ -49,7 +44,6 @@ export default function SceneTransition({
           : {
               "--maison-local-scene-progress": progress,
               y,
-              filter,
             }
       }
       className={`relative z-10 ${className}`}

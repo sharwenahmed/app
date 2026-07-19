@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import { AnimatePresence, motion, useReducedMotion, useScroll, useSpring } from "framer-motion";
 import AmbientLighting from "./scroll/AmbientLighting";
 import SceneTransition from "./scroll/SceneTransition";
 import { useMaisonScroll } from "./scroll/MaisonScrollDirector";
+import useSectionPresence from "./experience/useSectionPresence";
 
 const defaultScenes = [
   {
@@ -135,9 +136,7 @@ export function SceneChapter({ children, sceneId }) {
 export default function ExperienceShell({ children, scenes = defaultScenes }) {
   const reduce = useReducedMotion();
   const { scrollTo, setActiveScene } = useMaisonScroll();
-  const rafRef = useRef(null);
-  const activeIdRef = useRef(scenes[0]?.id || "top");
-  const [activeId, setActiveId] = useState(scenes[0]?.id || "top");
+  const activeId = useSectionPresence(scenes);
 
   const { scrollYProgress } = useScroll();
   const smoothProgress = useSpring(scrollYProgress, {
@@ -150,51 +149,6 @@ export default function ExperienceShell({ children, scenes = defaultScenes }) {
     () => scenes.find((scene) => scene.id === activeId) || scenes[0],
     [activeId, scenes]
   );
-
-  const updateActiveScene = useCallback(() => {
-    const trigger = window.innerHeight * 0.42;
-    let nextScene = scenes[0];
-
-    scenes.forEach((scene) => {
-      const el = document.getElementById(scene.id);
-      if (!el) return;
-
-      const rect = el.getBoundingClientRect();
-      if (rect.top <= trigger) {
-        nextScene = scene;
-      }
-    });
-
-    if (nextScene && activeIdRef.current !== nextScene.id) {
-      activeIdRef.current = nextScene.id;
-      setActiveId(nextScene.id);
-    }
-  }, [scenes]);
-
-  useEffect(() => {
-    const scheduleUpdate = () => {
-      if (rafRef.current) return;
-
-      rafRef.current = window.requestAnimationFrame(() => {
-        rafRef.current = null;
-        updateActiveScene();
-      });
-    };
-
-    updateActiveScene();
-
-    window.addEventListener("scroll", scheduleUpdate, { passive: true });
-    window.addEventListener("resize", scheduleUpdate);
-
-    return () => {
-      if (rafRef.current) {
-        window.cancelAnimationFrame(rafRef.current);
-      }
-
-      window.removeEventListener("scroll", scheduleUpdate);
-      window.removeEventListener("resize", scheduleUpdate);
-    };
-  }, [updateActiveScene]);
 
   const scrollToScene = (id) => {
     const el = document.getElementById(id);
@@ -224,22 +178,6 @@ export default function ExperienceShell({ children, scenes = defaultScenes }) {
 
       <div className="pointer-events-none fixed inset-0 z-0 bg-[#050505]" />
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={`atmosphere-${activeScene.id}`}
-          initial={reduce ? { opacity: 1 } : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: reduce ? 0 : 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className="pointer-events-none fixed inset-0 z-[1]"
-          style={{
-            background: `radial-gradient(circle at ${activeScene.x} ${activeScene.y}, ${activeScene.glowA}, transparent 38%), radial-gradient(circle at 82% 30%, ${activeScene.glowB}, transparent 34%), linear-gradient(135deg, rgba(0,0,0,0.96), rgba(0,0,0,0.74))`,
-          }}
-        />
-      </AnimatePresence>
-
-      <div className="pointer-events-none fixed inset-0 z-[2] bg-[radial-gradient(circle_at_50%_50%,transparent,rgba(0,0,0,0.68)_72%)]" />
-      <div className="pointer-events-none fixed inset-0 z-[2] opacity-[0.045] [background-image:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:24px_24px]" />
       <AmbientLighting />
 
       <AnimatePresence mode="wait">

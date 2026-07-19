@@ -1,45 +1,40 @@
 import { useEffect, useRef, useState } from "react";
 
-import { getSceneProgress } from "./scrollChoreography";
 import { useMaisonScroll } from "./MaisonScrollDirector";
 
 export default function useMaisonScene(sceneId) {
   const ref = useRef(null);
-  const rafRef = useRef(null);
-  const { activeSceneId, updateSceneProgress } = useMaisonScroll();
+  const { activeSceneId } = useMaisonScroll();
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
 
-    const updateProgress = () => {
-      rafRef.current = null;
+    const element = ref.current;
+    if (!element || typeof IntersectionObserver === "undefined") {
+      setProgress(1);
+      return undefined;
+    }
 
-      const nextProgress = getSceneProgress(ref.current);
-      setProgress((current) =>
-        Math.abs(current - nextProgress) < 0.01 ? current : nextProgress
-      );
-      updateSceneProgress(sceneId, nextProgress);
-    };
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setProgress((current) => {
+          const nextProgress = entry.isIntersecting ? entry.intersectionRatio : 0;
 
-    const scheduleProgress = () => {
-      if (rafRef.current) return;
-      rafRef.current = window.requestAnimationFrame(updateProgress);
-    };
+          return Math.abs(current - nextProgress) < 0.08 ? current : nextProgress;
+        });
+      },
+      {
+        threshold: [0, 0.18, 0.42, 0.68, 0.86, 1],
+      }
+    );
 
-    updateProgress();
-    window.addEventListener("scroll", scheduleProgress, { passive: true });
-    window.addEventListener("resize", scheduleProgress);
+    observer.observe(element);
 
     return () => {
-      if (rafRef.current) {
-        window.cancelAnimationFrame(rafRef.current);
-      }
-
-      window.removeEventListener("scroll", scheduleProgress);
-      window.removeEventListener("resize", scheduleProgress);
+      observer.disconnect();
     };
-  }, [sceneId, updateSceneProgress]);
+  }, []);
 
   return {
     ref,

@@ -88,25 +88,11 @@ export default function MaisonScrollDirector({
   const nativeRafRef = useRef(null);
 
   const [activeScene, setActiveSceneState] = useState(scenes[0] || null);
-  const [scrollState, setScrollState] = useState(defaultScrollState);
   const [isScrollLocked, setIsScrollLocked] = useState(false);
   const [smoothEnabled, setSmoothEnabled] = useState(false);
 
   const publishScrollState = useCallback((nextState) => {
     scrollStateRef.current = nextState;
-    setScrollState((current) => {
-      const velocityDelta = Math.abs(current.velocity - nextState.velocity);
-
-      if (
-        current.direction === nextState.direction &&
-        Math.abs(current.progress - nextState.progress) < 0.002 &&
-        velocityDelta < 0.2
-      ) {
-        return current;
-      }
-
-      return nextState;
-    });
 
     if (typeof document !== "undefined") {
       const root = document.documentElement;
@@ -114,6 +100,10 @@ export default function MaisonScrollDirector({
       root.style.setProperty("--maison-scroll-direction", String(nextState.direction));
       root.style.setProperty(
         "--maison-scroll-velocity",
+        String(Math.min(Math.abs(nextState.velocity) / 90, 1))
+      );
+      root.style.setProperty(
+        "--mn-scroll-velocity",
         String(Math.min(Math.abs(nextState.velocity) / 90, 1))
       );
     }
@@ -134,6 +124,7 @@ export default function MaisonScrollDirector({
       root.style.setProperty("--maison-glow-b", scene.glowB || "rgba(74,20,24,0.18)");
       root.style.setProperty("--maison-glow-x", scene.x || "50%");
       root.style.setProperty("--maison-glow-y", scene.y || "50%");
+      root.dataset.mnActiveScene = scene.id;
     }
   }, []);
 
@@ -325,7 +316,7 @@ export default function MaisonScrollDirector({
       isScrollLocked,
       lenis: lenisRef.current,
       reducedMotion: Boolean(reduceMotion),
-      scrollState,
+      scrollState: scrollStateRef.current,
       setActiveScene,
       lockScroll,
       unlockScroll,
@@ -337,7 +328,6 @@ export default function MaisonScrollDirector({
       isScrollLocked,
       lockScroll,
       reduceMotion,
-      scrollState,
       scrollTo,
       setActiveScene,
       unlockScroll,
