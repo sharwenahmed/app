@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   motion,
   useReducedMotion,
@@ -41,6 +41,52 @@ const privateFormats = [
   },
 ];
 
+function VisibleVideo({ src, poster, alt, className = "" }) {
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+
+    if (!video || typeof IntersectionObserver === "undefined") return undefined;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play?.().catch(() => {});
+          return;
+        }
+
+        video.pause?.();
+      },
+      {
+        threshold: 0.12,
+      }
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.disconnect();
+      video.pause?.();
+    };
+  }, []);
+
+  return (
+    <video
+      ref={videoRef}
+      src={src}
+      poster={poster}
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="metadata"
+      aria-label={alt}
+      className={className}
+    />
+  );
+}
+
 export default function PrivateDining() {
   const ref = useRef(null);
   const reduce = useReducedMotion();
@@ -51,6 +97,7 @@ export default function PrivateDining() {
   });
 
   const imageY = useTransform(scrollYProgress, [0, 1], [-24, 28]);
+  const imageX = useTransform(scrollYProgress, [0, 1], [-10, 14]);
   const roomDepth = useTransform(scrollYProgress, [0, 0.5, 1], [1.08, 1.03, 1.01]);
   const frameLeftX = useTransform(scrollYProgress, [0.05, 0.48], ["0%", "-78%"]);
   const frameRightX = useTransform(scrollYProgress, [0.05, 0.48], ["0%", "78%"]);
@@ -126,7 +173,7 @@ export default function PrivateDining() {
               <motion.img
                 src="/images/MaisonNoir/gallery/private-dining-room.webp"
                 alt="Private dining room at Maison Noir"
-                style={reduce ? undefined : { scale: roomDepth, y: imageY }}
+                style={reduce ? undefined : { scale: roomDepth, x: imageX, y: imageY }}
                 className="absolute inset-0 h-full w-full object-cover opacity-90 will-change-transform"
               />
 
@@ -213,15 +260,10 @@ export default function PrivateDining() {
             >
               <div className="relative h-72 overflow-hidden border-b border-white/10">
                 {format.media.type === "video" ? (
-                  <video
+                  <VisibleVideo
                     src={format.media.src}
                     poster={format.media.poster}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                    aria-label={format.media.alt}
+                    alt={format.media.alt}
                     className="h-full w-full object-cover opacity-90 transition duration-700 group-hover:scale-105"
                   />
                 ) : (

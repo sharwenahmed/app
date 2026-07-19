@@ -20,17 +20,6 @@ export default function ChefCraft() {
   const imageRotateY = useTransform(scrollYProgress, [0, 0.52, 1], [-7, 3, 0]);
   const imageX = useTransform(scrollYProgress, [0, 0.52, 1], [-18, 12, 0]);
   const imageScale = useTransform(scrollYProgress, [0, 0.52, 1], [0.98, 1.035, 1]);
-  const imageFilter = useTransform(
-    scrollYProgress,
-    [0, 0.28, 0.54, 0.78, 1],
-    [
-      "brightness(0.82) contrast(1.12) blur(0px)",
-      "brightness(0.98) contrast(1.08) blur(0px)",
-      "brightness(0.86) contrast(1.08) blur(1.6px)",
-      "brightness(1.03) contrast(1.04) blur(0px)",
-      "brightness(0.96) contrast(1.08) blur(0px)",
-    ]
-  );
   const philosophySharpness = useTransform(scrollYProgress, [0.32, 0.56, 0.78], [0.6, 1, 0.78]);
   const cardOneY = useTransform(scrollYProgress, [0.42, 0.72], [36, 0]);
   const cardTwoY = useTransform(scrollYProgress, [0.5, 0.82], [44, 0]);
@@ -105,11 +94,10 @@ export default function ChefCraft() {
                     rotateY: imageRotateY,
                     x: imageX,
                     scale: imageScale,
-                    filter: imageFilter,
                     transformStyle: "preserve-3d",
                   }
             }
-            className="overflow-hidden rounded-[40px] border border-white/10 bg-white/[0.03] shadow-[0_50px_140px_-70px_rgba(201,162,91,0.45)]"
+            className="relative overflow-hidden rounded-[40px] border border-white/10 bg-white/[0.03] shadow-[0_50px_140px_-70px_rgba(201,162,91,0.45)]"
           >
             <img
               loading="lazy"
@@ -117,6 +105,11 @@ export default function ChefCraft() {
               src="/images/MaisonNoir/people/chef.webp"
               alt="Maison Noir executive chef plating a dish"
               className="h-[720px] w-full object-cover object-center"
+            />
+            <motion.div
+              aria-hidden="true"
+              style={reduce ? undefined : { x: edgeLightX, opacity: edgeLightOpacity }}
+              className="pointer-events-none absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-[#C9A25B]/18 via-transparent to-transparent"
             />
           </motion.div>
 

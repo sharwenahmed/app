@@ -16,13 +16,10 @@ export default function Philosophy() {
   });
 
   const textY = useTransform(scrollYProgress, [0, 0.45, 1], [56, 0, -18]);
+  const textX = useTransform(scrollYProgress, [0, 1], [-10, 12]);
   const textOpacity = useTransform(scrollYProgress, [0, 0.28, 0.9], [0.35, 1, 1]);
-  const textFilter = useTransform(
-    scrollYProgress,
-    [0, 0.28, 0.85, 1],
-    ["blur(10px)", "blur(0px)", "blur(0px)", "blur(4px)"]
-  );
   const imageY = useTransform(scrollYProgress, [0, 1], [42, -34]);
+  const imageX = useTransform(scrollYProgress, [0, 1], [14, -10]);
   const imageScale = useTransform(scrollYProgress, [0, 0.6, 1], [1.05, 1.01, 1.03]);
   const goldLineX = useTransform(scrollYProgress, [0.12, 0.72], ["-32%", "88%"]);
   const goldLineOpacity = useTransform(scrollYProgress, [0.08, 0.28, 0.78], [0, 0.76, 0]);
@@ -48,7 +45,7 @@ export default function Philosophy() {
           whileInView={reduce ? {} : { opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.35 }}
           transition={{ duration: 0.8 }}
-          style={reduce ? undefined : { y: textY, opacity: textOpacity, filter: textFilter }}
+          style={reduce ? undefined : { y: textY, x: textX, opacity: textOpacity }}
           className="lg:col-span-6"
         >
           <p className="text-[#C9A25B] tracking-[0.35em] uppercase text-xs mb-6">
@@ -90,7 +87,7 @@ export default function Philosophy() {
           whileInView={reduce ? {} : { opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.9, delay: 0.1 }}
-          style={reduce ? undefined : { y: imageY, scale: imageScale }}
+          style={reduce ? undefined : { y: imageY, x: imageX, scale: imageScale }}
           className="lg:col-span-6"
         >
           <div className="relative rounded-[2.5rem] overflow-hidden border border-white/10 bg-white/[0.03] shadow-[0_40px_120px_-50px_rgba(201,162,91,0.35)]">

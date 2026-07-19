@@ -12,7 +12,6 @@ import { MAISON_SCROLL_LOCKS } from "./scroll/scrollChoreography";
 
 export default function Hero() {
   const sectionRef = useRef(null);
-  const pointerRafRef = useRef(null);
   const touchStartYRef = useRef(null);
   const progressRef = useRef(0);
   const releaseScrollLockRef = useRef(null);
@@ -20,8 +19,9 @@ export default function Hero() {
   const reduce = useReducedMotion();
   const { lockScroll, unlockScroll } = useMaisonScroll();
 
-  const [pointer, setPointer] = useState({ x: 50, y: 58 });
   const [hasCompleted, setHasCompleted] = useState(false);
+  const [heroInView, setHeroInView] = useState(true);
+  const atmosphereActive = !reduce && heroInView;
 
   const rawProgress = useMotionValue(0);
 
@@ -200,12 +200,6 @@ export default function Hero() {
   const thresholdLeftX = useTransform(heroProgress, [0, 0.5, 1], ["0%", "-18%", "-72%"]);
   const thresholdRightX = useTransform(heroProgress, [0, 0.5, 1], ["0%", "18%", "72%"]);
   const thresholdOpacity = useTransform(heroProgress, [0, 0.62, 1], [0.82, 0.48, 0.08]);
-  const thresholdBlur = useTransform(
-    heroProgress,
-    [0, 0.62, 1],
-    ["blur(0px)", "blur(3px)", "blur(8px)"]
-  );
-
   const glowOpacity = useTransform(heroProgress, [0, 0.48, 1], [0.34, 0.78, 0.92]);
 
   const heroRevealOpacity = useTransform(
@@ -214,26 +208,10 @@ export default function Hero() {
     [0.68, 0.88, 1]
   );
 
-  const heroRevealFilter = useTransform(
-    heroProgress,
-    [0, 0.32, 0.72],
-    [
-      "brightness(0.58) contrast(1.18) saturate(0.92) blur(12px)",
-      "brightness(0.78) contrast(1.12) saturate(1) blur(6px)",
-      "brightness(1) contrast(1.04) saturate(1.04) blur(0px)",
-    ]
-  );
-
   const arrivalShadeOpacity = useTransform(
     heroProgress,
     [0, 0.68, 1],
     [0.58, 0.24, 0]
-  );
-
-  const contentFilter = useTransform(
-    heroProgress,
-    [0, 0.28, 0.54],
-    ["blur(12px)", "blur(5px)", "blur(0px)"]
   );
 
   const eyebrowOpacity = useTransform(heroProgress, [0.04, 0.16], [0, 1]);
@@ -260,28 +238,28 @@ export default function Hero() {
   const scrollCueOpacity = useTransform(heroProgress, [0, 0.82, 1], [1, 0.7, 0]);
   const scrollCueY = useTransform(heroProgress, [0, 1], [0, 18]);
 
-  const handlePointerMove = (event) => {
-    if (reduce) return;
+  useEffect(() => {
+    const section = sectionRef.current;
 
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width) * 100;
-    const y = ((event.clientY - rect.top) / rect.height) * 100;
-
-    if (pointerRafRef.current) {
-      window.cancelAnimationFrame(pointerRafRef.current);
+    if (!section || typeof IntersectionObserver === "undefined") {
+      setHeroInView(true);
+      return undefined;
     }
 
-    pointerRafRef.current = window.requestAnimationFrame(() => {
-      setPointer({ x, y });
-      pointerRafRef.current = null;
-    });
-  };
-
-  useEffect(() => {
-    return () => {
-      if (pointerRafRef.current) {
-        window.cancelAnimationFrame(pointerRafRef.current);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setHeroInView(entry.isIntersecting);
+      },
+      {
+        rootMargin: "20% 0px 20% 0px",
+        threshold: 0.05,
       }
+    );
+
+    observer.observe(section);
+
+    return () => {
+      observer.disconnect();
     };
   }, []);
 
@@ -289,8 +267,6 @@ export default function Hero() {
     <section
       id="top"
       ref={sectionRef}
-      onMouseMove={handlePointerMove}
-      onMouseLeave={() => setPointer({ x: 50, y: 58 })}
       className="relative h-screen overflow-hidden bg-[#050302]"
     >
       {/* Scroll progress line */}
@@ -309,7 +285,6 @@ export default function Hero() {
                 y: heroY,
                 rotate: heroRotate,
                 opacity: heroRevealOpacity,
-                filter: heroRevealFilter,
               }
         }
         className="absolute inset-0 origin-bottom"
@@ -334,14 +309,6 @@ export default function Hero() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_86%_38%,rgba(255,105,36,0.20),transparent_34%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_92%,rgba(201,162,91,0.16),transparent_36%)]" />
 
-      {/* Cursor-reactive light */}
-      <div
-        style={{
-          background: `radial-gradient(circle at ${pointer.x}% ${pointer.y}%, rgba(246,211,139,0.22), transparent 32%)`,
-        }}
-        className="pointer-events-none absolute inset-0 z-[2] mix-blend-screen transition-opacity duration-500"
-      />
-
       {/* Dark shaping */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/34 to-[#050302]/82" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/82 via-black/10 to-black/72" />
@@ -360,7 +327,6 @@ export default function Hero() {
             : {
                 x: thresholdLeftX,
                 opacity: thresholdOpacity,
-                filter: thresholdBlur,
               }
         }
         className="pointer-events-none absolute inset-y-0 left-0 z-[5] hidden w-[24vw] bg-gradient-to-r from-black via-black/82 to-transparent md:block"
@@ -373,7 +339,6 @@ export default function Hero() {
             : {
                 x: thresholdRightX,
                 opacity: thresholdOpacity,
-                filter: thresholdBlur,
               }
         }
         className="pointer-events-none absolute inset-y-0 right-0 z-[5] hidden w-[24vw] bg-gradient-to-l from-black via-black/82 to-transparent md:block"
@@ -409,29 +374,45 @@ export default function Hero() {
       <motion.div
         className="absolute left-[9%] top-[24%] z-[3] h-32 w-32 rounded-full bg-[#C9A25B]/20 blur-3xl"
         animate={
-          reduce
-            ? {}
-            : {
+          atmosphereActive
+            ? {
                 x: [0, 18, -10, 0],
                 y: [0, -12, 10, 0],
                 opacity: [0.22, 0.56, 0.32, 0.22],
               }
+            : {
+                x: 0,
+                y: 0,
+                opacity: 0.2,
+              }
         }
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        transition={{
+          duration: atmosphereActive ? 8 : 0.45,
+          repeat: atmosphereActive ? Infinity : 0,
+          ease: "easeInOut",
+        }}
       />
 
       <motion.div
         className="absolute right-[8%] top-[46%] z-[3] h-40 w-40 rounded-full bg-orange-500/16 blur-3xl"
         animate={
-          reduce
-            ? {}
-            : {
+          atmosphereActive
+            ? {
                 x: [0, -16, 10, 0],
                 y: [0, 14, -8, 0],
                 opacity: [0.2, 0.48, 0.3, 0.2],
               }
+            : {
+                x: 0,
+                y: 0,
+                opacity: 0.18,
+              }
         }
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        transition={{
+          duration: atmosphereActive ? 10 : 0.45,
+          repeat: atmosphereActive ? Infinity : 0,
+          ease: "easeInOut",
+        }}
       />
 
       {/* Interface frame */}
@@ -463,7 +444,6 @@ export default function Hero() {
             : {
                 y: contentY,
                 opacity: contentOpacity,
-                filter: contentFilter,
               }
         }
         className="absolute inset-0 z-10 flex flex-col items-center justify-center px-5 pb-16 pt-24 text-center sm:px-6 lg:pb-12"

@@ -27,8 +27,6 @@ export default function Reservation() {
   });
 
   const deskLightOpacity = useTransform(scrollYProgress, [0.1, 0.5, 0.88], [0, 0.62, 0.18]);
-  const formY = useTransform(scrollYProgress, [0.18, 0.54], [38, 0]);
-  const formScale = useTransform(scrollYProgress, [0.18, 0.54], [0.985, 1]);
   const calmDarkness = useTransform(scrollYProgress, [0, 0.62, 1], [0.18, 0.05, 0.26]);
 
   return (
@@ -66,9 +64,7 @@ export default function Reservation() {
           </p>
         </div>
 
-        <motion.div
-          style={reduce ? undefined : { y: formY, scale: formScale }}
-        >
+        <motion.div>
         <GlassCard className="mt-24 max-w-6xl mx-auto p-6 md:p-10">
           <div className="grid lg:grid-cols-12 gap-8">
             <div className="lg:col-span-4 rounded-[2rem] border border-white/10 bg-black/35 p-6">

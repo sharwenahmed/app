@@ -470,17 +470,17 @@ export default function SignatureMenu() {
                 initial={
                   reduce
                     ? false
-                    : { opacity: 0, y: 36, filter: "blur(14px)" }
+                    : { opacity: 0, y: 32 }
                 }
                 animate={
                   reduce
                     ? {}
-                    : { opacity: 1, y: 0, filter: "blur(0px)" }
+                    : { opacity: 1, y: 0 }
                 }
                 exit={
                   reduce
                     ? {}
-                    : { opacity: 0, y: -22, filter: "blur(10px)" }
+                    : { opacity: 0, y: -18 }
                 }
                 transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1] }}
               >
@@ -598,7 +598,13 @@ export default function SignatureMenu() {
               transition={{ duration: 1.35, ease: [0.22, 1, 0.36, 1] }}
               className="relative z-30"
             >
-              <div className="pointer-events-none absolute -inset-8 rounded-[3rem] bg-[radial-gradient(circle_at_50%_50%,rgba(201,162,91,0.18),transparent_64%)] blur-2xl" />
+              <motion.div
+                key={`dish-spotlight-${active}`}
+                initial={reduce ? false : { opacity: 0.12, scale: 0.96 }}
+                animate={reduce ? {} : { opacity: 0.34, scale: 1 }}
+                transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+                className="pointer-events-none absolute -inset-8 rounded-[3rem] bg-[radial-gradient(circle_at_50%_52%,rgba(201,162,91,0.2),transparent_64%)] blur-2xl"
+              />
 
               <div className="relative overflow-hidden border border-[#C9A25B]/24 bg-black/30 shadow-[0_70px_180px_-90px_rgba(201,162,91,0.75)]">
                 <div className="pointer-events-none absolute inset-3 z-30 border border-[#C9A25B]/24" />
@@ -612,7 +618,7 @@ export default function SignatureMenu() {
                         : {
                             opacity: 0,
                             clipPath: "inset(0 100% 0 0)",
-                            filter: "blur(16px) brightness(0.72)",
+                            scale: 0.985,
                           }
                     }
                     animate={
@@ -621,7 +627,7 @@ export default function SignatureMenu() {
                         : {
                             opacity: 1,
                             clipPath: "inset(0 0% 0 0)",
-                            filter: "blur(0px) brightness(1)",
+                            scale: 1,
                           }
                     }
                     exit={
@@ -630,7 +636,7 @@ export default function SignatureMenu() {
                         : {
                             opacity: 0,
                             clipPath: "inset(0 0 0 100%)",
-                            filter: "blur(10px) brightness(0.7)",
+                            scale: 1.01,
                           }
                     }
                     transition={{ duration: 1.25, ease: [0.22, 1, 0.36, 1] }}
