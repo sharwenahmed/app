@@ -16,7 +16,10 @@ const createMessage = (role, content) => ({
   content,
 });
 
-export default function MaisonConcierge({ visible = true }) {
+export default function MaisonConcierge({
+  visible = true,
+  onStartOrder = () => {},
+}) {
   const reduceMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
@@ -166,6 +169,18 @@ export default function MaisonConcierge({ visible = true }) {
     }
   };
 
+  const handleQuickAction = (action) => {
+    if (action === "Start an order") {
+      onStartOrder();
+      setOpen(false);
+      return;
+    }
+
+    submitMessage(action);
+  };
+
+  const quickActions = [...conciergeQuickActions, "Start an order"];
+
   const panelMotion = reduceMotion
     ? {
         initial: { opacity: 1 },
@@ -308,11 +323,11 @@ export default function MaisonConcierge({ visible = true }) {
 
             <div className="relative z-10 border-t border-white/10 px-5 py-4">
               <div className="mb-3 flex flex-wrap gap-2">
-                {conciergeQuickActions.map((action) => (
+                {quickActions.map((action) => (
                   <button
                     key={action}
                     type="button"
-                    onClick={() => submitMessage(action)}
+                    onClick={() => handleQuickAction(action)}
                     disabled={typing}
                     className="rounded-full border border-[#C9A25B]/20 bg-black/25 px-3 py-2 text-[11px] text-white/62 transition hover:border-[#C9A25B]/45 hover:text-[#C9A25B] disabled:cursor-not-allowed disabled:opacity-45"
                   >

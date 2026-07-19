@@ -1556,7 +1556,7 @@ export default function FullMenu({ onAddToCart = () => {} }) {
                         const isSelected = selected?.[0] === name;
 
                         return (
-                          <button
+                          <div
                             key={name}
                             onMouseEnter={(event) => handleDishPreviewMove(category, item, event)}
                             onMouseMove={(event) => handleDishPreviewMove(category, item, event)}
@@ -1566,14 +1566,7 @@ export default function FullMenu({ onAddToCart = () => {} }) {
                                 visible: false,
                               }));
                             }}
-                            onClick={() => {
-                              setActive(category);
-                              setSelectedByCategory((prev) => ({
-                                ...prev,
-                                [category]: item,
-                              }));
-                            }}
-                            className={`relative w-full text-left grid sm:grid-cols-[1fr_auto] gap-4 py-6 group overflow-hidden transition-all duration-300 ease-out ${isSelected
+                            className={`relative w-full py-6 group overflow-hidden transition-all duration-300 ease-out ${isSelected
                               ? "rounded-2xl bg-white/[0.04] px-5 border border-[#C9A25B]/35 shadow-[0_20px_70px_-55px_rgba(201,162,91,0.65)]"
                               : "border-b border-white/10 hover:px-4 hover:bg-white/[0.018]"
                               }`}
@@ -1583,30 +1576,50 @@ export default function FullMenu({ onAddToCart = () => {} }) {
                                 }`}
                             />
 
-                            <div>
-                              <h4
-                                className={`font-serif text-2xl md:text-3xl transition-all duration-300 ease-out ${isSelected
-                                  ? "translate-x-1 text-[#C9A25B]"
-                                  : "text-white group-hover:translate-x-1 group-hover:text-[#C9A25B]"
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActive(category);
+                                setSelectedByCategory((prev) => ({
+                                  ...prev,
+                                  [category]: item,
+                                }));
+                              }}
+                              className="relative w-full text-left grid sm:grid-cols-[1fr_auto] gap-4"
+                            >
+                              <div>
+                                <h4
+                                  className={`font-serif text-2xl md:text-3xl transition-all duration-300 ease-out ${isSelected
+                                    ? "translate-x-1 text-[#C9A25B]"
+                                    : "text-white group-hover:translate-x-1 group-hover:text-[#C9A25B]"
+                                    }`}
+                                >
+                                  {name}
+                                </h4>
+
+                                <p className="mt-2 text-white/45 leading-relaxed max-w-2xl transition-all duration-300 ease-out group-hover:text-white/65">
+                                  {desc}
+                                </p>
+                              </div>
+
+                              <div
+                                className={`font-serif text-2xl transition-all duration-300 ease-out ${isSelected
+                                  ? "text-[#C9A25B]"
+                                  : "text-[#C9A25B]/75 group-hover:text-[#C9A25B] group-hover:translate-x-[-2px]"
                                   }`}
                               >
-                                {name}
-                              </h4>
+                                {price}
+                              </div>
+                            </button>
 
-                              <p className="mt-2 text-white/45 leading-relaxed max-w-2xl transition-all duration-300 ease-out group-hover:text-white/65">
-                                {desc}
-                              </p>
-                            </div>
-
-                            <div
-                              className={`font-serif text-2xl transition-all duration-300 ease-out ${isSelected
-                                ? "text-[#C9A25B]"
-                                : "text-[#C9A25B]/75 group-hover:text-[#C9A25B] group-hover:translate-x-[-2px]"
-                                }`}
+                            <button
+                              type="button"
+                              onClick={() => onAddToCart({ category, item })}
+                              className="relative mt-4 rounded-full border border-[#C9A25B]/25 px-4 py-2 text-xs uppercase tracking-[0.18em] text-[#C9A25B]/82 transition hover:border-[#C9A25B]/60 hover:bg-[#C9A25B] hover:text-black"
                             >
-                              {price}
-                            </div>
-                          </button>
+                              Add to order
+                            </button>
+                          </div>
                         );
                       })}
                     </div>
@@ -1791,7 +1804,7 @@ export default function FullMenu({ onAddToCart = () => {} }) {
                             }}
                             className="mt-6 w-full rounded-full bg-[#C9A25B] py-3 text-base font-medium text-black transition-colors hover:bg-[#d6b36d]"
                           >
-                            Add items to cart
+                            Add to order
                           </motion.button>
                         </motion.div>
                       </div>
