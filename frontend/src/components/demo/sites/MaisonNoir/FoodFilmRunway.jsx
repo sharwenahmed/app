@@ -784,6 +784,22 @@ export function FoodFilmRunway() {
     >
       {/* XL screen 3D vortex */}
       <div className="relative isolate hidden h-screen overflow-hidden bg-[#050302] xl:block">
+        <motion.div
+          aria-hidden="true"
+          initial={reduce ? false : { opacity: 0, scaleX: 0.7 }}
+          whileInView={reduce ? {} : { opacity: 1, scaleX: 1 }}
+          viewport={{ once: false, amount: 0.55 }}
+          transition={{ duration: 0.95, ease: [0.22, 1, 0.36, 1] }}
+          className="pointer-events-none absolute inset-x-0 top-0 z-20 h-40 origin-center bg-[radial-gradient(ellipse_at_50%_0%,rgba(201,162,91,0.18),rgba(74,20,24,0.2)_30%,transparent_70%)]"
+        />
+        <motion.div
+          aria-hidden="true"
+          initial={reduce ? false : { opacity: 0, y: 36 }}
+          whileInView={reduce ? {} : { opacity: 0.9, y: 0 }}
+          viewport={{ once: false, amount: 0.82 }}
+          transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1] }}
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-52 bg-[radial-gradient(ellipse_at_50%_100%,rgba(201,162,91,0.16),rgba(5,3,2,0.7)_46%,#050302_78%)]"
+        />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,rgba(201,162,91,0.14),transparent_42%)]" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_70%,rgba(74,20,24,0.32),transparent_34%)]" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_86%_20%,rgba(119,63,139,0.16),transparent_34%)]" />

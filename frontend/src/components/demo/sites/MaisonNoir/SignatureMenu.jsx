@@ -826,6 +826,24 @@ export default function SignatureMenu() {
         </div>
       </div>
 
+      <motion.div
+        aria-hidden="true"
+        initial={reduce ? false : { opacity: 0, scaleX: 0.72 }}
+        whileInView={reduce ? {} : { opacity: 1, scaleX: 1 }}
+        viewport={{ once: false, amount: 0.86 }}
+        transition={{ duration: 0.95, ease: [0.22, 1, 0.36, 1] }}
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[8] h-44 origin-center bg-[radial-gradient(ellipse_at_50%_100%,rgba(201,162,91,0.22),rgba(74,20,24,0.2)_32%,transparent_68%)]"
+      />
+
+      <motion.div
+        aria-hidden="true"
+        initial={reduce ? false : { opacity: 0, y: 42 }}
+        whileInView={reduce ? {} : { opacity: 0.72, y: 0 }}
+        viewport={{ once: false, amount: 0.9 }}
+        transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+        className="pointer-events-none absolute bottom-4 left-1/2 z-[9] h-px w-[min(44rem,70vw)] -translate-x-1/2 bg-gradient-to-r from-transparent via-[#C9A25B] to-transparent shadow-[0_0_42px_rgba(201,162,91,0.72)]"
+      />
+
       <AnimatePresence>
         {isReserving && (
           <motion.div

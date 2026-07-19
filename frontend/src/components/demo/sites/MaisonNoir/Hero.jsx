@@ -197,6 +197,15 @@ export default function Hero() {
 
   const progressScale = useTransform(heroProgress, [0, 1], [0, 1]);
 
+  const thresholdLeftX = useTransform(heroProgress, [0, 0.5, 1], ["0%", "-18%", "-72%"]);
+  const thresholdRightX = useTransform(heroProgress, [0, 0.5, 1], ["0%", "18%", "72%"]);
+  const thresholdOpacity = useTransform(heroProgress, [0, 0.62, 1], [0.82, 0.48, 0.08]);
+  const thresholdBlur = useTransform(
+    heroProgress,
+    [0, 0.62, 1],
+    ["blur(0px)", "blur(3px)", "blur(8px)"]
+  );
+
   const glowOpacity = useTransform(heroProgress, [0, 0.48, 1], [0.34, 0.78, 0.92]);
 
   const heroRevealOpacity = useTransform(
@@ -342,6 +351,32 @@ export default function Hero() {
       <motion.div
         style={reduce ? undefined : { opacity: arrivalShadeOpacity }}
         className="absolute inset-0 z-[4] bg-[radial-gradient(circle_at_50%_58%,rgba(0,0,0,0.42),rgba(0,0,0,0.9)_72%)]"
+      />
+
+      <motion.div
+        style={
+          reduce
+            ? undefined
+            : {
+                x: thresholdLeftX,
+                opacity: thresholdOpacity,
+                filter: thresholdBlur,
+              }
+        }
+        className="pointer-events-none absolute inset-y-0 left-0 z-[5] hidden w-[24vw] bg-gradient-to-r from-black via-black/82 to-transparent md:block"
+      />
+
+      <motion.div
+        style={
+          reduce
+            ? undefined
+            : {
+                x: thresholdRightX,
+                opacity: thresholdOpacity,
+                filter: thresholdBlur,
+              }
+        }
+        className="pointer-events-none absolute inset-y-0 right-0 z-[5] hidden w-[24vw] bg-gradient-to-l from-black via-black/82 to-transparent md:block"
       />
 
       {/* Subtle grain */}

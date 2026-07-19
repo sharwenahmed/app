@@ -598,6 +598,30 @@ export default function OpeningArrivalGate() {
     [0, 0.9, 0]
   );
 
+  const doorLeftX = useTransform(
+    cinematicProgress,
+    [0.68, 0.84, 0.98, 1],
+    ["0%", "-8%", "-78%", "-118%"]
+  );
+
+  const doorRightX = useTransform(
+    cinematicProgress,
+    [0.68, 0.84, 0.98, 1],
+    ["0%", "8%", "78%", "118%"]
+  );
+
+  const doorOpacity = useTransform(
+    cinematicProgress,
+    [0.58, 0.84, 0.98, 1],
+    [0.78, 0.95, 0.74, 0]
+  );
+
+  const doorLightOpacity = useTransform(
+    cinematicProgress,
+    [0.68, 0.88, 0.98],
+    [0, 0.5, 0]
+  );
+
   const sweepX = useTransform(cinematicProgress, [0.16, 0.94], ["-165%", "165%"]);
 
   const sweepOpacity = useTransform(
@@ -681,6 +705,21 @@ export default function OpeningArrivalGate() {
         <motion.div
           style={reduce ? undefined : { scaleX: apertureScaleX, opacity: apertureOpacity }}
           className="absolute left-1/2 top-[calc(50%+18px)] z-[28] h-px w-[70vw] -translate-x-1/2 origin-center bg-gradient-to-r from-transparent via-[#D8B35F]/35 to-transparent"
+        />
+
+        <motion.div
+          style={reduce ? undefined : { x: doorLeftX, opacity: doorOpacity }}
+          className="pointer-events-none absolute inset-y-0 left-0 z-[27] w-[52vw] bg-[linear-gradient(90deg,#020202_0%,rgba(0,0,0,0.94)_58%,rgba(26,19,14,0.72)_100%)] shadow-[22px_0_70px_rgba(0,0,0,0.82)]"
+        />
+
+        <motion.div
+          style={reduce ? undefined : { x: doorRightX, opacity: doorOpacity }}
+          className="pointer-events-none absolute inset-y-0 right-0 z-[27] w-[52vw] bg-[linear-gradient(270deg,#020202_0%,rgba(0,0,0,0.94)_58%,rgba(26,19,14,0.72)_100%)] shadow-[-22px_0_70px_rgba(0,0,0,0.82)]"
+        />
+
+        <motion.div
+          style={reduce ? undefined : { opacity: doorLightOpacity }}
+          className="pointer-events-none absolute inset-y-0 left-1/2 z-[29] w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-[#D8B35F] to-transparent shadow-[0_0_42px_rgba(216,179,95,0.86)]"
         />
 
         <motion.div

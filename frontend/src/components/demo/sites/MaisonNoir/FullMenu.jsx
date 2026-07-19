@@ -704,10 +704,29 @@ function CategoryHeroStage({
 
 
 function CategoryBar({ active, onSelect }) {
+  const focusGlow = {
+    Starters: "rgba(201,162,91,0.18)",
+    Steaks: "rgba(255,92,38,0.2)",
+    Seafood: "rgba(120,190,255,0.16)",
+    Sides: "rgba(180,220,150,0.14)",
+    Desserts: "rgba(255,180,220,0.14)",
+    Cocktails: "rgba(170,120,255,0.16)",
+  };
+
   return (
-    <div className="bg-[#050404]/95 backdrop-blur-2xl border-y border-white/10 shadow-[0_24px_70px_-40px_rgba(201,162,91,0.55)]">
+    <div className="relative overflow-hidden bg-[#050404]/95 backdrop-blur-2xl border-y border-white/10 shadow-[0_24px_70px_-40px_rgba(201,162,91,0.55)]">
+      <motion.div
+        aria-hidden="true"
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        style={{
+          background: `radial-gradient(circle at 50% 0%, ${focusGlow[active] || focusGlow.Starters}, transparent 58%)`,
+        }}
+        className="pointer-events-none absolute inset-0"
+      />
+
       <div className="max-w-7xl mx-auto px-6 py-4 overflow-x-auto no-scrollbar">
-        <div className="flex gap-3 min-w-max">
+        <div className="relative z-10 flex gap-3 min-w-max">
           {categories.map((category) => (
             <button
               key={category}
@@ -1276,6 +1295,24 @@ export default function FullMenu({ onAddToCart = () => {} }) {
       });
 
       setActive(current);
+
+      const fullMenu = fullMenuRef.current;
+      const fullMenuRect = fullMenu?.getBoundingClientRect();
+      const fullMenuInView =
+        fullMenuRect &&
+        fullMenuRect.bottom > 0 &&
+        fullMenuRect.top < window.innerHeight;
+
+      if (!fullMenuInView) {
+        setDishPreview((prev) =>
+          prev.visible
+            ? {
+                ...prev,
+                visible: false,
+              }
+            : prev
+        );
+      }
 
       if (window.innerWidth >= 1024) {
         const nextOffsets = {};

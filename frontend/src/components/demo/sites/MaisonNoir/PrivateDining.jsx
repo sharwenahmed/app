@@ -50,8 +50,13 @@ export default function PrivateDining() {
     offset: ["start end", "end start"],
   });
 
-  const imageScale = useTransform(scrollYProgress, [0, 1], [1.06, 1]);
   const imageY = useTransform(scrollYProgress, [0, 1], [-24, 28]);
+  const roomDepth = useTransform(scrollYProgress, [0, 0.5, 1], [1.08, 1.03, 1.01]);
+  const frameLeftX = useTransform(scrollYProgress, [0.05, 0.48], ["0%", "-78%"]);
+  const frameRightX = useTransform(scrollYProgress, [0.05, 0.48], ["0%", "78%"]);
+  const frameOpacity = useTransform(scrollYProgress, [0, 0.42, 0.72], [0.78, 0.42, 0]);
+  const copyLift = useTransform(scrollYProgress, [0.2, 0.7], [26, 0]);
+  const ctaOpacity = useTransform(scrollYProgress, [0.58, 0.82], [0, 1]);
 
   return (
     <section
@@ -106,10 +111,22 @@ export default function PrivateDining() {
             className="relative overflow-hidden rounded-[2.75rem] border border-white/10 bg-black/40 shadow-[0_60px_140px_-70px_rgba(201,162,91,0.45)] lg:col-span-8"
           >
             <div className="relative h-[560px] overflow-hidden md:h-[640px]">
+              <motion.div
+                aria-hidden="true"
+                style={reduce ? undefined : { x: frameLeftX, opacity: frameOpacity }}
+                className="pointer-events-none absolute inset-y-0 left-0 z-30 hidden w-[32%] bg-gradient-to-r from-black via-black/82 to-transparent md:block"
+              />
+
+              <motion.div
+                aria-hidden="true"
+                style={reduce ? undefined : { x: frameRightX, opacity: frameOpacity }}
+                className="pointer-events-none absolute inset-y-0 right-0 z-30 hidden w-[32%] bg-gradient-to-l from-black via-black/82 to-transparent md:block"
+              />
+
               <motion.img
                 src="/images/MaisonNoir/gallery/private-dining-room.webp"
                 alt="Private dining room at Maison Noir"
-                style={reduce ? undefined : { scale: imageScale, y: imageY }}
+                style={reduce ? undefined : { scale: roomDepth, y: imageY }}
                 className="absolute inset-0 h-full w-full object-cover opacity-90 will-change-transform"
               />
 
@@ -118,7 +135,10 @@ export default function PrivateDining() {
               <div className="absolute inset-0 shadow-[inset_0_0_160px_rgba(0,0,0,0.88)]" />
 
               <div className="absolute bottom-7 left-7 right-7 md:bottom-10 md:left-10 md:right-10">
-                <div className="max-w-xl rounded-[2rem] border border-white/10 bg-black/58 p-6 backdrop-blur-xl md:p-7">
+                <motion.div
+                  style={reduce ? undefined : { y: copyLift }}
+                  className="max-w-xl rounded-[2rem] border border-white/10 bg-black/58 p-6 backdrop-blur-xl md:p-7"
+                >
                   <p className="mb-4 text-[10px] uppercase tracking-[0.35em] text-[#C9A25B]">
                     The Velvet Room
                   </p>
@@ -127,7 +147,7 @@ export default function PrivateDining() {
                     Candlelight, cellar pairings, and a table set away from the
                     room.
                   </p>
-                </div>
+                </motion.div>
               </div>
             </div>
           </motion.div>
@@ -247,6 +267,7 @@ export default function PrivateDining() {
             whileInView={reduce ? {} : { opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.4 }}
             transition={{ duration: 0.7, delay: 0.2 }}
+            style={reduce ? undefined : { opacity: ctaOpacity }}
             className="inline-flex items-center gap-2 rounded-full bg-[#C9A25B] px-7 py-4 font-medium text-black transition hover:-translate-y-1 hover:bg-[#e0bd73]"
           >
             Request Private Dining

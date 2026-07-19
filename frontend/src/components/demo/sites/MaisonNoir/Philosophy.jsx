@@ -1,17 +1,46 @@
-import React from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import React, { useRef } from "react";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 
 export default function Philosophy() {
+  const sectionRef = useRef(null);
   const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  const textY = useTransform(scrollYProgress, [0, 0.45, 1], [56, 0, -18]);
+  const textOpacity = useTransform(scrollYProgress, [0, 0.28, 0.9], [0.35, 1, 1]);
+  const textFilter = useTransform(
+    scrollYProgress,
+    [0, 0.28, 0.85, 1],
+    ["blur(10px)", "blur(0px)", "blur(0px)", "blur(4px)"]
+  );
+  const imageY = useTransform(scrollYProgress, [0, 1], [42, -34]);
+  const imageScale = useTransform(scrollYProgress, [0, 0.6, 1], [1.05, 1.01, 1.03]);
+  const goldLineX = useTransform(scrollYProgress, [0.12, 0.72], ["-32%", "88%"]);
+  const goldLineOpacity = useTransform(scrollYProgress, [0.08, 0.28, 0.78], [0, 0.76, 0]);
 
   return (
     <section
       id="story"
+      ref={sectionRef}
       className="relative bg-[#050505] px-6 py-32 md:py-44 overflow-hidden border-t border-white/10"
     >
       <div className="absolute left-[-160px] top-1/3 w-[420px] h-[420px] rounded-full bg-[#4A1418]/20 blur-[120px]" />
       <div className="absolute right-[-160px] bottom-0 w-[420px] h-[420px] rounded-full bg-[#C9A25B]/10 blur-[140px]" />
+
+      <motion.div
+        aria-hidden="true"
+        style={reduce ? undefined : { x: goldLineX, opacity: goldLineOpacity }}
+        className="pointer-events-none absolute top-[52%] h-px w-[48vw] bg-gradient-to-r from-transparent via-[#C9A25B] to-transparent shadow-[0_0_38px_rgba(201,162,91,0.7)]"
+      />
 
       <div className="relative max-w-7xl mx-auto grid lg:grid-cols-12 gap-16 lg:gap-24 items-center">
         <motion.div
@@ -19,6 +48,7 @@ export default function Philosophy() {
           whileInView={reduce ? {} : { opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.35 }}
           transition={{ duration: 0.8 }}
+          style={reduce ? undefined : { y: textY, opacity: textOpacity, filter: textFilter }}
           className="lg:col-span-6"
         >
           <p className="text-[#C9A25B] tracking-[0.35em] uppercase text-xs mb-6">
@@ -60,6 +90,7 @@ export default function Philosophy() {
           whileInView={reduce ? {} : { opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.9, delay: 0.1 }}
+          style={reduce ? undefined : { y: imageY, scale: imageScale }}
           className="lg:col-span-6"
         >
           <div className="relative rounded-[2.5rem] overflow-hidden border border-white/10 bg-white/[0.03] shadow-[0_40px_120px_-50px_rgba(201,162,91,0.35)]">
