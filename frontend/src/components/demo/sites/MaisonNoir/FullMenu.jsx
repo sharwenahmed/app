@@ -1147,9 +1147,7 @@ export default function FullMenu({ onAddToCart = () => {} }) {
     Cocktails: menuItems.Cocktails[0],
   }));
 
-  const [showFixedBar, setShowFixedBar] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [cardOffsets, setCardOffsets] = useState({});
   const [dishPreview, setDishPreview] = useState({
     visible: false,
     x: 0,
@@ -1162,13 +1160,9 @@ export default function FullMenu({ onAddToCart = () => {} }) {
 
   const fullMenuRef = useRef(null);
   const heroVideoRef = useRef(null);
-  const inlineBarRef = useRef(null);
-  const endRef = useRef(null);
   const dishPreviewRafRef = useRef(null);
   const pendingDishPreviewRef = useRef(null);
   const sectionRefs = useRef({});
-  const menuGridRefs = useRef({});
-  const cardRefs = useRef({});
 
   const scrollToCategory = (category) => {
     setActive(category);
@@ -1316,123 +1310,34 @@ export default function FullMenu({ onAddToCart = () => {} }) {
   }, []);
 
   useEffect(() => {
-    let rafId = null;
+    if (typeof IntersectionObserver === "undefined") return undefined;
 
-    const updateStickyState = () => {
-      rafId = null;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const current = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0]
+          ?.target?.dataset?.category;
 
-      const inlineBar = inlineBarRef.current;
-      const end = endRef.current;
-
-      if (!inlineBar || !end) return;
-
-      const barRect = inlineBar.getBoundingClientRect();
-      const endRect = end.getBoundingClientRect();
-
-      const shouldShow = barRect.top <= 0 && endRect.top > window.innerHeight * 0.25;
-      setShowFixedBar((current) => (current === shouldShow ? current : shouldShow));
-
-      let current = "Starters";
-
-      categories.forEach((category) => {
-        const el = sectionRefs.current[category];
-        if (!el) return;
-
-        if (el.getBoundingClientRect().top <= 140) {
-          current = category;
+        if (current) {
+          setActive((previous) => (previous === current ? previous : current));
         }
-      });
-
-      setActive((previous) => (previous === current ? previous : current));
-
-      const fullMenu = fullMenuRef.current;
-      const fullMenuRect = fullMenu?.getBoundingClientRect();
-      const fullMenuInView =
-        fullMenuRect &&
-        fullMenuRect.bottom > 0 &&
-        fullMenuRect.top < window.innerHeight;
-
-      if (!fullMenuInView) {
-        setDishPreview((prev) =>
-          prev.visible
-            ? {
-                ...prev,
-                visible: false,
-              }
-            : prev
-        );
+      },
+      {
+        rootMargin: "-22% 0px -62% 0px",
+        threshold: [0, 0.18, 0.32],
       }
+    );
 
-      if (window.innerWidth >= 1024) {
-        const nextOffsets = {};
-        const topOffset = 96;
-
-        categories.forEach((category) => {
-          const grid = menuGridRefs.current[category];
-          const card = cardRefs.current[category];
-
-          if (!grid || !card) return;
-
-          const gridTop = grid.getBoundingClientRect().top + window.scrollY;
-          const gridHeight = grid.offsetHeight;
-          const cardHeight = card.offsetHeight;
-          const maxOffset = Math.max(gridHeight - cardHeight, 0);
-          const rawOffset = window.scrollY + topOffset - gridTop;
-
-          nextOffsets[category] = Math.min(Math.max(rawOffset, 0), maxOffset);
-        });
-
-        setCardOffsets((prev) => {
-          const isSame = categories.every(
-            (category) =>
-              Math.abs((prev[category] || 0) - (nextOffsets[category] || 0)) < 0.5
-          );
-
-          return isSame ? prev : nextOffsets;
-        });
-      } else {
-        setCardOffsets((prev) => (Object.keys(prev).length === 0 ? prev : {}));
-      }
-    };
-
-    const scheduleStickyState = () => {
-      if (rafId) return;
-      rafId = window.requestAnimationFrame(updateStickyState);
-    };
-
-    updateStickyState();
-
-    window.addEventListener("scroll", scheduleStickyState, { passive: true });
-    window.addEventListener("resize", scheduleStickyState);
+    categories.forEach((category) => {
+      const el = sectionRefs.current[category];
+      if (el) observer.observe(el);
+    });
 
     return () => {
-      if (rafId) {
-        window.cancelAnimationFrame(rafId);
-      }
-
-      window.removeEventListener("scroll", scheduleStickyState);
-      window.removeEventListener("resize", scheduleStickyState);
+      observer.disconnect();
     };
   }, []);
-
-
-  const fixedBar =
-    mounted && showFixedBar
-      ? createPortal(
-        <AnimatePresence>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.22 }}
-            className="fixed top-0 left-0 right-0 z-[99999]"
-          >
-            <CategoryBar active={active} onSelect={scrollToCategory} />
-          </motion.div>
-        </AnimatePresence>,
-        document.body
-      )
-      : null;
 
   const dishPreviewPortal =
     mounted
@@ -1532,7 +1437,6 @@ export default function FullMenu({ onAddToCart = () => {} }) {
       ref={fullMenuRef}
       className="relative bg-[#050404] px-6 py-24 md:py-36 overflow-visible border-t border-white/10"
     >
-      {fixedBar}
       {dishPreviewPortal}
 
       <SectionGlow />
@@ -1588,7 +1492,7 @@ export default function FullMenu({ onAddToCart = () => {} }) {
         </div>
       </div>
 
-      <div ref={inlineBarRef} className="relative z-20 -mx-6 border-t border-white/10 bg-[#050404]/70 backdrop-blur-xl">
+      <div className="sticky top-0 z-[99999] -mx-6 border-t border-white/10 bg-[#050404]/70 backdrop-blur-xl">
         <CategoryBar active={active} onSelect={scrollToCategory} />
       </div>
 
@@ -1604,7 +1508,6 @@ export default function FullMenu({ onAddToCart = () => {} }) {
             const selectedName = selected?.[0] || featuredImages[category].title;
             const selectedPrice = selected?.[1] || "";
             const selectedDesc = selected?.[2] || featuredImages[category].subtitle;
-            const cardOffset = cardOffsets[category] || 0;
             const heroStage = categoryHeroStage[category] || categoryHeroStage.Starters;
             return (
               <section
@@ -1633,12 +1536,7 @@ export default function FullMenu({ onAddToCart = () => {} }) {
                     />
                   </div>
 
-                  <div
-                    ref={(el) => {
-                      menuGridRefs.current[category] = el;
-                    }}
-                    className="grid lg:grid-cols-12 gap-12 items-start"
-                  >
+                  <div className="grid lg:grid-cols-12 gap-12 items-start">
                     <div className="lg:col-span-7 divide-y divide-white/10">
                       {menuItems[category].map((item) => {
                         const [name, price, desc] = item;
@@ -1709,13 +1607,7 @@ export default function FullMenu({ onAddToCart = () => {} }) {
                     </div>
 
                     <div className="hidden lg:block lg:col-span-5 relative">
-                      <div
-                        ref={(el) => {
-                          cardRefs.current[category] = el;
-                        }}
-                        style={{ transform: `translateY(${cardOffset}px)` }}
-                        className="rounded-[2rem] overflow-hidden border border-white/10 bg-black backdrop-blur-xl shadow-[0_50px_120px_-55px_rgba(201,162,91,0.45)] transition-transform duration-150 ease-out will-change-transform"
-                      >
+                      <div className="sticky top-24 rounded-[2rem] overflow-hidden border border-white/10 bg-black backdrop-blur-xl shadow-[0_50px_120px_-55px_rgba(201,162,91,0.45)]">
                         <AnimatePresence mode="wait">
                           <motion.div
                             key={`${category}-${selectedName}-image`}
@@ -1900,7 +1792,6 @@ export default function FullMenu({ onAddToCart = () => {} }) {
           })}
         </div>
       </div>
-      <div ref={endRef} className="h-px" />
     </section>
   );
 }

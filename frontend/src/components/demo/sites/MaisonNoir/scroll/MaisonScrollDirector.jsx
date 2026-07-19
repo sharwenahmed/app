@@ -8,8 +8,6 @@ import React, {
   useState,
 } from "react";
 import { useReducedMotion } from "framer-motion";
-import gsap from "gsap";
-import Lenis from "lenis";
 
 import {
   getScrollTargetY,
@@ -50,64 +48,16 @@ export function useMaisonScroll() {
   return useContext(MaisonScrollContext) || fallbackDirector;
 }
 
-function getShouldSmoothScroll(reduceMotion) {
-  if (typeof window === "undefined" || reduceMotion) return false;
-
-  return window.matchMedia(maisonScrollSettings.desktopQuery).matches;
-}
-
-function shouldPreventLenis(target) {
-  if (!target || !target.closest) return false;
-
-  return Boolean(
-    target.closest(
-      [
-        "[data-lenis-prevent]",
-        "[data-maison-scroll-prevent]",
-        "[role='dialog']",
-        "input",
-        "textarea",
-        "select",
-      ].join(",")
-    )
-  );
-}
-
 export default function MaisonScrollDirector({
   children,
   scenes = [],
 }) {
   const reduceMotion = useReducedMotion();
-  const lenisRef = useRef(null);
   const lockReasonsRef = useRef(new Set());
   const scrollStateRef = useRef(defaultScrollState);
-  const lastNativeScrollRef = useRef({
-    time: 0,
-    y: 0,
-  });
-  const nativeRafRef = useRef(null);
 
   const [activeScene, setActiveSceneState] = useState(scenes[0] || null);
   const [isScrollLocked, setIsScrollLocked] = useState(false);
-  const [smoothEnabled, setSmoothEnabled] = useState(false);
-
-  const publishScrollState = useCallback((nextState) => {
-    scrollStateRef.current = nextState;
-
-    if (typeof document !== "undefined") {
-      const root = document.documentElement;
-      root.style.setProperty("--maison-scroll-progress", String(nextState.progress));
-      root.style.setProperty("--maison-scroll-direction", String(nextState.direction));
-      root.style.setProperty(
-        "--maison-scroll-velocity",
-        String(Math.min(Math.abs(nextState.velocity) / 90, 1))
-      );
-      root.style.setProperty(
-        "--mn-scroll-velocity",
-        String(Math.min(Math.abs(nextState.velocity) / 90, 1))
-      );
-    }
-  }, []);
 
   const setActiveScene = useCallback((scene) => {
     if (!scene) return;
@@ -138,16 +88,17 @@ export default function MaisonScrollDirector({
 
   const applyLockState = useCallback(() => {
     const hasLocks = lockReasonsRef.current.size > 0;
-    const lenis = lenisRef.current;
-
     setIsScrollLocked(hasLocks);
 
-    if (!lenis) return;
+    if (typeof document !== "undefined") {
+      const root = document.documentElement;
+      root.classList.toggle("maison-scroll-locked", hasLocks);
 
-    if (hasLocks) {
-      lenis.stop();
-    } else {
-      lenis.start();
+      if (hasLocks) {
+        root.dataset.mnScrollLocks = Array.from(lockReasonsRef.current).join(" ");
+      } else {
+        delete root.dataset.mnScrollLocks;
+      }
     }
   }, []);
 
@@ -179,129 +130,23 @@ export default function MaisonScrollDirector({
       const offset = options.offset ?? maisonScrollSettings.anchorOffset;
       const y = getScrollTargetY(target, offset);
       const immediate = options.behavior === "auto" || reduceMotion;
-      const lenis = lenisRef.current;
-
-      if (lenis && smoothEnabled) {
-        lenis.scrollTo(y, {
-          immediate,
-          force: true,
-          duration: options.duration || maisonScrollSettings.smoothScroll.duration,
-          easing: (value) => Math.min(1, 1.001 - Math.pow(2, -10 * value)),
-        });
-        return;
-      }
 
       window.scrollTo({
         top: y,
         behavior: immediate ? "auto" : options.behavior || "smooth",
       });
     },
-    [reduceMotion, smoothEnabled]
+    [reduceMotion]
   );
 
   useEffect(() => {
-    if (typeof window === "undefined") return undefined;
-
-    const syncMode = () => {
-      setSmoothEnabled(getShouldSmoothScroll(reduceMotion));
-    };
-
-    syncMode();
-    window.addEventListener("resize", syncMode);
-
     return () => {
-      window.removeEventListener("resize", syncMode);
-    };
-  }, [reduceMotion]);
-
-  useEffect(() => {
-    if (typeof window === "undefined" || !smoothEnabled) {
-      return undefined;
-    }
-
-    const lenis = new Lenis({
-      lerp: maisonScrollSettings.smoothScroll.lerp,
-      duration: maisonScrollSettings.smoothScroll.duration,
-      smoothWheel: true,
-      syncTouch: false,
-      wheelMultiplier: maisonScrollSettings.smoothScroll.wheelMultiplier,
-      touchMultiplier: maisonScrollSettings.smoothScroll.touchMultiplier,
-      prevent: shouldPreventLenis,
-    });
-
-    lenisRef.current = lenis;
-
-    const onLenisScroll = (instance) => {
-      publishScrollState({
-        direction: instance.direction || 0,
-        progress: instance.progress || 0,
-        velocity: instance.velocity || 0,
-      });
-    };
-
-    const raf = (time) => {
-      lenis.raf(time * 1000);
-    };
-
-    lenis.on("scroll", onLenisScroll);
-    gsap.ticker.add(raf);
-    gsap.ticker.lagSmoothing(0);
-    applyLockState();
-
-    return () => {
-      gsap.ticker.remove(raf);
-      lenis.off("scroll", onLenisScroll);
-      lenis.destroy();
-      lenisRef.current = null;
-      setIsScrollLocked(false);
-    };
-  }, [applyLockState, publishScrollState, smoothEnabled]);
-
-  useEffect(() => {
-    if (typeof window === "undefined" || smoothEnabled) {
-      return undefined;
-    }
-
-    const updateNativeState = () => {
-      nativeRafRef.current = null;
-
-      const now = performance.now();
-      const y = window.scrollY;
-      const elapsed = Math.max(now - lastNativeScrollRef.current.time, 16);
-      const distance = y - lastNativeScrollRef.current.y;
-      const maxScroll =
-        document.documentElement.scrollHeight - window.innerHeight || 1;
-
-      lastNativeScrollRef.current = {
-        time: now,
-        y,
-      };
-
-      publishScrollState({
-        direction: Math.sign(distance),
-        progress: Math.min(Math.max(y / maxScroll, 0), 1),
-        velocity: distance / (elapsed / 16.67),
-      });
-    };
-
-    const scheduleNativeState = () => {
-      if (nativeRafRef.current) return;
-      nativeRafRef.current = window.requestAnimationFrame(updateNativeState);
-    };
-
-    updateNativeState();
-    window.addEventListener("scroll", scheduleNativeState, { passive: true });
-    window.addEventListener("resize", scheduleNativeState);
-
-    return () => {
-      if (nativeRafRef.current) {
-        window.cancelAnimationFrame(nativeRafRef.current);
+      if (typeof document !== "undefined") {
+        document.documentElement.classList.remove("maison-scroll-locked");
+        delete document.documentElement.dataset.mnScrollLocks;
       }
-
-      window.removeEventListener("scroll", scheduleNativeState);
-      window.removeEventListener("resize", scheduleNativeState);
     };
-  }, [publishScrollState, smoothEnabled]);
+  }, []);
 
   useEffect(() => {
     if (scenes[0]) {
@@ -314,7 +159,7 @@ export default function MaisonScrollDirector({
       activeScene,
       activeSceneId: activeScene?.id || null,
       isScrollLocked,
-      lenis: lenisRef.current,
+      lenis: null,
       reducedMotion: Boolean(reduceMotion),
       scrollState: scrollStateRef.current,
       setActiveScene,
@@ -339,26 +184,19 @@ export default function MaisonScrollDirector({
     <MaisonScrollContext.Provider value={value}>
       <style>
         {`
-          html.lenis {
-            height: auto;
-          }
-
           html,
           body {
             overflow-x: clip;
           }
 
-          .lenis.lenis-smooth {
-            scroll-behavior: auto !important;
-          }
-
-          .lenis.lenis-smooth [data-lenis-prevent],
-          .lenis.lenis-smooth [data-maison-scroll-prevent],
-          .lenis.lenis-smooth [role='dialog'] {
+          [data-lenis-prevent],
+          [data-maison-scroll-prevent],
+          [role='dialog'] {
             overscroll-behavior: contain;
           }
 
-          .lenis.lenis-stopped {
+          html.maison-scroll-locked,
+          html.maison-scroll-locked body {
             overflow: hidden;
           }
         `}

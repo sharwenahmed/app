@@ -7,13 +7,6 @@ export const MAISON_SCROLL_LOCKS = {
 };
 
 export const maisonScrollSettings = {
-  desktopQuery: "(min-width: 1280px)",
-  smoothScroll: {
-    lerp: 0.14,
-    duration: 0.72,
-    wheelMultiplier: 1.05,
-    touchMultiplier: 1.0,
-  },
   anchorOffset: 76,
 };
 

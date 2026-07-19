@@ -389,8 +389,8 @@ export function FoodFilmRunway() {
 
       const focusStart = 0.2;
       const focusEnd = 0.96;
-      const lockDistance = Math.max(window.innerHeight * 4.8, foodFilms.length * 360);
-      const wheelPace = 2.05;
+      const lockDistance = Math.max(window.innerHeight * 3.4, foodFilms.length * 240);
+      const wheelPace = 2.85;
       const itemProgressStep =
         (focusEnd - focusStart) / Math.max(foodFilms.length - 1, 1);
       const preloadedImages = [];
@@ -588,7 +588,7 @@ export function FoodFilmRunway() {
           return;
         }
 
-        renderedProgress += distance * 0.32;
+        renderedProgress += distance * 0.48;
         renderScene(renderedProgress);
         renderFrame = window.requestAnimationFrame(animateRender);
       };
