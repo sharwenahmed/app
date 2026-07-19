@@ -1,11 +1,13 @@
-import React, { useRef } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import {
   motion,
   useReducedMotion,
-  useScroll,
-  useTransform,
 } from "framer-motion";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowUpRight } from "lucide-react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const galleryMoments = [
   {
@@ -59,50 +61,118 @@ const galleryMoments = [
 ];
 
 function RevealImage({ src, alt, label, title, className = "", index = 0 }) {
-  const ref = useRef(null);
+  const frameRef = useRef(null);
+  const imageRef = useRef(null);
   const reduce = useReducedMotion();
 
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
+  useLayoutEffect(() => {
+    const frame = frameRef.current;
+    const image = imageRef.current;
 
-  const scale = useTransform(scrollYProgress, [0, 1], [1.12, 1]);
-  const y = useTransform(scrollYProgress, [0, 1], [48, -32]);
-  const figureX = useTransform(
-    scrollYProgress,
-    [0, 0.5, 1],
-    [index % 2 === 0 ? -26 : 26, 0, index % 2 === 0 ? 12 : -12]
-  );
-  const captionY = useTransform(scrollYProgress, [0.2, 0.64], [22, 0]);
+    if (!frame || !image) {
+      return undefined;
+    }
+
+    const direction = index % 2 === 0 ? -1 : 1;
+    const media = gsap.matchMedia();
+    const context = gsap.context(() => {
+      if (reduce) {
+        gsap.set(frame, {
+          autoAlpha: 1,
+          x: 0,
+          scale: 1,
+          rotation: 0,
+          clearProps: "willChange",
+        });
+        gsap.set(image, { y: 0, scale: 1, clearProps: "willChange,filter" });
+        return;
+      }
+
+      media.add(
+        {
+          isMobile: "(max-width: 767px)",
+          isDesktop: "(min-width: 768px)",
+        },
+        ({ conditions }) => {
+          const isMobile = conditions?.isMobile;
+          const enterX = direction * (isMobile ? 56 : 140);
+          const enterScale = isMobile ? 0.985 : 0.97;
+          const enterRotate = isMobile ? 0 : direction * 1.5;
+
+          gsap.set(frame, {
+            autoAlpha: 0,
+            x: enterX,
+            scale: enterScale,
+            rotation: enterRotate,
+            transformOrigin: "center center",
+            willChange: "transform, opacity",
+          });
+
+          gsap.to(frame, {
+            autoAlpha: 1,
+            x: 0,
+            scale: 1,
+            rotation: 0,
+            duration: isMobile ? 0.8 : 1.12,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: frame,
+              start: "top 82%",
+              toggleActions: "play none none none",
+              once: true,
+            },
+            onComplete: () => {
+              gsap.set(frame, { clearProps: "willChange" });
+            },
+          });
+
+          gsap.set(image, {
+            y: isMobile ? 0 : 14,
+            scale: 1,
+            transformOrigin: "center center",
+          });
+
+          if (!isMobile) {
+            gsap.to(image, {
+              y: -14,
+              ease: "none",
+              scrollTrigger: {
+                trigger: frame,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 0.45,
+              },
+            });
+          }
+        }
+      );
+    }, frame);
+
+    return () => {
+      media.revert();
+      context.revert();
+    };
+  }, [index, reduce]);
 
   return (
-    <motion.figure
-      ref={ref}
-      initial={reduce ? false : { opacity: 0, y: 44, filter: "blur(10px)" }}
-      whileInView={reduce ? {} : { opacity: 1, y: 0, filter: "blur(0px)" }}
-      viewport={{ once: true, amount: 0.25 }}
-      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-      style={reduce ? undefined : { x: figureX }}
+    <figure
+      ref={frameRef}
       className={`group relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/[0.03] shadow-[0_45px_120px_-80px_rgba(201,162,91,0.55)] ${className}`}
     >
-      <motion.img
+      <img
+        ref={imageRef}
         src={src}
         alt={alt}
         loading="lazy"
         decoding="async"
-        style={reduce ? undefined : { scale, y }}
-        className="h-full w-full object-cover opacity-90 transition duration-700 group-hover:opacity-100"
+        className="h-full w-full object-cover opacity-90 transition-[transform,filter,opacity] duration-300 ease-out md:group-hover:scale-[1.02] md:group-hover:brightness-[1.06] md:group-hover:opacity-100"
       />
 
       <div className="absolute inset-0 bg-gradient-to-t from-black/86 via-black/18 to-black/20" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_55%,transparent,rgba(0,0,0,0.42)_78%)]" />
       <div className="pointer-events-none absolute inset-4 rounded-[2rem] border border-white/10 opacity-0 transition duration-700 group-hover:opacity-100" />
 
-      <motion.figcaption
-        style={reduce ? undefined : { y: captionY }}
-        className="absolute bottom-6 left-6 right-6 md:bottom-8 md:left-8 md:right-8"
-      >
+      <figcaption className="absolute bottom-6 left-6 right-6 md:bottom-8 md:left-8 md:right-8">
         <div className="mb-4 flex items-center justify-between gap-4">
           <span className="text-xs uppercase tracking-[0.35em] text-[#C9A25B]">
             {label}
@@ -116,8 +186,8 @@ function RevealImage({ src, alt, label, title, className = "", index = 0 }) {
         <p className="max-w-2xl font-serif text-3xl leading-tight text-white md:text-5xl">
           {title}
         </p>
-      </motion.figcaption>
-    </motion.figure>
+      </figcaption>
+    </figure>
   );
 }
 
@@ -158,19 +228,9 @@ export default function Gallery() {
         </motion.div>
 
         <div className="space-y-8 md:space-y-10">
-          <RevealImage {...galleryMoments[0]} index={0} />
-
-          <div className="grid gap-8 md:gap-10 lg:grid-cols-2">
-            <RevealImage {...galleryMoments[1]} index={1} />
-            <RevealImage {...galleryMoments[2]} index={2} />
-          </div>
-
-          <RevealImage {...galleryMoments[3]} index={3} />
-
-          <div className="grid gap-8 md:gap-10 lg:grid-cols-2">
-            <RevealImage {...galleryMoments[4]} index={4} />
-            <RevealImage {...galleryMoments[5]} index={5} />
-          </div>
+          {galleryMoments.map((moment, index) => (
+            <RevealImage key={moment.src} {...moment} index={index} />
+          ))}
         </div>
 
         <div className="mt-12 flex flex-col items-start justify-between gap-6 border-t border-white/10 pt-8 md:flex-row md:items-center">
