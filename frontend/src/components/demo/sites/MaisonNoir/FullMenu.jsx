@@ -462,9 +462,6 @@ function CategoryHeroStage({
   category,
   stage,
   image,
-  heroPointer,
-  onPointerMove,
-  onPointerLeave,
 }) {
   const stageRef = useRef(null);
 
@@ -522,8 +519,6 @@ function CategoryHeroStage({
     <motion.div
       ref={stageRef}
       data-course-hero
-      onMouseMove={(event) => onPointerMove(category, event)}
-      onMouseLeave={onPointerLeave}
       initial={{ opacity: 0, y: 90, scale: 0.965 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, amount: 0.34 }}
@@ -536,13 +531,6 @@ function CategoryHeroStage({
       <div
         style={{ background: atmosphere[category] || atmosphere.Starters }}
         className="pointer-events-none absolute inset-0 z-0 opacity-90"
-      />
-
-      <div
-        style={{
-          background: `radial-gradient(circle at ${heroPointer.x}% ${heroPointer.y}%, rgba(201,162,91,0.26), transparent 34%)`,
-        }}
-        className="pointer-events-none absolute inset-0 z-20 opacity-0 mix-blend-screen transition-opacity duration-500 group-hover:opacity-100"
       />
 
       <motion.div
@@ -1162,7 +1150,6 @@ export default function FullMenu({ onAddToCart = () => {} }) {
   const [showFixedBar, setShowFixedBar] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [cardOffsets, setCardOffsets] = useState({});
-  const [heroPointers, setHeroPointers] = useState({});
   const [dishPreview, setDishPreview] = useState({
     visible: false,
     x: 0,
@@ -1174,8 +1161,11 @@ export default function FullMenu({ onAddToCart = () => {} }) {
 
 
   const fullMenuRef = useRef(null);
+  const heroVideoRef = useRef(null);
   const inlineBarRef = useRef(null);
   const endRef = useRef(null);
+  const dishPreviewRafRef = useRef(null);
+  const pendingDishPreviewRef = useRef(null);
   const sectionRefs = useRef({});
   const menuGridRefs = useRef({});
   const cardRefs = useRef({});
@@ -1217,13 +1207,44 @@ export default function FullMenu({ onAddToCart = () => {} }) {
       y = 18;
     }
 
-    setDishPreview({
+    pendingDishPreviewRef.current = {
       visible: true,
       x,
       y,
       category,
       item,
+    };
+
+    if (dishPreviewRafRef.current) return;
+
+    dishPreviewRafRef.current = window.requestAnimationFrame(() => {
+      dishPreviewRafRef.current = null;
+
+      const nextPreview = pendingDishPreviewRef.current;
+      if (!nextPreview) return;
+
+      setDishPreview((prev) => {
+        const isSameItem =
+          prev.category === nextPreview.category &&
+          prev.item?.[0] === nextPreview.item?.[0];
+        const isSamePosition =
+          Math.abs(prev.x - nextPreview.x) < 0.5 &&
+          Math.abs(prev.y - nextPreview.y) < 0.5;
+
+        return prev.visible && isSameItem && isSamePosition ? prev : nextPreview;
+      });
     });
+  };
+
+  const hideDishPreview = () => {
+    pendingDishPreviewRef.current = null;
+
+    if (dishPreviewRafRef.current) {
+      window.cancelAnimationFrame(dishPreviewRafRef.current);
+      dishPreviewRafRef.current = null;
+    }
+
+    setDishPreview((prev) => (prev.visible ? { ...prev, visible: false } : prev));
   };
 
 
@@ -1255,23 +1276,51 @@ export default function FullMenu({ onAddToCart = () => {} }) {
     }, 950);
   };
 
-  const handleHeroPointerMove = (category, event) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-
-    const x = ((event.clientX - rect.left) / rect.width) * 100;
-    const y = ((event.clientY - rect.top) / rect.height) * 100;
-
-    setHeroPointers((prev) => ({
-      ...prev,
-      [category]: { x, y },
-    }));
-  };
-
   useEffect(() => {
     setMounted(true);
   }, []);
+
   useEffect(() => {
+    const video = heroVideoRef.current;
+
+    if (!video || typeof IntersectionObserver === "undefined") return undefined;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play?.().catch(() => {});
+          return;
+        }
+
+        video.pause?.();
+      },
+      {
+        threshold: 0.08,
+      }
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.disconnect();
+      video.pause?.();
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (dishPreviewRafRef.current) {
+        window.cancelAnimationFrame(dishPreviewRafRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    let rafId = null;
+
     const updateStickyState = () => {
+      rafId = null;
+
       const inlineBar = inlineBarRef.current;
       const end = endRef.current;
 
@@ -1281,7 +1330,7 @@ export default function FullMenu({ onAddToCart = () => {} }) {
       const endRect = end.getBoundingClientRect();
 
       const shouldShow = barRect.top <= 0 && endRect.top > window.innerHeight * 0.25;
-      setShowFixedBar(shouldShow);
+      setShowFixedBar((current) => (current === shouldShow ? current : shouldShow));
 
       let current = "Starters";
 
@@ -1294,7 +1343,7 @@ export default function FullMenu({ onAddToCart = () => {} }) {
         }
       });
 
-      setActive(current);
+      setActive((previous) => (previous === current ? previous : current));
 
       const fullMenu = fullMenuRef.current;
       const fullMenuRect = fullMenu?.getBoundingClientRect();
@@ -1334,24 +1383,35 @@ export default function FullMenu({ onAddToCart = () => {} }) {
         });
 
         setCardOffsets((prev) => {
-          const prevString = JSON.stringify(prev);
-          const nextString = JSON.stringify(nextOffsets);
+          const isSame = categories.every(
+            (category) =>
+              Math.abs((prev[category] || 0) - (nextOffsets[category] || 0)) < 0.5
+          );
 
-          return prevString === nextString ? prev : nextOffsets;
+          return isSame ? prev : nextOffsets;
         });
       } else {
-        setCardOffsets({});
+        setCardOffsets((prev) => (Object.keys(prev).length === 0 ? prev : {}));
       }
+    };
+
+    const scheduleStickyState = () => {
+      if (rafId) return;
+      rafId = window.requestAnimationFrame(updateStickyState);
     };
 
     updateStickyState();
 
-    document.addEventListener("scroll", updateStickyState, true);
-    window.addEventListener("resize", updateStickyState);
+    window.addEventListener("scroll", scheduleStickyState, { passive: true });
+    window.addEventListener("resize", scheduleStickyState);
 
     return () => {
-      document.removeEventListener("scroll", updateStickyState, true);
-      window.removeEventListener("resize", updateStickyState);
+      if (rafId) {
+        window.cancelAnimationFrame(rafId);
+      }
+
+      window.removeEventListener("scroll", scheduleStickyState);
+      window.removeEventListener("resize", scheduleStickyState);
     };
   }, []);
 
@@ -1479,6 +1539,7 @@ export default function FullMenu({ onAddToCart = () => {} }) {
 
       <div className="pointer-events-none absolute left-0 right-0 top-0 z-0 h-[54rem] overflow-hidden border-b border-white/10">
         <video
+          ref={heroVideoRef}
           className="absolute inset-0 h-full w-full object-cover object-center opacity-75 saturate-[1.08] contrast-[1.08] brightness-[1.18]"
           src="/images/MaisonNoir/videos/hero/chef-grilling-steak.mp4"
           poster="/images/MaisonNoir/branding/hero.webp"
@@ -1545,7 +1606,6 @@ export default function FullMenu({ onAddToCart = () => {} }) {
             const selectedDesc = selected?.[2] || featuredImages[category].subtitle;
             const cardOffset = cardOffsets[category] || 0;
             const heroStage = categoryHeroStage[category] || categoryHeroStage.Starters;
-            const heroPointer = heroPointers[category] || { x: 50, y: 50 };
             return (
               <section
                 key={category}
@@ -1570,14 +1630,6 @@ export default function FullMenu({ onAddToCart = () => {} }) {
                       category={category}
                       stage={heroStage}
                       image={featuredImages[category]}
-                      heroPointer={heroPointer}
-                      onPointerMove={handleHeroPointerMove}
-                      onPointerLeave={() => {
-                        setHeroPointers((prev) => ({
-                          ...prev,
-                          [category]: { x: 50, y: 50 },
-                        }));
-                      }}
                     />
                   </div>
 
@@ -1597,12 +1649,7 @@ export default function FullMenu({ onAddToCart = () => {} }) {
                             key={name}
                             onMouseEnter={(event) => handleDishPreviewMove(category, item, event)}
                             onMouseMove={(event) => handleDishPreviewMove(category, item, event)}
-                            onMouseLeave={() => {
-                              setDishPreview((prev) => ({
-                                ...prev,
-                                visible: false,
-                              }));
-                            }}
+                            onMouseLeave={hideDishPreview}
                             className={`relative w-full py-6 group overflow-hidden transition-all duration-300 ease-out ${isSelected
                               ? "rounded-2xl bg-white/[0.04] px-5 border border-[#C9A25B]/35 shadow-[0_20px_70px_-55px_rgba(201,162,91,0.65)]"
                               : "border-b border-white/10 hover:px-4 hover:bg-white/[0.018]"

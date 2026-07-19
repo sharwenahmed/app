@@ -60,6 +60,15 @@ const galleryMoments = [
   },
 ];
 
+const galleryChapterLights = [
+  { lightX: 42, lightY: 52, amber: 0.16, burgundy: 0.18, fire: 0.04 },
+  { lightX: 58, lightY: 58, amber: 0.2, burgundy: 0.12, fire: 0.13 },
+  { lightX: 50, lightY: 44, amber: 0.17, burgundy: 0.1, fire: 0.08 },
+  { lightX: 36, lightY: 48, amber: 0.14, burgundy: 0.24, fire: 0.03 },
+  { lightX: 62, lightY: 46, amber: 0.19, burgundy: 0.16, fire: 0.05 },
+  { lightX: 54, lightY: 60, amber: 0.16, burgundy: 0.12, fire: 0.02 },
+];
+
 function RevealImage({ src, alt, label, title, className = "", index = 0 }) {
   const frameRef = useRef(null);
   const imageRef = useRef(null);
@@ -141,6 +150,40 @@ function RevealImage({ src, alt, label, title, className = "", index = 0 }) {
                 start: "top bottom",
                 end: "bottom top",
                 scrub: 0.45,
+              },
+            });
+
+            ScrollTrigger.create({
+              trigger: frame,
+              start: "top 58%",
+              end: "bottom 42%",
+              onEnter: () => {
+                const light = galleryChapterLights[index] || galleryChapterLights[0];
+
+                gsap.to(document.documentElement, {
+                  "--mn-light-x": light.lightX,
+                  "--mn-light-y": light.lightY,
+                  "--mn-amber": light.amber,
+                  "--mn-burgundy": light.burgundy,
+                  "--mn-fire": light.fire,
+                  duration: 0.8,
+                  ease: "power2.out",
+                  overwrite: "auto",
+                });
+              },
+              onEnterBack: () => {
+                const light = galleryChapterLights[index] || galleryChapterLights[0];
+
+                gsap.to(document.documentElement, {
+                  "--mn-light-x": light.lightX,
+                  "--mn-light-y": light.lightY,
+                  "--mn-amber": light.amber,
+                  "--mn-burgundy": light.burgundy,
+                  "--mn-fire": light.fire,
+                  duration: 0.8,
+                  ease: "power2.out",
+                  overwrite: "auto",
+                });
               },
             });
           }

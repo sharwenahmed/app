@@ -66,17 +66,10 @@ function LetterReveal({
           initial={{
             opacity: 0,
             y: 36,
-            filter: "blur(10px)",
           }}
           animate={{
             opacity: [0, 1, 1, 0],
             y: [36, 0, 0, -12],
-            filter: [
-              "blur(10px)",
-              "blur(0px)",
-              "blur(0px)",
-              "blur(8px)",
-            ],
           }}
           transition={{
             duration: cycleDuration,
@@ -775,17 +768,17 @@ export default function SignatureMenu() {
                         initial={
                           reduce
                             ? false
-                            : { opacity: 0, y: 24, filter: "blur(8px)" }
+                            : { opacity: 0, y: 24 }
                         }
                         animate={
                           reduce
                             ? {}
-                            : { opacity: 1, y: 0, filter: "blur(0px)" }
+                            : { opacity: 1, y: 0 }
                         }
                         exit={
                           reduce
                             ? {}
-                            : { opacity: 0, y: -16, filter: "blur(8px)" }
+                            : { opacity: 0, y: -16 }
                         }
                         transition={{
                           duration: 0.75,

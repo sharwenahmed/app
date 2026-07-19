@@ -249,12 +249,6 @@ export default function SignatureToFullMenuTransition() {
     [0.88, 1, 1.08, 1.18]
   );
 
-  const roomBlur = useTransform(
-    cinematicProgress,
-    [0.12, 0.42, 0.72, 1],
-    ["blur(18px)", "blur(3px)", "blur(8px)", "blur(18px)"]
-  );
-
   const topCurtainY = useTransform(
     cinematicProgress,
     [0.04, 0.24, 0.64, 0.84, 1],
@@ -374,7 +368,6 @@ export default function SignatureToFullMenuTransition() {
               : {
                   opacity: roomOpacity,
                   scale: roomScale,
-                  filter: roomBlur,
                   backgroundImage: "url('/images/MaisonNoir/branding/hero.webp')",
                 }
           }

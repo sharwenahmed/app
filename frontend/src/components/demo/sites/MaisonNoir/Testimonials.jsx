@@ -1,5 +1,10 @@
-import React from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import { Quote, Star } from "lucide-react";
 
 const testimonials = [
@@ -186,12 +191,46 @@ function TestimonialCard({ testimonial, depth = 0 }) {
 }
 
 export default function Testimonials() {
+  const sectionRef = useRef(null);
   const reduce = useReducedMotion();
+  const [inView, setInView] = useState(false);
   const marqueeItems = [...testimonials, ...testimonials];
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+  const edgeLightX = useTransform(scrollYProgress, [0, 1], ["-18%", "58%"]);
+  const edgeLightOpacity = useTransform(scrollYProgress, [0.08, 0.46, 0.86], [0, 0.42, 0]);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+
+    if (!section || typeof IntersectionObserver === "undefined") {
+      setInView(true);
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setInView(entry.isIntersecting);
+      },
+      {
+        rootMargin: "20% 0px 20% 0px",
+        threshold: 0.1,
+      }
+    );
+
+    observer.observe(section);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   return (
     <section
       id="testimonials"
+      ref={sectionRef}
       className="relative overflow-hidden border-t border-white/10 bg-[#050505] py-28 md:py-40"
     >
       <style>
@@ -223,6 +262,11 @@ export default function Testimonials() {
       <div className="pointer-events-none absolute left-[-180px] top-24 h-[520px] w-[520px] rounded-full bg-[#4A1418]/22 blur-[150px]" />
       <div className="pointer-events-none absolute right-[-180px] bottom-10 h-[520px] w-[520px] rounded-full bg-[#C9A25B]/8 blur-[150px]" />
       <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_180px_rgba(0,0,0,0.9)]" />
+      <motion.div
+        aria-hidden="true"
+        style={reduce ? undefined : { x: edgeLightX, opacity: edgeLightOpacity }}
+        className="pointer-events-none absolute top-[46%] h-px w-[54vw] bg-gradient-to-r from-transparent via-[#C9A25B]/80 to-transparent shadow-[0_0_42px_rgba(201,162,91,0.62)]"
+      />
 
       <div className="relative mx-auto mb-16 max-w-7xl px-6">
         <motion.div
@@ -270,7 +314,10 @@ export default function Testimonials() {
 
           <div
             className="maison-noir-testimonials-track flex w-max will-change-transform"
-            style={{ "--duration": "95s" }}
+            style={{
+              "--duration": "95s",
+              animationPlayState: inView ? "running" : "paused",
+            }}
           >
             {marqueeItems.map((testimonial, index) => (
               <TestimonialCard

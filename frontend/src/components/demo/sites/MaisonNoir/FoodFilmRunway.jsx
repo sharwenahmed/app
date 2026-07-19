@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useRef } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import gsap from "gsap";
 import { menuItems } from "./FullMenu";
@@ -94,12 +94,7 @@ const foodFilms = menuEntries.map((item, index) => ({
   eyebrow: item.category,
 }));
 
-const lateMenuStartIndex = foodFilms.findIndex(
-  (film) => film.category === "Desserts"
-);
-
-const shouldPrioritizeFilm = (index) =>
-  index < 8 || (lateMenuStartIndex !== -1 && index >= lateMenuStartIndex);
+const shouldPrioritizeFilm = (index) => index < 6;
 
 const emberParticles = Array.from({ length: 28 }, (_, index) => ({
   id: index,
@@ -109,7 +104,7 @@ const emberParticles = Array.from({ length: 28 }, (_, index) => ({
   size: index % 5 === 0 ? "h-1.5 w-1.5" : "h-1 w-1",
 }));
 
-function DesktopVortexCard({ film, index, setCardRef }) {
+function DesktopVortexCard({ film, index, setCardRef, effectsActive }) {
   const showShine = index % 4 === 0;
 
   return (
@@ -125,19 +120,19 @@ function DesktopVortexCard({ film, index, setCardRef }) {
         transform: `translate3d(calc(-50% + ${film.x}px), calc(-50% + ${film.y}px), ${film.z}px) rotateX(${film.rotateX}deg) rotateY(${film.rotateY}deg) rotateZ(${film.rotateZ}deg) scale(${film.scale})`,
       }}
     >
-      <div className="group relative h-full w-full overflow-hidden rounded-[6px] border border-[#C9A25B]/30 bg-[#090604]/75 shadow-[0_48px_140px_-78px_rgba(201,162,91,0.95),0_24px_80px_-68px_rgba(0,0,0,0.95)] ring-1 ring-white/[0.04]">
-        <div className="pointer-events-none absolute -inset-8 z-0 bg-[radial-gradient(circle_at_50%_50%,rgba(201,162,91,0.16),transparent_64%)] blur-2xl" />
+      <div className="group relative h-full w-full overflow-hidden rounded-[6px] border border-[#C9A25B]/30 bg-[#090604]/75 shadow-[0_30px_86px_-58px_rgba(201,162,91,0.85),0_18px_60px_-52px_rgba(0,0,0,0.95)] ring-1 ring-white/[0.04]">
+        <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle_at_50%_50%,rgba(201,162,91,0.12),transparent_68%)]" />
         <div className="pointer-events-none absolute -inset-px z-20 rounded-[6px] border border-white/[0.05]" />
         <div className="pointer-events-none absolute inset-[0.42rem] z-20 rounded-[4px] border border-[#C9A25B]/16" />
 
         {film.video ? (
           <video
             src={film.video}
-            autoPlay
+            autoPlay={effectsActive}
             muted
             loop
             playsInline
-            preload="metadata"
+            preload={effectsActive ? "metadata" : "none"}
             className="relative z-10 h-full w-full object-cover opacity-90 brightness-[0.92] contrast-[1.08] saturate-[0.86] transition [transition-duration:1800ms] group-hover:scale-[1.035] group-hover:opacity-100 group-hover:saturate-100"
           />
         ) : (
@@ -154,7 +149,7 @@ function DesktopVortexCard({ film, index, setCardRef }) {
         <div className="pointer-events-none absolute inset-0 z-20 bg-[radial-gradient(circle_at_50%_55%,transparent,rgba(0,0,0,0.52)_82%)]" />
         <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-20 bg-gradient-to-b from-white/[0.08] to-transparent opacity-50" />
 
-        {showShine ? (
+        {showShine && effectsActive ? (
           <motion.div
             initial={{ x: "-130%", opacity: 0 }}
             animate={{ x: "140%", opacity: [0, 0.28, 0] }}
@@ -174,10 +169,10 @@ function DesktopVortexCard({ film, index, setCardRef }) {
   );
 }
 
-function DesktopSpotlightCard({ film, index, setSpotlightRef }) {
+function DesktopSpotlightCard({ setSpotlightRef, setSpotlightImageRef }) {
   return (
     <article
-      ref={(element) => setSpotlightRef(element, index)}
+      ref={setSpotlightRef}
       className="pointer-events-none absolute left-1/2 top-1/2 z-50 h-[min(56vh,34rem)] w-[min(58vw,46rem)] isolate overflow-hidden rounded-[8px] border border-[#C9A25B]/36 bg-[#050302] opacity-0 shadow-[0_55px_170px_-60px_rgba(201,162,91,0.95),0_30px_100px_-55px_rgba(0,0,0,0.95)] ring-1 ring-white/[0.06] will-change-[opacity,transform]"
       style={{
         transform: "translate3d(-50%, -50%, 0) scale(0.92)",
@@ -185,26 +180,15 @@ function DesktopSpotlightCard({ film, index, setSpotlightRef }) {
     >
       <div className="pointer-events-none absolute inset-[0.55rem] z-20 rounded-[5px] border border-[#C9A25B]/18" />
 
-      {film.video ? (
-        <video
-          src={film.video}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          className="block h-full w-full object-cover"
-        />
-      ) : (
-        <img
-          src={film.image}
-          alt=""
-          loading="eager"
-          fetchPriority={shouldPrioritizeFilm(index) ? "high" : "auto"}
-          decoding="async"
-          className="block h-full w-full object-cover"
-        />
-      )}
+      <img
+        ref={setSpotlightImageRef}
+        src={foodFilms[0]?.image}
+        alt=""
+        loading="eager"
+        fetchPriority="high"
+        decoding="async"
+        className="block h-full w-full object-cover"
+      />
 
       <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-black/[0.05] via-transparent to-transparent" />
     </article>
@@ -216,8 +200,8 @@ function MobileFilmCard({ film, index }) {
 
   return (
     <motion.article
-      initial={reduce ? false : { opacity: 0, y: 70, filter: "blur(12px)" }}
-      whileInView={reduce ? {} : { opacity: 1, y: 0, filter: "blur(0px)" }}
+      initial={reduce ? false : { opacity: 0, y: 70 }}
+      whileInView={reduce ? {} : { opacity: 1, y: 0 }}
       viewport={{ once: false, amount: 0.35 }}
       transition={{
         duration: 1.1,
@@ -226,7 +210,7 @@ function MobileFilmCard({ film, index }) {
       }}
       className="relative"
     >
-      <div className="pointer-events-none absolute -inset-5 bg-[radial-gradient(circle_at_50%_50%,rgba(201,162,91,0.14),transparent_70%)] blur-2xl" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(201,162,91,0.1),transparent_72%)]" />
 
       <div
         className={`relative overflow-hidden border border-[#C9A25B]/22 bg-black/40 shadow-[0_45px_120px_-70px_rgba(201,162,91,0.75)] ${film.mobileShape}`}
@@ -281,11 +265,20 @@ export function FoodFilmRunway() {
   const progressFillRef = useRef(null);
   const progressLabelRef = useRef(null);
   const cardRefs = useRef([]);
-  const spotlightRefs = useRef([]);
+  const spotlightRef = useRef(null);
+  const spotlightImageRef = useRef(null);
   const progressRef = useRef(0);
+  const gateNearbyRef = useRef(false);
   const gateActiveRef = useRef(false);
   const gateCompleteRef = useRef(false);
+  const activeSpotlightIndexRef = useRef(0);
   const releaseScrollLockRef = useRef(null);
+  const [isDesktopRunway, setIsDesktopRunway] = useState(() =>
+    typeof window === "undefined"
+      ? false
+      : window.matchMedia("(min-width: 1280px)").matches
+  );
+  const [runwayEffectsActive, setRunwayEffectsActive] = useState(false);
 
   const reduce = useReducedMotion();
   const { lockScroll, unlockScroll } = useMaisonScroll();
@@ -309,18 +302,71 @@ export function FoodFilmRunway() {
     cardRefs.current[index] = element;
   };
 
-  const setSpotlightRef = (element, index) => {
-    spotlightRefs.current[index] = element;
+  const setSpotlightRef = (element) => {
+    spotlightRef.current = element;
   };
 
+  const setSpotlightImageRef = (element) => {
+    spotlightImageRef.current = element;
+  };
+
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+
+    const mediaQuery = window.matchMedia("(min-width: 1280px)");
+
+    const syncRunwayMode = () => {
+      setIsDesktopRunway(mediaQuery.matches);
+    };
+
+    syncRunwayMode();
+    mediaQuery.addEventListener?.("change", syncRunwayMode);
+
+    return () => {
+      mediaQuery.removeEventListener?.("change", syncRunwayMode);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+
+    const section = sectionRef.current;
+    if (!section || typeof IntersectionObserver === "undefined") {
+      gateNearbyRef.current = true;
+      setRunwayEffectsActive(true);
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const isNearby = entry.isIntersecting;
+
+        gateNearbyRef.current = isNearby;
+        setRunwayEffectsActive(isNearby);
+      },
+      {
+        root: null,
+        rootMargin: "38% 0px 38% 0px",
+        threshold: 0.01,
+      }
+    );
+
+    observer.observe(section);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   useLayoutEffect(() => {
-    if (reduce) return undefined;
+    if (reduce || !isDesktopRunway) return undefined;
 
     const matchMedia = gsap.matchMedia();
 
     matchMedia.add("(min-width: 1280px)", () => {
       const cards = foodFilms.map((_, index) => cardRefs.current[index]);
-      const spotlightCards = foodFilms.map((_, index) => spotlightRefs.current[index]);
+      const spotlightCard = spotlightRef.current;
+      const spotlightImage = spotlightImageRef.current;
 
       if (
         !sectionRef.current ||
@@ -329,8 +375,9 @@ export function FoodFilmRunway() {
         !subTextRef.current ||
         !progressFillRef.current ||
         !progressLabelRef.current ||
-        cards.some((card) => !card) ||
-        spotlightCards.some((card) => !card)
+        !spotlightCard ||
+        !spotlightImage ||
+        cards.some((card) => !card)
       ) {
         return undefined;
       }
@@ -347,22 +394,14 @@ export function FoodFilmRunway() {
       const itemProgressStep =
         (focusEnd - focusStart) / Math.max(foodFilms.length - 1, 1);
       const preloadedImages = [];
-      const preloadLinks = [];
+      const preloadedSources = new Set();
 
-      foodFilms.forEach((film, index) => {
-        if (!film.image) return;
+      const warmFilmImage = (index) => {
+        const film = foodFilms[index];
+        if (!film?.image) return;
+        if (preloadedSources.has(film.image)) return;
 
-        if (shouldPrioritizeFilm(index)) {
-          const link = document.createElement("link");
-
-          link.rel = "preload";
-          link.as = "image";
-          link.href = film.image;
-          link.fetchPriority = "high";
-          document.head.appendChild(link);
-          preloadLinks.push(link);
-        }
-
+        preloadedSources.add(film.image);
         const image = new window.Image();
         image.decoding = "async";
         image.loading = "eager";
@@ -370,6 +409,10 @@ export function FoodFilmRunway() {
         image.src = film.image;
         image.decode?.().catch(() => {});
         preloadedImages.push(image);
+      };
+
+      foodFilms.slice(0, 6).forEach((_, index) => {
+        warmFilmImage(index);
       });
 
       const lockToSection = () => {
@@ -405,7 +448,26 @@ export function FoodFilmRunway() {
         const focusAmounts = foodFilms.map((_, index) => {
           return getFocusAmount(index, activePosition) * focusStrength;
         });
-        const activeSpotlightIndex = Math.round(activePosition);
+        const activeSpotlightIndex = Math.min(
+          Math.max(Math.round(activePosition), 0),
+          foodFilms.length - 1
+        );
+        const activeSpotlightFocus = focusAmounts[activeSpotlightIndex] || 0;
+
+        if (activeSpotlightIndexRef.current !== activeSpotlightIndex) {
+          activeSpotlightIndexRef.current = activeSpotlightIndex;
+
+          const activeFilm = foodFilms[activeSpotlightIndex];
+
+          if (activeFilm?.image && spotlightImage.getAttribute("src") !== activeFilm.image) {
+            spotlightImage.src = activeFilm.image;
+          }
+
+          warmFilmImage(activeSpotlightIndex - 1);
+          warmFilmImage(activeSpotlightIndex);
+          warmFilmImage(activeSpotlightIndex + 1);
+          warmFilmImage(activeSpotlightIndex + 2);
+        }
 
         gsap.set(vortexRef.current, {
           rotationY: vortexRotationY,
@@ -473,19 +535,16 @@ export function FoodFilmRunway() {
 
             return baseRotation * (1 - focus);
           },
-          opacity: (index) => 0.48 + (1 - focusAmounts[index]) * 0.34,
+          opacity: (index) => 0.74 + focusAmounts[index] * 0.24,
           zIndex: (index) =>
             Math.round(foodFilms[index].layer + focusAmounts[index] * 1000),
           force3D: true,
         });
 
-        gsap.set(spotlightCards, {
-          autoAlpha: (index) =>
-            index === activeSpotlightIndex ? Math.pow(focusAmounts[index] || 0, 1.45) : 0,
-          scale: (index) =>
-            index === activeSpotlightIndex ? 0.94 + (focusAmounts[index] || 0) * 0.06 : 0.94,
-          filter: "none",
-          zIndex: (index) => (index === activeSpotlightIndex ? 1000 : 900),
+        gsap.set(spotlightCard, {
+          autoAlpha: Math.pow(activeSpotlightFocus, 1.7),
+          scale: 0.94 + activeSpotlightFocus * 0.06,
+          zIndex: 1000,
           force3D: true,
         });
 
@@ -493,14 +552,12 @@ export function FoodFilmRunway() {
           opacity: textOpacity,
           y: 38 * (1 - textIn) - 54 * textOut,
           scale: 1 - 0.08 * textOut,
-          filter: `blur(${16 * (1 - textIn) + 10 * textOut}px)`,
           force3D: true,
         });
 
         gsap.set(subTextRef.current, {
           opacity: subOpacity,
           y: 26 * (1 - textIn) - 34 * textOut,
-          filter: `blur(${12 * (1 - textIn) + 7 * textOut}px)`,
           force3D: true,
         });
       };
@@ -561,7 +618,7 @@ export function FoodFilmRunway() {
         force3D: true,
       });
 
-      gsap.set(spotlightCards, {
+      gsap.set(spotlightCard, {
         xPercent: -50,
         yPercent: -50,
         autoAlpha: 0,
@@ -596,13 +653,11 @@ export function FoodFilmRunway() {
         opacity: 0,
         y: 38,
         scale: 1,
-        filter: "blur(16px)",
       });
 
       gsap.set(subTextRef.current, {
         opacity: 0,
         y: 26,
-        filter: "blur(12px)",
       });
 
       renderNow(0);
@@ -660,6 +715,8 @@ export function FoodFilmRunway() {
       };
 
       const handleWheel = (event) => {
+        if (!gateActiveRef.current && !gateNearbyRef.current) return;
+
         if (!gateActiveRef.current) {
           resetGateIfAbove();
         }
@@ -700,6 +757,8 @@ export function FoodFilmRunway() {
       };
 
       const handleKeyDown = (event) => {
+        if (!gateActiveRef.current && !gateNearbyRef.current) return;
+
         const forwardKeys = ["ArrowDown", "PageDown", " ", "End"];
         const backwardKeys = ["ArrowUp", "PageUp", "Home"];
         const isForward = forwardKeys.includes(event.key);
@@ -745,6 +804,8 @@ export function FoodFilmRunway() {
       };
 
       const handleScroll = () => {
+        if (!gateActiveRef.current && !gateNearbyRef.current) return;
+
         resetGateIfAbove();
 
         if (gateActiveRef.current) {
@@ -758,7 +819,6 @@ export function FoodFilmRunway() {
 
       return () => {
         releaseRunwayScrollLock();
-        preloadLinks.forEach((link) => link.remove());
         preloadedImages.length = 0;
 
         if (renderFrame !== null) {
@@ -774,7 +834,7 @@ export function FoodFilmRunway() {
     return () => {
       matchMedia.revert();
     };
-  }, [engageRunwayScrollLock, reduce, releaseRunwayScrollLock]);
+  }, [engageRunwayScrollLock, isDesktopRunway, reduce, releaseRunwayScrollLock]);
 
   return (
     <section
@@ -783,7 +843,8 @@ export function FoodFilmRunway() {
       className="relative bg-[#050302] xl:h-screen xl:overflow-visible"
     >
       {/* XL screen 3D vortex */}
-      <div className="relative isolate hidden h-screen overflow-hidden bg-[#050302] xl:block">
+      {isDesktopRunway ? (
+      <div className="relative isolate h-screen overflow-hidden bg-[#050302]">
         <motion.div
           aria-hidden="true"
           initial={reduce ? false : { opacity: 0, scaleX: 0.7 }}
@@ -812,6 +873,7 @@ export function FoodFilmRunway() {
         <div className="pointer-events-none absolute inset-x-10 bottom-12 z-20 h-px bg-gradient-to-r from-transparent via-[#C9A25B]/18 to-transparent" />
 
         {!reduce &&
+          runwayEffectsActive &&
           emberParticles.map((particle) => (
             <motion.span
               key={particle.id}
@@ -873,18 +935,15 @@ export function FoodFilmRunway() {
                 film={film}
                 index={index}
                 setCardRef={setCardRef}
+                effectsActive={runwayEffectsActive}
               />
             ))}
           </div>
 
-          {foodFilms.map((film, index) => (
-            <DesktopSpotlightCard
-              key={`${film.id}-spotlight`}
-              film={film}
-              index={index}
-              setSpotlightRef={setSpotlightRef}
-            />
-          ))}
+          <DesktopSpotlightCard
+            setSpotlightRef={setSpotlightRef}
+            setSpotlightImageRef={setSpotlightImageRef}
+          />
         </div>
 
         <div className="pointer-events-none absolute inset-0 z-20 flex translate-y-16 items-center justify-center px-6 text-center">
@@ -907,9 +966,11 @@ export function FoodFilmRunway() {
           </div>
         </div>
       </div>
+      ) : null}
 
       {/* Below XL: clean cinematic stack */}
-      <div className="relative bg-[#050302] px-6 py-28 xl:hidden">
+      {!isDesktopRunway ? (
+      <div className="relative bg-[#050302] px-6 py-28">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_8%,rgba(201,162,91,0.1),transparent_34%)]" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_46%,rgba(74,20,24,0.28),transparent_36%)]" />
         <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_150px_rgba(0,0,0,0.96)]" />
@@ -942,6 +1003,7 @@ export function FoodFilmRunway() {
           </div>
         </div>
       </div>
+      ) : null}
     </section>
   );
 }
