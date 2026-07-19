@@ -1,4 +1,10 @@
-import React from "react";
+import React, { useRef } from "react";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import { MapPin, Clock, Phone } from "lucide-react";
 
 import LuxuryButton from "@/components/demo/ui/LuxuryButton";
@@ -7,19 +13,39 @@ import SectionGlow from "@/components/demo/ui/SectionGlow";
 import SectionHeader from "@/components/demo/ui/SectionHeader";
 
 export default function Visit() {
+  const sectionRef = useRef(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+  const detailsY = useTransform(scrollYProgress, [0, 0.48, 1], [34, 0, -12]);
+  const mapY = useTransform(scrollYProgress, [0, 1], [42, -8]);
+  const mapOpacity = useTransform(scrollYProgress, [0.1, 0.42, 1], [0.58, 1, 0.92]);
+  const closingLight = useTransform(scrollYProgress, [0.2, 0.78, 1], [0.5, 0.24, 0.08]);
+
   return (
     <section
       id="visit"
+      ref={sectionRef}
       className="relative bg-[#040303] px-6 py-32 md:py-44 overflow-hidden border-t border-white/10"
     >
       <SectionGlow />
 
       <div className="absolute left-[-180px] bottom-10 w-[520px] h-[520px] rounded-full bg-[#4A1418]/25 blur-[150px]" />
+      <motion.div
+        aria-hidden="true"
+        style={reduce ? undefined : { opacity: closingLight }}
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_68%_30%,rgba(201,162,91,0.16),transparent_42%)]"
+      />
 
       <div className="relative max-w-7xl mx-auto grid lg:grid-cols-12 gap-14 lg:gap-20 items-center">
         {/* LEFT */}
 
-        <div className="lg:col-span-5">
+        <motion.div
+          style={reduce ? undefined : { y: detailsY }}
+          className="lg:col-span-5"
+        >
           <SectionHeader
             eyebrow="Visit Maison Noir"
             title={
@@ -76,11 +102,14 @@ export default function Visit() {
           >
             Get Directions
           </LuxuryButton>
-        </div>
+        </motion.div>
 
         {/* RIGHT */}
 
-        <div className="lg:col-span-7">
+        <motion.div
+          style={reduce ? undefined : { y: mapY, opacity: mapOpacity }}
+          className="lg:col-span-7"
+        >
   <GlassCard className="relative min-h-[620px] overflow-hidden p-0">
     <iframe
       title="Maison Noir location map"
@@ -104,7 +133,7 @@ export default function Visit() {
       </GlassCard>
     </div>
   </GlassCard>
-</div>
+</motion.div>
       </div>
     </section>
   );

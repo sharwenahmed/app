@@ -22,6 +22,7 @@ import OrderDrawer from "./order/OrderDrawer";
 import OrderLauncher from "./order/OrderLauncher";
 import { OrderProvider, useOrder } from "./order/OrderProvider";
 import MaisonScrollDirector from "./scroll/MaisonScrollDirector";
+import SmokeTransition from "./scroll/SmokeTransition";
 
 const maisonNoirScenes = [
   {
@@ -256,6 +257,8 @@ function MaisonNoirContent() {
           <SceneChapter sceneId="chef">
             <ChefCraft />
           </SceneChapter>
+
+          <SmokeTransition />
 
           <SceneChapter sceneId="private">
             <PrivateDining />

@@ -145,9 +145,13 @@ const testimonials = [
   },
 ];
 
-function TestimonialCard({ testimonial }) {
+function TestimonialCard({ testimonial, depth = 0 }) {
   return (
-    <article className="mx-3 flex h-[24rem] w-[min(26rem,82vw)] flex-none flex-col justify-between rounded-[2rem] border border-white/10 bg-white/[0.035] p-7 shadow-[0_45px_130px_-95px_rgba(201,162,91,0.8)] backdrop-blur-xl transition duration-500 hover:-translate-y-1 hover:border-[#C9A25B]/35 hover:bg-[#C9A25B]/[0.055]">
+    <article
+      tabIndex={0}
+      style={{ marginTop: depth }}
+      className="mx-3 flex h-[24rem] w-[min(26rem,82vw)] flex-none flex-col justify-between rounded-[2rem] border border-white/10 bg-white/[0.035] p-7 shadow-[0_45px_130px_-95px_rgba(201,162,91,0.8)] backdrop-blur-xl transition duration-500 hover:-translate-y-1 hover:border-[#C9A25B]/35 hover:bg-[#C9A25B]/[0.055] focus:outline-none focus:ring-1 focus:ring-[#C9A25B]/45"
+    >
       <div>
         <div className="mb-8 flex items-center justify-between gap-4">
           <div className="flex gap-1">
@@ -208,6 +212,10 @@ export default function Testimonials() {
           .maison-noir-testimonials-track:hover {
             animation-play-state: paused;
           }
+
+          .maison-noir-testimonials-track:focus-within {
+            animation-play-state: paused;
+          }
         `}
       </style>
 
@@ -251,6 +259,7 @@ export default function Testimonials() {
             <TestimonialCard
               key={`${testimonial.source}-${testimonial.detail}`}
               testimonial={testimonial}
+              depth={0}
             />
           ))}
         </div>
@@ -267,6 +276,7 @@ export default function Testimonials() {
               <TestimonialCard
                 key={`${testimonial.source}-${testimonial.detail}-${index}`}
                 testimonial={testimonial}
+                depth={index % 2 === 0 ? 0 : 18}
               />
             ))}
           </div>

@@ -353,6 +353,11 @@ export default function MaisonScrollDirector({
             height: auto;
           }
 
+          html,
+          body {
+            overflow-x: clip;
+          }
+
           .lenis.lenis-smooth {
             scroll-behavior: auto !important;
           }

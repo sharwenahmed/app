@@ -58,7 +58,7 @@ const galleryMoments = [
   },
 ];
 
-function RevealImage({ src, alt, label, title, className = "" }) {
+function RevealImage({ src, alt, label, title, className = "", index = 0 }) {
   const ref = useRef(null);
   const reduce = useReducedMotion();
 
@@ -69,6 +69,12 @@ function RevealImage({ src, alt, label, title, className = "" }) {
 
   const scale = useTransform(scrollYProgress, [0, 1], [1.12, 1]);
   const y = useTransform(scrollYProgress, [0, 1], [48, -32]);
+  const figureX = useTransform(
+    scrollYProgress,
+    [0, 0.5, 1],
+    [index % 2 === 0 ? -26 : 26, 0, index % 2 === 0 ? 12 : -12]
+  );
+  const captionY = useTransform(scrollYProgress, [0.2, 0.64], [22, 0]);
 
   return (
     <motion.figure
@@ -77,6 +83,7 @@ function RevealImage({ src, alt, label, title, className = "" }) {
       whileInView={reduce ? {} : { opacity: 1, y: 0, filter: "blur(0px)" }}
       viewport={{ once: true, amount: 0.25 }}
       transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+      style={reduce ? undefined : { x: figureX }}
       className={`group relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/[0.03] shadow-[0_45px_120px_-80px_rgba(201,162,91,0.55)] ${className}`}
     >
       <motion.img
@@ -92,7 +99,10 @@ function RevealImage({ src, alt, label, title, className = "" }) {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_55%,transparent,rgba(0,0,0,0.42)_78%)]" />
       <div className="pointer-events-none absolute inset-4 rounded-[2rem] border border-white/10 opacity-0 transition duration-700 group-hover:opacity-100" />
 
-      <figcaption className="absolute bottom-6 left-6 right-6 md:bottom-8 md:left-8 md:right-8">
+      <motion.figcaption
+        style={reduce ? undefined : { y: captionY }}
+        className="absolute bottom-6 left-6 right-6 md:bottom-8 md:left-8 md:right-8"
+      >
         <div className="mb-4 flex items-center justify-between gap-4">
           <span className="text-xs uppercase tracking-[0.35em] text-[#C9A25B]">
             {label}
@@ -106,7 +116,7 @@ function RevealImage({ src, alt, label, title, className = "" }) {
         <p className="max-w-2xl font-serif text-3xl leading-tight text-white md:text-5xl">
           {title}
         </p>
-      </figcaption>
+      </motion.figcaption>
     </motion.figure>
   );
 }
@@ -148,18 +158,18 @@ export default function Gallery() {
         </motion.div>
 
         <div className="space-y-8 md:space-y-10">
-          <RevealImage {...galleryMoments[0]} />
+          <RevealImage {...galleryMoments[0]} index={0} />
 
           <div className="grid gap-8 md:gap-10 lg:grid-cols-2">
-            <RevealImage {...galleryMoments[1]} />
-            <RevealImage {...galleryMoments[2]} />
+            <RevealImage {...galleryMoments[1]} index={1} />
+            <RevealImage {...galleryMoments[2]} index={2} />
           </div>
 
-          <RevealImage {...galleryMoments[3]} />
+          <RevealImage {...galleryMoments[3]} index={3} />
 
           <div className="grid gap-8 md:gap-10 lg:grid-cols-2">
-            <RevealImage {...galleryMoments[4]} />
-            <RevealImage {...galleryMoments[5]} />
+            <RevealImage {...galleryMoments[4]} index={4} />
+            <RevealImage {...galleryMoments[5]} index={5} />
           </div>
         </div>
 

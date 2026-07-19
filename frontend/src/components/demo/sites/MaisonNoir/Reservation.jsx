@@ -1,4 +1,10 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import { CalendarDays, Clock3, Users, Gift, CheckCircle2 } from "lucide-react";
 
 import LuxuryButton from "@/components/demo/ui/LuxuryButton";
@@ -10,16 +16,38 @@ const guests = ["2", "3", "4", "5", "6", "Private Room"];
 const occasions = ["Dinner", "Anniversary", "Birthday", "Business", "Date Night"];
 
 export default function Reservation() {
+  const sectionRef = useRef(null);
   const [selectedTime, setSelectedTime] = useState("7:30 PM");
   const [selectedGuests, setSelectedGuests] = useState("2");
   const [selectedOccasion, setSelectedOccasion] = useState("Anniversary");
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  const deskLightOpacity = useTransform(scrollYProgress, [0.1, 0.5, 0.88], [0, 0.62, 0.18]);
+  const formY = useTransform(scrollYProgress, [0.18, 0.54], [38, 0]);
+  const formScale = useTransform(scrollYProgress, [0.18, 0.54], [0.985, 1]);
+  const calmDarkness = useTransform(scrollYProgress, [0, 0.62, 1], [0.18, 0.05, 0.26]);
 
   return (
     <section
       id="reserve"
+      ref={sectionRef}
       className="relative bg-[#020202] border-t border-white/10 overflow-hidden"
     >
       <SectionGlow />
+      <motion.div
+        aria-hidden="true"
+        style={reduce ? undefined : { opacity: deskLightOpacity }}
+        className="pointer-events-none absolute inset-x-0 top-24 h-[28rem] bg-[radial-gradient(ellipse_at_50%_0%,rgba(201,162,91,0.24),rgba(201,162,91,0.07)_38%,transparent_72%)]"
+      />
+      <motion.div
+        aria-hidden="true"
+        style={reduce ? undefined : { opacity: calmDarkness }}
+        className="pointer-events-none absolute inset-0 bg-black"
+      />
 
       <div className="relative max-w-7xl mx-auto px-6 py-36">
         <div className="text-center max-w-4xl mx-auto">
@@ -38,6 +66,9 @@ export default function Reservation() {
           </p>
         </div>
 
+        <motion.div
+          style={reduce ? undefined : { y: formY, scale: formScale }}
+        >
         <GlassCard className="mt-24 max-w-6xl mx-auto p-6 md:p-10">
           <div className="grid lg:grid-cols-12 gap-8">
             <div className="lg:col-span-4 rounded-[2rem] border border-white/10 bg-black/35 p-6">
@@ -173,6 +204,7 @@ export default function Reservation() {
             </div>
           </div>
         </GlassCard>
+        </motion.div>
       </div>
     </section>
   );
