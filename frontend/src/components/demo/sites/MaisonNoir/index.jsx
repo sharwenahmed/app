@@ -21,6 +21,7 @@ import MaisonConcierge from "./MaisonConcierge";
 import OrderDrawer from "./order/OrderDrawer";
 import OrderLauncher from "./order/OrderLauncher";
 import { OrderProvider, useOrder } from "./order/OrderProvider";
+import MaisonScrollDirector from "./scroll/MaisonScrollDirector";
 
 const maisonNoirScenes = [
   {
@@ -164,7 +165,7 @@ function OrderChrome({ visible }) {
         <Navbar cartCount={cartCount} onCartOpen={() => openDrawer("cart")} />,
         document.body
       )}
-      <OrderLauncher visible={visible} />
+      {createPortal(<OrderLauncher visible={visible} />, document.body)}
       <OrderDrawer />
     </>
   );
@@ -217,74 +218,76 @@ function MaisonNoirContent() {
   }, []);
 
   return (
-    <main
-      ref={pageRef}
-      className="relative bg-[#050505] text-[#F5F2EB] selection:bg-[#C9A25B] selection:text-black"
-    >
-      <ExperienceShell scenes={maisonNoirScenes}>
-        <div
-          className="pointer-events-none fixed inset-0 z-[60] opacity-[0.035] mix-blend-overlay"
-          style={{
-            backgroundImage: "url('https://grainy-gradients.vercel.app/noise.svg')",
-          }}
+    <MaisonScrollDirector scenes={maisonNoirScenes}>
+      <main
+        ref={pageRef}
+        className="relative bg-[#050505] text-[#F5F2EB] selection:bg-[#C9A25B] selection:text-black"
+      >
+        <ExperienceShell scenes={maisonNoirScenes}>
+          <div
+            className="pointer-events-none fixed inset-0 z-[60] opacity-[0.035] mix-blend-overlay"
+            style={{
+              backgroundImage: "url('https://grainy-gradients.vercel.app/noise.svg')",
+            }}
+          />
+          <div className="pointer-events-none fixed inset-0 z-[59] bg-[radial-gradient(circle_at_50%_0%,rgba(201,162,91,0.08),transparent_35%)]" />
+
+          <OpeningArrivalGate />
+
+          <SceneChapter sceneId="top">
+            <Hero />
+          </SceneChapter>
+
+          <SceneChapter sceneId="menu">
+            <SignatureMenu />
+
+            <FoodFilmRunway />
+          </SceneChapter>
+
+          <SignatureToFullMenuTransition />
+
+          <SceneChapter sceneId="full-menu">
+            <FullMenu onAddToCart={openItemCustomizer} />
+          </SceneChapter>
+          <SceneChapter sceneId="story">
+            <Philosophy />
+          </SceneChapter>
+
+          <SceneChapter sceneId="chef">
+            <ChefCraft />
+          </SceneChapter>
+
+          <SceneChapter sceneId="private">
+            <PrivateDining />
+          </SceneChapter>
+
+          <SceneChapter sceneId="gallery">
+            <Gallery />
+          </SceneChapter>
+
+          <SceneChapter sceneId="testimonials">
+            <Testimonials />
+          </SceneChapter>
+
+          <SceneChapter sceneId="reserve">
+            <Reservation />
+          </SceneChapter>
+
+          <SceneChapter sceneId="visit">
+            <Visit />
+          </SceneChapter>
+
+          <Footer />
+        </ExperienceShell>
+
+        <MaisonConcierge
+          visible={floatingControlsVisible}
+          onStartOrder={() => openDrawer("cart")}
         />
-        <div className="pointer-events-none fixed inset-0 z-[59] bg-[radial-gradient(circle_at_50%_0%,rgba(201,162,91,0.08),transparent_35%)]" />
 
-        <OpeningArrivalGate />
-
-        <SceneChapter sceneId="top">
-          <Hero />
-        </SceneChapter>
-
-        <SceneChapter sceneId="menu">
-          <SignatureMenu />
-
-          <FoodFilmRunway />
-        </SceneChapter>
-
-        <SignatureToFullMenuTransition />
-
-        <SceneChapter sceneId="full-menu">
-          <FullMenu onAddToCart={openItemCustomizer} />
-        </SceneChapter>
-        <SceneChapter sceneId="story">
-          <Philosophy />
-        </SceneChapter>
-
-        <SceneChapter sceneId="chef">
-          <ChefCraft />
-        </SceneChapter>
-
-        <SceneChapter sceneId="private">
-          <PrivateDining />
-        </SceneChapter>
-
-        <SceneChapter sceneId="gallery">
-          <Gallery />
-        </SceneChapter>
-
-        <SceneChapter sceneId="testimonials">
-          <Testimonials />
-        </SceneChapter>
-
-        <SceneChapter sceneId="reserve">
-          <Reservation />
-        </SceneChapter>
-
-        <SceneChapter sceneId="visit">
-          <Visit />
-        </SceneChapter>
-
-        <Footer />
-      </ExperienceShell>
-
-      <MaisonConcierge
-        visible={floatingControlsVisible}
-        onStartOrder={() => openDrawer("cart")}
-      />
-
-      {chromeMounted ? <OrderChrome visible={floatingControlsVisible} /> : null}
-    </main>
+        {chromeMounted ? <OrderChrome visible={floatingControlsVisible} /> : null}
+      </main>
+    </MaisonScrollDirector>
   );
 }
 

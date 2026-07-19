@@ -9,6 +9,7 @@ import {
   createConciergeContext,
   getConciergeResponse,
 } from "./maisonConciergeKnowledge";
+import { useMaisonScroll } from "./scroll/MaisonScrollDirector";
 
 const createMessage = (role, content) => ({
   id: `${role}-${Date.now()}-${Math.random().toString(36).slice(2)}`,
@@ -21,6 +22,7 @@ export default function MaisonConcierge({
   onStartOrder = () => {},
 }) {
   const reduceMotion = useReducedMotion();
+  const { scrollTo } = useMaisonScroll();
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
@@ -105,9 +107,9 @@ export default function MaisonConcierge({
 
     if (!reservationTarget) return;
 
-    reservationTarget.scrollIntoView({
+    scrollTo(reservationTarget, {
       behavior: reduceMotion ? "auto" : "smooth",
-      block: "start",
+      duration: 1,
     });
   };
 
@@ -117,15 +119,18 @@ export default function MaisonConcierge({
 
     const userMessage = createMessage("user", text);
     const fallbackResponse = getConciergeResponse(text, conversationContext);
-    const responsePromise = loadSemanticConcierge().then((module) =>
-      module
-        ? module.getSemanticConciergeResponse(
-            text,
-            conversationContext,
-            fallbackResponse
-          )
-        : fallbackResponse
-    );
+    const responsePromise =
+      fallbackResponse.action === "reserve"
+        ? Promise.resolve(fallbackResponse)
+        : loadSemanticConcierge().then((module) =>
+            module
+              ? module.getSemanticConciergeResponse(
+                  text,
+                  conversationContext,
+                  fallbackResponse
+                )
+              : fallbackResponse
+          );
     const replyDelay = 500 + Math.floor(Math.random() * 401);
 
     setMessages((current) => [...current, userMessage]);

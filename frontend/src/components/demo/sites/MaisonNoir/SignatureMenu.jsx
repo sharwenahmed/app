@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
+import { useMaisonScroll } from "./scroll/MaisonScrollDirector";
+import { MAISON_SCROLL_LOCKS } from "./scroll/scrollChoreography";
 
 const dishes = [
   {
@@ -114,7 +116,9 @@ export default function SignatureMenu() {
   const viewGateActiveRef = useRef(false);
   const viewGateCompleteRef = useRef(false);
   const releaseTimerRef = useRef(null);
+  const releaseScrollLockRef = useRef(null);
   const reduce = useReducedMotion();
+  const { lockScroll, unlockScroll } = useMaisonScroll();
 
   const dish = dishes[active];
 
@@ -165,6 +169,21 @@ export default function SignatureMenu() {
     }, 2050);
   };
 
+  const releaseSignatureScrollLock = React.useCallback(() => {
+    if (releaseScrollLockRef.current) {
+      releaseScrollLockRef.current();
+      releaseScrollLockRef.current = null;
+      return;
+    }
+
+    unlockScroll(MAISON_SCROLL_LOCKS.signature);
+  }, [unlockScroll]);
+
+  const engageSignatureScrollLock = React.useCallback(() => {
+    if (releaseScrollLockRef.current) return;
+    releaseScrollLockRef.current = lockScroll(MAISON_SCROLL_LOCKS.signature);
+  }, [lockScroll]);
+
   useEffect(() => {
     if (reduce) return undefined;
 
@@ -193,6 +212,7 @@ export default function SignatureMenu() {
       viewGateActiveRef.current = false;
       viewGateCompleteRef.current = true;
       viewProgressRef.current = 1;
+      releaseSignatureScrollLock();
 
       if (releaseTimerRef.current) {
         window.clearTimeout(releaseTimerRef.current);
@@ -205,6 +225,7 @@ export default function SignatureMenu() {
 
       viewGateActiveRef.current = true;
       viewProgressRef.current = 0;
+      engageSignatureScrollLock();
       lockToSignature();
 
       if (releaseTimerRef.current) {
@@ -224,6 +245,7 @@ export default function SignatureMenu() {
         viewGateActiveRef.current = false;
         viewGateCompleteRef.current = false;
         viewProgressRef.current = 0;
+        releaseSignatureScrollLock();
 
         if (releaseTimerRef.current) {
           window.clearTimeout(releaseTimerRef.current);
@@ -325,6 +347,8 @@ export default function SignatureMenu() {
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
+      releaseSignatureScrollLock();
+
       if (releaseTimerRef.current) {
         window.clearTimeout(releaseTimerRef.current);
       }
@@ -334,7 +358,7 @@ export default function SignatureMenu() {
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [reduce]);
+  }, [engageSignatureScrollLock, reduce, releaseSignatureScrollLock]);
 
   return (
     <section

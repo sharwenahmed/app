@@ -22,7 +22,7 @@ export default function OrderLauncher({ visible = true }) {
       whileTap={reduceMotion ? undefined : { scale: 0.97 }}
       transition={{ duration: reduceMotion ? 0 : 0.28, ease: [0.22, 1, 0.36, 1] }}
       style={{ zIndex: 2147482600 }}
-      className="fixed right-4 top-28 flex min-h-14 items-center gap-3 rounded-full border border-[#C9A25B]/32 bg-black/78 px-3.5 py-2 text-[#F5F2EB] shadow-[0_26px_90px_-42px_rgba(201,162,91,0.82)] backdrop-blur-2xl transition hover:border-[#C9A25B]/65 hover:bg-[#120909] sm:right-6 lg:top-32"
+      className="fixed bottom-24 right-5 flex min-h-14 items-center gap-3 rounded-full border border-[#C9A25B]/32 bg-black/78 px-3.5 py-2 text-[#F5F2EB] shadow-[0_26px_90px_-42px_rgba(201,162,91,0.82)] backdrop-blur-2xl transition hover:border-[#C9A25B]/65 hover:bg-[#120909] sm:right-6 md:bottom-28"
     >
       <span className="relative flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.045] text-[#C9A25B]">
         <ShoppingBag size={19} strokeWidth={1.8} />

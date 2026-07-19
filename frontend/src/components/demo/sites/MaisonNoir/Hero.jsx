@@ -7,14 +7,18 @@ import {
   useTransform,
 } from "framer-motion";
 import { ArrowDown, ArrowUpRight, Star } from "lucide-react";
+import { useMaisonScroll } from "./scroll/MaisonScrollDirector";
+import { MAISON_SCROLL_LOCKS } from "./scroll/scrollChoreography";
 
 export default function Hero() {
   const sectionRef = useRef(null);
   const pointerRafRef = useRef(null);
   const touchStartYRef = useRef(null);
   const progressRef = useRef(0);
+  const releaseScrollLockRef = useRef(null);
 
   const reduce = useReducedMotion();
+  const { lockScroll, unlockScroll } = useMaisonScroll();
 
   const [pointer, setPointer] = useState({ x: 50, y: 58 });
   const [hasCompleted, setHasCompleted] = useState(false);
@@ -27,11 +31,27 @@ export default function Hero() {
     mass: 1.55,
   });
 
+  const releaseHeroScrollLock = useCallback(() => {
+    if (releaseScrollLockRef.current) {
+      releaseScrollLockRef.current();
+      releaseScrollLockRef.current = null;
+      return;
+    }
+
+    unlockScroll(MAISON_SCROLL_LOCKS.hero);
+  }, [unlockScroll]);
+
+  const engageHeroScrollLock = useCallback(() => {
+    if (releaseScrollLockRef.current) return;
+    releaseScrollLockRef.current = lockScroll(MAISON_SCROLL_LOCKS.hero);
+  }, [lockScroll]);
+
   const completeHeroReveal = useCallback(() => {
     progressRef.current = 1;
     rawProgress.set(1);
     setHasCompleted(true);
-  }, [rawProgress]);
+    releaseHeroScrollLock();
+  }, [rawProgress, releaseHeroScrollLock]);
 
   const updateHeroProgress = useCallback(
     (delta) => {
@@ -39,6 +59,8 @@ export default function Hero() {
 
       const section = sectionRef.current;
       if (!section) return;
+
+      engageHeroScrollLock();
 
       const rect = section.getBoundingClientRect();
       const targetY = window.scrollY + rect.top;
@@ -59,11 +81,22 @@ export default function Hero() {
       progressRef.current = nextProgress;
       rawProgress.set(nextProgress);
 
+      if (nextProgress <= 0.001 && cappedDelta < 0) {
+        releaseHeroScrollLock();
+      }
+
       if (nextProgress >= 0.995) {
         completeHeroReveal();
       }
     },
-    [completeHeroReveal, hasCompleted, rawProgress, reduce]
+    [
+      completeHeroReveal,
+      engageHeroScrollLock,
+      hasCompleted,
+      rawProgress,
+      reduce,
+      releaseHeroScrollLock,
+    ]
   );
 
   useEffect(() => {
@@ -140,12 +173,14 @@ export default function Hero() {
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
+      releaseHeroScrollLock();
+
       window.removeEventListener("wheel", handleWheel);
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [hasCompleted, reduce, updateHeroProgress]);
+  }, [hasCompleted, reduce, releaseHeroScrollLock, updateHeroProgress]);
 
   const heroScale = useTransform(heroProgress, [0, 0.5, 1], [1.24, 1.1, 1.03]);
   const heroY = useTransform(heroProgress, [0, 1], [0, 34]);

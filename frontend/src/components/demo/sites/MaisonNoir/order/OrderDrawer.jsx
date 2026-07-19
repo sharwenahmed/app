@@ -439,7 +439,7 @@ export default function OrderDrawer() {
 
   useEffect(() => {
     if (!drawerOpen) return;
-    drawerRef.current?.focus();
+    drawerRef.current?.focus({ preventScroll: true });
   }, [drawerOpen, drawerView]);
 
   useEffect(() => {

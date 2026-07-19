@@ -1,7 +1,9 @@
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useCallback, useLayoutEffect, useRef } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import gsap from "gsap";
 import { menuItems } from "./FullMenu";
+import { useMaisonScroll } from "./scroll/MaisonScrollDirector";
+import { MAISON_SCROLL_LOCKS } from "./scroll/scrollChoreography";
 
 const cardShapes = [
   {
@@ -283,8 +285,25 @@ export function FoodFilmRunway() {
   const progressRef = useRef(0);
   const gateActiveRef = useRef(false);
   const gateCompleteRef = useRef(false);
+  const releaseScrollLockRef = useRef(null);
 
   const reduce = useReducedMotion();
+  const { lockScroll, unlockScroll } = useMaisonScroll();
+
+  const releaseRunwayScrollLock = useCallback(() => {
+    if (releaseScrollLockRef.current) {
+      releaseScrollLockRef.current();
+      releaseScrollLockRef.current = null;
+      return;
+    }
+
+    unlockScroll(MAISON_SCROLL_LOCKS.foodRunway);
+  }, [unlockScroll]);
+
+  const engageRunwayScrollLock = useCallback(() => {
+    if (releaseScrollLockRef.current) return;
+    releaseScrollLockRef.current = lockScroll(MAISON_SCROLL_LOCKS.foodRunway);
+  }, [lockScroll]);
 
   const setCardRef = (element, index) => {
     cardRefs.current[index] = element;
@@ -593,6 +612,7 @@ export function FoodFilmRunway() {
 
         gateActiveRef.current = true;
         progressRef.current = 0;
+        engageRunwayScrollLock();
         renderNow(0);
         lockToSection();
       };
@@ -602,6 +622,7 @@ export function FoodFilmRunway() {
         gateActiveRef.current = false;
         progressRef.current = 1;
         renderNow(1);
+        releaseRunwayScrollLock();
 
         window.requestAnimationFrame(() => {
           const section = sectionRef.current;
@@ -621,6 +642,7 @@ export function FoodFilmRunway() {
           gateCompleteRef.current = false;
           gateActiveRef.current = false;
           progressRef.current = 0;
+          releaseRunwayScrollLock();
           renderNow(0);
         }
       };
@@ -669,6 +691,7 @@ export function FoodFilmRunway() {
 
         if (nextProgress <= 0.001 && event.deltaY < 0) {
           gateActiveRef.current = false;
+          releaseRunwayScrollLock();
           renderNow(0);
           return;
         }
@@ -713,6 +736,7 @@ export function FoodFilmRunway() {
 
         if (nextProgress <= 0.001 && isBackward) {
           gateActiveRef.current = false;
+          releaseRunwayScrollLock();
           renderNow(0);
           return;
         }
@@ -733,6 +757,7 @@ export function FoodFilmRunway() {
       window.addEventListener("scroll", handleScroll, { passive: true });
 
       return () => {
+        releaseRunwayScrollLock();
         preloadLinks.forEach((link) => link.remove());
         preloadedImages.length = 0;
 
@@ -749,7 +774,7 @@ export function FoodFilmRunway() {
     return () => {
       matchMedia.revert();
     };
-  }, [reduce]);
+  }, [engageRunwayScrollLock, reduce, releaseRunwayScrollLock]);
 
   return (
     <section

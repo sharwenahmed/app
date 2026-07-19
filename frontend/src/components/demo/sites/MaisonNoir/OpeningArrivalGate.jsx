@@ -6,6 +6,8 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
+import { useMaisonScroll } from "./scroll/MaisonScrollDirector";
+import { MAISON_SCROLL_LOCKS } from "./scroll/scrollChoreography";
 
 const OPENING_VIDEO_SRC = "/images/MaisonNoir/videos/hero/maison-noir-opening.mp4";
 const POSTER_SRC = "/images/MaisonNoir/branding/hero.webp";
@@ -326,8 +328,10 @@ export default function OpeningArrivalGate() {
   const releaseTimerRef = useRef(null);
   const touchStartYRef = useRef(null);
   const progressRef = useRef(0);
+  const releaseScrollLockRef = useRef(null);
 
   const reduce = useReducedMotion();
+  const { lockScroll, scrollTo, unlockScroll } = useMaisonScroll();
   const [hasCompleted, setHasCompleted] = useState(false);
 
   const rawProgress = useMotionValue(0);
@@ -337,6 +341,21 @@ export default function OpeningArrivalGate() {
     damping: 24,
     mass: 1.65,
   });
+
+  const releaseArrivalScrollLock = useCallback(() => {
+    if (releaseScrollLockRef.current) {
+      releaseScrollLockRef.current();
+      releaseScrollLockRef.current = null;
+      return;
+    }
+
+    unlockScroll(MAISON_SCROLL_LOCKS.openingArrival);
+  }, [unlockScroll]);
+
+  const engageArrivalScrollLock = useCallback(() => {
+    if (releaseScrollLockRef.current) return;
+    releaseScrollLockRef.current = lockScroll(MAISON_SCROLL_LOCKS.openingArrival);
+  }, [lockScroll]);
 
   const completeArrival = useCallback(() => {
     setHasCompleted(true);
@@ -351,13 +370,16 @@ export default function OpeningArrivalGate() {
       const hero = document.getElementById("top");
 
       if (hero) {
-        hero.scrollIntoView({
+        scrollTo(hero, {
           behavior: "smooth",
-          block: "start",
+          offset: 0,
+          duration: 0.95,
         });
       }
+
+      releaseArrivalScrollLock();
     }, 620);
-  }, [rawProgress]);
+  }, [rawProgress, releaseArrivalScrollLock, scrollTo]);
 
   const updateGateProgress = useCallback(
     (delta) => {
@@ -365,6 +387,8 @@ export default function OpeningArrivalGate() {
 
       const section = sectionRef.current;
       if (!section) return;
+
+      engageArrivalScrollLock();
 
       const rect = section.getBoundingClientRect();
       const targetY = window.scrollY + rect.top;
@@ -384,11 +408,21 @@ export default function OpeningArrivalGate() {
       progressRef.current = nextProgress;
       rawProgress.set(nextProgress);
 
+      if (nextProgress <= 0.001 && delta < 0) {
+        releaseArrivalScrollLock();
+      }
+
       if (nextProgress >= 0.995) {
         completeArrival();
       }
     },
-    [completeArrival, hasCompleted, rawProgress]
+    [
+      completeArrival,
+      engageArrivalScrollLock,
+      hasCompleted,
+      rawProgress,
+      releaseArrivalScrollLock,
+    ]
   );
 
   useEffect(() => {
@@ -463,6 +497,8 @@ export default function OpeningArrivalGate() {
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
+      releaseArrivalScrollLock();
+
       if (releaseTimerRef.current) {
         window.clearTimeout(releaseTimerRef.current);
       }
@@ -472,7 +508,7 @@ export default function OpeningArrivalGate() {
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [hasCompleted, updateGateProgress]);
+  }, [hasCompleted, releaseArrivalScrollLock, updateGateProgress]);
 
   const roomOpacity = useTransform(cinematicProgress, [0, 1], [1, 1]);
 

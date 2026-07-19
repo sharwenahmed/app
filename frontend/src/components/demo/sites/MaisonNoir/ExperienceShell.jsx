@@ -1,5 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion, useScroll, useSpring } from "framer-motion";
+import AmbientLighting from "./scroll/AmbientLighting";
+import SceneTransition from "./scroll/SceneTransition";
+import { useMaisonScroll } from "./scroll/MaisonScrollDirector";
 
 const defaultScenes = [
   {
@@ -123,21 +126,15 @@ const defaultScenes = [
 
 export function SceneChapter({ children, sceneId }) {
   return (
-    <motion.div
-      data-scene-chapter={sceneId}
-      initial={{ opacity: 0.96 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: false, amount: 0.18 }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="relative z-10"
-    >
+    <SceneTransition sceneId={sceneId}>
       {children}
-    </motion.div>
+    </SceneTransition>
   );
 }
 
 export default function ExperienceShell({ children, scenes = defaultScenes }) {
   const reduce = useReducedMotion();
+  const { scrollTo, setActiveScene } = useMaisonScroll();
   const rafRef = useRef(null);
   const activeIdRef = useRef(scenes[0]?.id || "top");
   const [activeId, setActiveId] = useState(scenes[0]?.id || "top");
@@ -204,12 +201,19 @@ export default function ExperienceShell({ children, scenes = defaultScenes }) {
     if (!el) return;
 
     const offset = id === "top" ? 0 : 76;
-    const y = Math.max(el.getBoundingClientRect().top + window.scrollY - offset, 0);
 
-    window.scrollTo({ top: y, behavior: "smooth" });
+    scrollTo(el, {
+      offset,
+      behavior: "smooth",
+      duration: 1.05,
+    });
   };
 
   const showSceneChrome = activeScene.id !== "top";
+
+  useEffect(() => {
+    setActiveScene(activeScene);
+  }, [activeScene, setActiveScene]);
 
   return (
     <div className="relative overflow-hidden bg-[#050505]">
@@ -236,6 +240,7 @@ export default function ExperienceShell({ children, scenes = defaultScenes }) {
 
       <div className="pointer-events-none fixed inset-0 z-[2] bg-[radial-gradient(circle_at_50%_50%,transparent,rgba(0,0,0,0.68)_72%)]" />
       <div className="pointer-events-none fixed inset-0 z-[2] opacity-[0.045] [background-image:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:24px_24px]" />
+      <AmbientLighting />
 
       <AnimatePresence mode="wait">
         <motion.div

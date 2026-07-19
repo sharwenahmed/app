@@ -6,14 +6,18 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
+import { useMaisonScroll } from "./scroll/MaisonScrollDirector";
+import { MAISON_SCROLL_LOCKS } from "./scroll/scrollChoreography";
 
 export default function SignatureToFullMenuTransition() {
   const sectionRef = useRef(null);
   const releaseTimerRef = useRef(null);
   const touchStartYRef = useRef(null);
   const progressRef = useRef(0);
+  const releaseScrollLockRef = useRef(null);
 
   const reduce = useReducedMotion();
+  const { lockScroll, scrollTo, unlockScroll } = useMaisonScroll();
 
   const [hasCompleted, setHasCompleted] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
@@ -25,6 +29,21 @@ export default function SignatureToFullMenuTransition() {
     damping: 24,
     mass: 1.45,
   });
+
+  const releaseTransitionScrollLock = useCallback(() => {
+    if (releaseScrollLockRef.current) {
+      releaseScrollLockRef.current();
+      releaseScrollLockRef.current = null;
+      return;
+    }
+
+    unlockScroll(MAISON_SCROLL_LOCKS.signatureToMenu);
+  }, [unlockScroll]);
+
+  const engageTransitionScrollLock = useCallback(() => {
+    if (releaseScrollLockRef.current) return;
+    releaseScrollLockRef.current = lockScroll(MAISON_SCROLL_LOCKS.signatureToMenu);
+  }, [lockScroll]);
 
   const completeTransition = useCallback(() => {
     setHasCompleted(true);
@@ -40,13 +59,16 @@ export default function SignatureToFullMenuTransition() {
       const fullMenu = document.getElementById("full-menu");
 
       if (fullMenu) {
-        fullMenu.scrollIntoView({
+        scrollTo(fullMenu, {
           behavior: "smooth",
-          block: "start",
+          offset: 0,
+          duration: 0.95,
         });
       }
+
+      releaseTransitionScrollLock();
     }, 520);
-  }, [rawProgress]);
+  }, [rawProgress, releaseTransitionScrollLock, scrollTo]);
 
   const resetIfAboveTransition = useCallback(() => {
     const section = sectionRef.current;
@@ -59,8 +81,9 @@ export default function SignatureToFullMenuTransition() {
       setIsLocked(false);
       progressRef.current = 0;
       rawProgress.set(0);
+      releaseTransitionScrollLock();
     }
-  }, [rawProgress]);
+  }, [rawProgress, releaseTransitionScrollLock]);
 
   const snapToGate = useCallback(() => {
     const section = sectionRef.current;
@@ -80,6 +103,7 @@ export default function SignatureToFullMenuTransition() {
       if (hasCompleted) return;
 
       setIsLocked(true);
+      engageTransitionScrollLock();
       snapToGate();
   
       const resistance = 2850;
@@ -91,12 +115,24 @@ export default function SignatureToFullMenuTransition() {
   
       progressRef.current = nextProgress;
       rawProgress.set(nextProgress);
+
+      if (nextProgress <= 0.001 && delta < 0) {
+        setIsLocked(false);
+        releaseTransitionScrollLock();
+      }
   
       if (nextProgress >= 0.995) {
         completeTransition();
       }
     },
-    [completeTransition, hasCompleted, rawProgress, snapToGate]
+    [
+      completeTransition,
+      engageTransitionScrollLock,
+      hasCompleted,
+      rawProgress,
+      releaseTransitionScrollLock,
+      snapToGate,
+    ]
   );
 
   useEffect(() => {
@@ -177,6 +213,8 @@ export default function SignatureToFullMenuTransition() {
     window.addEventListener("keydown", handleKeyDown);
   
     return () => {
+      releaseTransitionScrollLock();
+
       if (releaseTimerRef.current) {
         window.clearTimeout(releaseTimerRef.current);
       }
@@ -186,7 +224,12 @@ export default function SignatureToFullMenuTransition() {
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [hasCompleted, resetIfAboveTransition, updateGateProgress]);
+  }, [
+    hasCompleted,
+    releaseTransitionScrollLock,
+    resetIfAboveTransition,
+    updateGateProgress,
+  ]);
 
   const darkness = useTransform(
     cinematicProgress,
