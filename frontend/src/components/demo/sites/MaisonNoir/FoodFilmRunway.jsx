@@ -662,8 +662,12 @@ export function FoodFilmRunway() {
 
       renderNow(0);
 
+      const canActivateAfterSignature = () =>
+        document.documentElement.dataset.mnSignatureExperienceComplete === "true";
+
       const activateGate = () => {
         if (gateCompleteRef.current || gateActiveRef.current) return;
+        if (!canActivateAfterSignature()) return;
 
         gateActiveRef.current = true;
         progressRef.current = 0;
@@ -716,6 +720,7 @@ export function FoodFilmRunway() {
 
       const handleWheel = (event) => {
         if (!gateActiveRef.current && !gateNearbyRef.current) return;
+        if (!gateActiveRef.current && !canActivateAfterSignature()) return;
 
         if (!gateActiveRef.current) {
           resetGateIfAbove();
@@ -758,6 +763,7 @@ export function FoodFilmRunway() {
 
       const handleKeyDown = (event) => {
         if (!gateActiveRef.current && !gateNearbyRef.current) return;
+        if (!gateActiveRef.current && !canActivateAfterSignature()) return;
 
         const forwardKeys = ["ArrowDown", "PageDown", " ", "End"];
         const backwardKeys = ["ArrowUp", "PageUp", "Home"];

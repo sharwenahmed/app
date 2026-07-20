@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
+import gsap from "gsap";
 import { useMaisonScroll } from "./scroll/MaisonScrollDirector";
 import { MAISON_SCROLL_LOCKS } from "./scroll/scrollChoreography";
 
@@ -88,7 +89,29 @@ function LetterReveal({
   );
 }
 
-const AUTOPLAY_DELAY = 5200;
+const SIGNATURE_STAGE = {
+  INTRO: 0,
+  RIBEYE: 1,
+  FILET: 2,
+  WAGYU: 3,
+  EXITING: 4,
+  COMPLETE: 5,
+};
+
+const SIGNATURE_STAGE_NAMES = [
+  "intro",
+  "ribeye",
+  "filet",
+  "wagyu",
+  "exiting",
+  "complete",
+];
+
+const WHEEL_INTENT_THRESHOLD = 118;
+const TOUCH_INTENT_THRESHOLD = 56;
+const STAGE_SETTLE_MS = 880;
+const ENTRY_SETTLE_MS = 640;
+const EXIT_SETTLE_MS = 860;
 
 const emberParticles = Array.from({ length: 18 }, (_, index) => ({
   id: index,
@@ -99,68 +122,68 @@ const emberParticles = Array.from({ length: 18 }, (_, index) => ({
 }));
 
 export default function SignatureMenu() {
+  const [stage, setStage] = useState(SIGNATURE_STAGE.INTRO);
   const [active, setActive] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
   const [isReserving, setIsReserving] = useState(false);
   const sectionRef = useRef(null);
-  const intervalRef = useRef(null);
+  const introRef = useRef(null);
+  const dishChapterRef = useRef(null);
   const touchStartYRef = useRef(null);
-  const viewProgressRef = useRef(0);
+  const stageRef = useRef(SIGNATURE_STAGE.INTRO);
+  const wheelIntentRef = useRef(0);
+  const lastIntentDirectionRef = useRef(0);
+  const inputLockedUntilRef = useRef(0);
+  const sectionTopRef = useRef(0);
+  const sectionHeightRef = useRef(0);
   const viewGateActiveRef = useRef(false);
   const viewGateCompleteRef = useRef(false);
-  const releaseTimerRef = useRef(null);
+  const transitionTimerRef = useRef(null);
+  const exitTimerRef = useRef(null);
   const releaseScrollLockRef = useRef(null);
   const reduce = useReducedMotion();
   const { lockScroll, unlockScroll } = useMaisonScroll();
 
   const dish = dishes[active];
+  const showIntroChapter = reduce || stage === SIGNATURE_STAGE.INTRO;
+  const showDishChapter = reduce || stage !== SIGNATURE_STAGE.INTRO;
+  const isExiting = stage === SIGNATURE_STAGE.EXITING;
 
-  useEffect(() => {
-    if (reduce || isPaused || isReserving) return;
+  const resetInputIntent = React.useCallback(() => {
+    wheelIntentRef.current = 0;
+    lastIntentDirectionRef.current = 0;
+  }, []);
 
-    intervalRef.current = window.setInterval(() => {
-      setActive((current) => (current + 1) % dishes.length);
-    }, AUTOPLAY_DELAY);
+  const lockInputFor = React.useCallback((duration) => {
+    inputLockedUntilRef.current = performance.now() + duration;
 
-    return () => {
-      if (intervalRef.current) {
-        window.clearInterval(intervalRef.current);
-      }
-    };
-  }, [isPaused, isReserving, reduce]);
-
-  const handleSelectDish = (index) => {
-    setActive(index);
-
-    if (intervalRef.current) {
-      window.clearInterval(intervalRef.current);
+    if (transitionTimerRef.current) {
+      window.clearTimeout(transitionTimerRef.current);
     }
-  };
 
-  const handleReserveExperience = (event) => {
-    event.preventDefault();
+    transitionTimerRef.current = window.setTimeout(() => {
+      inputLockedUntilRef.current = 0;
+      transitionTimerRef.current = null;
+    }, duration);
+  }, []);
 
-    setIsReserving(true);
-    setIsPaused(true);
+  const markSignatureStage = React.useCallback((nextStage) => {
+    if (typeof document === "undefined") return;
 
-    window.setTimeout(() => {
-      const reserveSection =
-        document.getElementById("reserve") ||
-        document.getElementById("reservation");
+    const root = document.documentElement;
+    const complete = nextStage === SIGNATURE_STAGE.COMPLETE;
 
-      if (reserveSection) {
-        reserveSection.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
-    }, 1250);
+    root.dataset.mnSignatureExperienceComplete = complete ? "true" : "false";
+    root.dataset.mnSignatureStage =
+      SIGNATURE_STAGE_NAMES[nextStage] || "active";
+  }, []);
 
-    window.setTimeout(() => {
-      setIsReserving(false);
-      setIsPaused(false);
-    }, 2050);
-  };
+  const measureSignature = React.useCallback(() => {
+    const section = sectionRef.current;
+    if (!section || typeof window === "undefined") return;
+
+    sectionTopRef.current = section.getBoundingClientRect().top + window.scrollY;
+    sectionHeightRef.current = section.offsetHeight;
+  }, []);
 
   const releaseSignatureScrollLock = React.useCallback(() => {
     if (releaseScrollLockRef.current) {
@@ -177,111 +200,457 @@ export default function SignatureMenu() {
     releaseScrollLockRef.current = lockScroll(MAISON_SCROLL_LOCKS.signature);
   }, [lockScroll]);
 
+  const getSignatureTargetY = React.useCallback(() => {
+    if (typeof window === "undefined") return 0;
+
+    const offset = window.innerWidth >= 768 ? 28 : 12;
+    return Math.max(sectionTopRef.current - offset, 0);
+  }, []);
+
+  const lockToSignature = React.useCallback(() => {
+    if (typeof window === "undefined") return;
+
+    const targetY = getSignatureTargetY();
+
+    if (Math.abs(window.scrollY - targetY) > 2) {
+      window.scrollTo({
+        top: targetY,
+        behavior: "auto",
+      });
+    }
+  }, [getSignatureTargetY]);
+
+  const completeSignatureExperience = React.useCallback(() => {
+    if (transitionTimerRef.current) {
+      window.clearTimeout(transitionTimerRef.current);
+      transitionTimerRef.current = null;
+    }
+
+    if (exitTimerRef.current) {
+      window.clearTimeout(exitTimerRef.current);
+      exitTimerRef.current = null;
+    }
+
+    resetInputIntent();
+    inputLockedUntilRef.current = 0;
+    stageRef.current = SIGNATURE_STAGE.COMPLETE;
+    viewGateActiveRef.current = false;
+    viewGateCompleteRef.current = true;
+    setStage(SIGNATURE_STAGE.COMPLETE);
+    setActive(2);
+    markSignatureStage(SIGNATURE_STAGE.COMPLETE);
+    releaseSignatureScrollLock();
+  }, [markSignatureStage, releaseSignatureScrollLock, resetInputIntent]);
+
+  const goToSignatureStage = React.useCallback(
+    (nextStage, settleMs = STAGE_SETTLE_MS) => {
+      if (exitTimerRef.current) {
+        window.clearTimeout(exitTimerRef.current);
+        exitTimerRef.current = null;
+      }
+
+      const stageValue = Math.min(
+        Math.max(nextStage, SIGNATURE_STAGE.INTRO),
+        SIGNATURE_STAGE.EXITING
+      );
+
+      resetInputIntent();
+      viewGateActiveRef.current = true;
+      viewGateCompleteRef.current = false;
+      stageRef.current = stageValue;
+      setStage(stageValue);
+      markSignatureStage(stageValue);
+      lockInputFor(settleMs);
+      lockToSignature();
+
+      if (stageValue === SIGNATURE_STAGE.INTRO) {
+        setActive(0);
+      } else if (stageValue <= SIGNATURE_STAGE.WAGYU) {
+        setActive(stageValue - 1);
+      } else {
+        setActive(2);
+        exitTimerRef.current = window.setTimeout(
+          completeSignatureExperience,
+          EXIT_SETTLE_MS
+        );
+      }
+    },
+    [
+      completeSignatureExperience,
+      lockInputFor,
+      lockToSignature,
+      markSignatureStage,
+      resetInputIntent,
+    ]
+  );
+
+  const activateSignatureGate = React.useCallback(
+    (initialStage = SIGNATURE_STAGE.INTRO) => {
+      if (viewGateActiveRef.current) return;
+
+      viewGateActiveRef.current = true;
+      viewGateCompleteRef.current = false;
+      engageSignatureScrollLock();
+      goToSignatureStage(initialStage, ENTRY_SETTLE_MS);
+    },
+    [engageSignatureScrollLock, goToSignatureStage]
+  );
+
+  const releaseToPreviousSection = React.useCallback(() => {
+    if (exitTimerRef.current) {
+      window.clearTimeout(exitTimerRef.current);
+      exitTimerRef.current = null;
+    }
+
+    resetInputIntent();
+    inputLockedUntilRef.current = 0;
+    stageRef.current = SIGNATURE_STAGE.INTRO;
+    viewGateActiveRef.current = false;
+    viewGateCompleteRef.current = false;
+    setStage(SIGNATURE_STAGE.INTRO);
+    setActive(0);
+    markSignatureStage(SIGNATURE_STAGE.INTRO);
+    releaseSignatureScrollLock();
+
+    window.requestAnimationFrame(() => {
+      window.scrollBy({
+        top: -Math.min(window.innerHeight * 0.46, 430),
+        behavior: "smooth",
+      });
+    });
+  }, [markSignatureStage, releaseSignatureScrollLock, resetInputIntent]);
+
+  const consumeSignatureIntent = React.useCallback(
+    (direction) => {
+      const currentStage = stageRef.current;
+
+      if (direction > 0) {
+        if (currentStage === SIGNATURE_STAGE.INTRO) {
+          goToSignatureStage(SIGNATURE_STAGE.RIBEYE);
+          return;
+        }
+
+        if (currentStage === SIGNATURE_STAGE.RIBEYE) {
+          goToSignatureStage(SIGNATURE_STAGE.FILET);
+          return;
+        }
+
+        if (currentStage === SIGNATURE_STAGE.FILET) {
+          goToSignatureStage(SIGNATURE_STAGE.WAGYU);
+          return;
+        }
+
+        if (currentStage === SIGNATURE_STAGE.WAGYU) {
+          goToSignatureStage(SIGNATURE_STAGE.EXITING, EXIT_SETTLE_MS);
+        }
+
+        return;
+      }
+
+      if (currentStage === SIGNATURE_STAGE.EXITING) {
+        goToSignatureStage(SIGNATURE_STAGE.WAGYU);
+        return;
+      }
+
+      if (currentStage === SIGNATURE_STAGE.WAGYU) {
+        goToSignatureStage(SIGNATURE_STAGE.FILET);
+        return;
+      }
+
+      if (currentStage === SIGNATURE_STAGE.FILET) {
+        goToSignatureStage(SIGNATURE_STAGE.RIBEYE);
+        return;
+      }
+
+      if (currentStage === SIGNATURE_STAGE.RIBEYE) {
+        goToSignatureStage(SIGNATURE_STAGE.INTRO);
+        return;
+      }
+
+      if (currentStage === SIGNATURE_STAGE.INTRO) {
+        releaseToPreviousSection();
+      }
+    },
+    [goToSignatureStage, releaseToPreviousSection]
+  );
+
+  const handleSelectDish = React.useCallback(
+    (index) => {
+      const nextStage = index + SIGNATURE_STAGE.RIBEYE;
+
+      if (viewGateActiveRef.current) {
+        goToSignatureStage(nextStage, 520);
+        return;
+      }
+
+      resetInputIntent();
+      stageRef.current = nextStage;
+      viewGateCompleteRef.current = false;
+      setStage(nextStage);
+      setActive(index);
+      markSignatureStage(nextStage);
+    },
+    [goToSignatureStage, markSignatureStage, resetInputIntent]
+  );
+
+  const releaseForAnchorNavigation = React.useCallback(() => {
+    completeSignatureExperience();
+  }, [completeSignatureExperience]);
+
+  const handleReserveExperience = (event) => {
+    event.preventDefault();
+
+    completeSignatureExperience();
+    setIsReserving(true);
+
+    window.setTimeout(() => {
+      const reserveSection =
+        document.getElementById("reserve") ||
+        document.getElementById("reservation");
+
+      if (reserveSection) {
+        reserveSection.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 1250);
+
+    window.setTimeout(() => {
+      setIsReserving(false);
+    }, 2050);
+  };
+
+  useEffect(() => {
+    const hydrateInitialStage = () => {
+      measureSignature();
+
+      if (reduce) {
+        completeSignatureExperience();
+        return;
+      }
+
+      const sectionBottom = sectionTopRef.current + sectionHeightRef.current;
+      const isAlreadyBelowSignature =
+        window.scrollY > sectionBottom - window.innerHeight * 0.2;
+
+      if (isAlreadyBelowSignature) {
+        completeSignatureExperience();
+        return;
+      }
+
+      markSignatureStage(stageRef.current);
+    };
+
+    const animationFrame = window.requestAnimationFrame(hydrateInitialStage);
+    const measureTimer = window.setTimeout(measureSignature, 260);
+
+    window.addEventListener("resize", measureSignature, { passive: true });
+    window.addEventListener("load", measureSignature, { once: true });
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+      window.clearTimeout(measureTimer);
+      window.removeEventListener("resize", measureSignature);
+      window.removeEventListener("load", measureSignature);
+      releaseSignatureScrollLock();
+
+      if (transitionTimerRef.current) {
+        window.clearTimeout(transitionTimerRef.current);
+      }
+
+      if (exitTimerRef.current) {
+        window.clearTimeout(exitTimerRef.current);
+      }
+
+      if (typeof document !== "undefined") {
+        delete document.documentElement.dataset.mnSignatureExperienceComplete;
+        delete document.documentElement.dataset.mnSignatureStage;
+      }
+    };
+  }, [
+    completeSignatureExperience,
+    markSignatureStage,
+    measureSignature,
+    reduce,
+    releaseSignatureScrollLock,
+  ]);
+
   useEffect(() => {
     if (reduce) return undefined;
 
-    const clamp = (value) => Math.min(Math.max(value, 0), 1);
+    const ctx = gsap.context(() => {
+      if (stage === SIGNATURE_STAGE.INTRO && introRef.current) {
+        gsap.fromTo(
+          introRef.current,
+          { autoAlpha: 0.92, y: 18, scale: 0.992 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.82,
+            ease: "power3.out",
+            clearProps: "transform,opacity,visibility",
+          }
+        );
+      }
 
-    const getTargetY = () => {
-      const section = sectionRef.current;
-      if (!section) return 0;
+      if (!dishChapterRef.current) return;
 
-      const offset = window.innerWidth >= 768 ? 28 : 12;
-      return Math.max(section.getBoundingClientRect().top + window.scrollY - offset, 0);
-    };
-
-    const lockToSignature = () => {
-      const targetY = getTargetY();
-
-      if (Math.abs(window.scrollY - targetY) > 1) {
-        window.scrollTo({
-          top: targetY,
-          behavior: "auto",
+      if (stage === SIGNATURE_STAGE.EXITING) {
+        gsap.to(dishChapterRef.current, {
+          autoAlpha: 0,
+          y: -30,
+          scale: 0.985,
+          duration: 0.72,
+          ease: "power3.out",
         });
-      }
-    };
-
-    const releaseGate = () => {
-      viewGateActiveRef.current = false;
-      viewGateCompleteRef.current = true;
-      viewProgressRef.current = 1;
-      releaseSignatureScrollLock();
-
-      if (releaseTimerRef.current) {
-        window.clearTimeout(releaseTimerRef.current);
-        releaseTimerRef.current = null;
-      }
-    };
-
-    const activateGate = () => {
-      if (viewGateActiveRef.current || viewGateCompleteRef.current) return;
-
-      viewGateActiveRef.current = true;
-      viewProgressRef.current = 0;
-      engageSignatureScrollLock();
-      lockToSignature();
-
-      if (releaseTimerRef.current) {
-        window.clearTimeout(releaseTimerRef.current);
+        return;
       }
 
-      releaseTimerRef.current = window.setTimeout(releaseGate, 1100);
+      if (stage !== SIGNATURE_STAGE.INTRO) {
+        gsap.fromTo(
+          dishChapterRef.current,
+          { autoAlpha: 0.82, y: 24, scale: 0.988 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.86,
+            ease: "power3.out",
+            clearProps: "transform,opacity,visibility",
+          }
+        );
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [reduce, stage]);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(measureSignature);
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [measureSignature, stage]);
+
+  useEffect(() => {
+    if (reduce) return undefined;
+
+    const managedSelectors =
+      "input, textarea, select, [contenteditable='true'], [role='dialog'], [data-lenis-prevent], [data-maison-scroll-prevent]";
+    const keyManagedSelectors =
+      "input, textarea, select, [contenteditable='true'], [role='dialog']";
+
+    const stopManagedEvent = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation?.();
     };
 
-    const resetIfAbove = () => {
-      const section = sectionRef.current;
-      if (!section) return;
+    const getSignatureBounds = () => {
+      if (!sectionHeightRef.current) {
+        measureSignature();
+      }
 
-      const rect = section.getBoundingClientRect();
+      return {
+        top: sectionTopRef.current,
+        height: sectionHeightRef.current,
+        bottom: sectionTopRef.current + sectionHeightRef.current,
+      };
+    };
 
-      if (rect.top > window.innerHeight * 0.72) {
-        viewGateActiveRef.current = false;
+    const resetIfBeforeSignature = () => {
+      if (viewGateActiveRef.current) return;
+
+      const { top } = getSignatureBounds();
+
+      if (window.scrollY + window.innerHeight * 0.58 < top) {
+        stageRef.current = SIGNATURE_STAGE.INTRO;
         viewGateCompleteRef.current = false;
-        viewProgressRef.current = 0;
-        releaseSignatureScrollLock();
-
-        if (releaseTimerRef.current) {
-          window.clearTimeout(releaseTimerRef.current);
-          releaseTimerRef.current = null;
-        }
+        setStage(SIGNATURE_STAGE.INTRO);
+        setActive(0);
+        markSignatureStage(SIGNATURE_STAGE.INTRO);
       }
     };
 
-    const isSignatureApproaching = () => {
-      const section = sectionRef.current;
-      if (!section) return false;
+    const isForwardGateZone = (deltaY = 0) => {
+      const { top, height } = getSignatureBounds();
+      const viewportHeight = window.innerHeight;
+      const projectedScrollY =
+        window.scrollY + Math.min(Math.max(deltaY, 0), viewportHeight * 5.5);
 
-      const rect = section.getBoundingClientRect();
-
-      const entryLine = Math.min(window.innerHeight * 0.46, 460);
-
-      return rect.top <= entryLine && rect.bottom >= window.innerHeight * 0.42;
+      return (
+        projectedScrollY + viewportHeight * 0.82 >= top &&
+        window.scrollY < top + height * 0.72
+      );
     };
 
-    const consumeForwardScroll = (delta) => {
-      lockToSignature();
-      viewProgressRef.current = clamp(viewProgressRef.current + delta / 1150);
+    const isReverseGateZone = (deltaY = 0) => {
+      const { top, bottom } = getSignatureBounds();
+      const viewportHeight = window.innerHeight;
+      const projectedScrollY =
+        window.scrollY - Math.min(Math.max(Math.abs(deltaY), 0), viewportHeight);
 
-      if (viewProgressRef.current >= 1) {
-        releaseGate();
+      return (
+        viewGateCompleteRef.current &&
+        window.scrollY <= bottom + viewportHeight * 0.48 &&
+        projectedScrollY + viewportHeight * 0.36 >= top
+      );
+    };
+
+    const isInputLocked = () => performance.now() < inputLockedUntilRef.current;
+
+    const advanceByWheelIntent = (deltaY) => {
+      const direction = deltaY > 0 ? 1 : -1;
+      const clampedDelta = Math.max(Math.min(deltaY, 160), -160);
+
+      if (lastIntentDirectionRef.current !== direction) {
+        wheelIntentRef.current = 0;
+        lastIntentDirectionRef.current = direction;
+      }
+
+      wheelIntentRef.current += Math.abs(clampedDelta);
+
+      if (wheelIntentRef.current >= WHEEL_INTENT_THRESHOLD) {
+        consumeSignatureIntent(direction);
       }
     };
 
     const handleWheel = (event) => {
-      if (!viewGateActiveRef.current) {
-        resetIfAbove();
+      if (event.defaultPrevented || event.target?.closest?.(managedSelectors)) {
+        return;
       }
 
-      const scrollingForward = event.deltaY > 0;
+      if (Math.abs(event.deltaY) < 1) return;
 
-      if (!scrollingForward || viewGateCompleteRef.current) return;
-      if (!viewGateActiveRef.current && !isSignatureApproaching()) return;
+      const direction = event.deltaY > 0 ? 1 : -1;
 
-      activateGate();
+      if (!viewGateActiveRef.current) {
+        resetIfBeforeSignature();
 
-      event.preventDefault();
-      event.stopPropagation();
-      consumeForwardScroll(event.deltaY);
+        if (direction > 0) {
+          if (viewGateCompleteRef.current || !isForwardGateZone(event.deltaY)) {
+            return;
+          }
+
+          stopManagedEvent(event);
+          activateSignatureGate(SIGNATURE_STAGE.INTRO);
+          return;
+        }
+
+        if (!isReverseGateZone(event.deltaY)) return;
+
+        stopManagedEvent(event);
+        activateSignatureGate(SIGNATURE_STAGE.WAGYU);
+        return;
+      }
+
+      stopManagedEvent(event);
+      lockToSignature();
+
+      if (isInputLocked()) return;
+
+      advanceByWheelIntent(event.deltaY);
     };
 
     const handleTouchStart = (event) => {
@@ -289,9 +658,7 @@ export default function SignatureMenu() {
     };
 
     const handleTouchMove = (event) => {
-      if (!viewGateActiveRef.current) {
-        resetIfAbove();
-      }
+      if (event.target?.closest?.(managedSelectors)) return;
 
       const currentY = event.touches[0]?.clientY ?? null;
       const startY = touchStartYRef.current;
@@ -299,39 +666,90 @@ export default function SignatureMenu() {
       if (currentY === null || startY === null) return;
 
       const delta = startY - currentY;
-      const scrollingForward = delta > 0;
 
-      if (!scrollingForward || viewGateCompleteRef.current) {
+      if (Math.abs(delta) < TOUCH_INTENT_THRESHOLD) return;
+
+      const direction = delta > 0 ? 1 : -1;
+
+      if (!viewGateActiveRef.current) {
+        resetIfBeforeSignature();
+
+        if (direction > 0) {
+          if (viewGateCompleteRef.current || !isForwardGateZone(delta)) {
+            touchStartYRef.current = currentY;
+            return;
+          }
+
+          stopManagedEvent(event);
+          activateSignatureGate(SIGNATURE_STAGE.INTRO);
+          touchStartYRef.current = currentY;
+          return;
+        }
+
+        if (!isReverseGateZone(delta)) {
+          touchStartYRef.current = currentY;
+          return;
+        }
+
+        stopManagedEvent(event);
+        activateSignatureGate(SIGNATURE_STAGE.WAGYU);
         touchStartYRef.current = currentY;
         return;
       }
 
-      if (!viewGateActiveRef.current && !isSignatureApproaching()) {
-        touchStartYRef.current = currentY;
-        return;
-      }
-
-      activateGate();
-
-      event.preventDefault();
-      consumeForwardScroll(delta * 2.6);
+      stopManagedEvent(event);
+      lockToSignature();
       touchStartYRef.current = currentY;
+
+      if (isInputLocked()) return;
+
+      consumeSignatureIntent(direction);
     };
 
     const handleKeyDown = (event) => {
-      const forwardKeys = ["ArrowDown", "PageDown", " ", "End"];
-
-      if (!forwardKeys.includes(event.key)) return;
-      if (!viewGateActiveRef.current) {
-        resetIfAbove();
+      if (
+        event.defaultPrevented ||
+        document.activeElement?.closest?.(keyManagedSelectors)
+      ) {
+        return;
       }
 
-      if (viewGateCompleteRef.current) return;
-      if (!viewGateActiveRef.current && !isSignatureApproaching()) return;
+      const forwardKeys = ["ArrowDown", "PageDown", "End"];
+      const backwardKeys = ["ArrowUp", "PageUp", "Home"];
+      const isSpace = event.key === " ";
+      const isForward =
+        forwardKeys.includes(event.key) || (isSpace && !event.shiftKey);
+      const isBackward =
+        backwardKeys.includes(event.key) || (isSpace && event.shiftKey);
 
-      activateGate();
-      event.preventDefault();
-      consumeForwardScroll(390);
+      if (!isForward && !isBackward) return;
+
+      const direction = isForward ? 1 : -1;
+
+      if (!viewGateActiveRef.current) {
+        resetIfBeforeSignature();
+
+        if (direction > 0) {
+          if (viewGateCompleteRef.current || !isForwardGateZone(120)) return;
+
+          stopManagedEvent(event);
+          activateSignatureGate(SIGNATURE_STAGE.INTRO);
+          return;
+        }
+
+        if (!isReverseGateZone(120)) return;
+
+        stopManagedEvent(event);
+        activateSignatureGate(SIGNATURE_STAGE.WAGYU);
+        return;
+      }
+
+      stopManagedEvent(event);
+      lockToSignature();
+
+      if (isInputLocked()) return;
+
+      consumeSignatureIntent(direction);
     };
 
     window.addEventListener("wheel", handleWheel, { passive: false });
@@ -340,18 +758,19 @@ export default function SignatureMenu() {
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      releaseSignatureScrollLock();
-
-      if (releaseTimerRef.current) {
-        window.clearTimeout(releaseTimerRef.current);
-      }
-
       window.removeEventListener("wheel", handleWheel);
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [engageSignatureScrollLock, reduce, releaseSignatureScrollLock]);
+  }, [
+    activateSignatureGate,
+    consumeSignatureIntent,
+    lockToSignature,
+    markSignatureStage,
+    measureSignature,
+    reduce,
+  ]);
 
   return (
     <section
@@ -397,48 +816,66 @@ export default function SignatureMenu() {
         ))}
 
       <div className="relative z-10 mx-auto max-w-7xl">
-        <motion.div
-          initial={reduce ? false : { opacity: 1 }}
-          whileInView={reduce ? {} : { opacity: 1 }}
-          viewport={{ once: true, amount: 0.45 }}
-          className="relative z-0 mx-auto mb-14 max-w-5xl text-center md:mb-20 lg:mb-24"
-        >
-          <p className="mb-7 text-xs uppercase tracking-[0.56em] text-[#C9A25B]">
-            <LetterReveal
-              text="SIGNATURE EXPERIENCE"
-              delay={0.05}
-              stagger={0.055}
-            />
-          </p>
+        <AnimatePresence mode="wait">
+          {showIntroChapter && (
+            <motion.div
+              key="signature-intro"
+              ref={introRef}
+              initial={reduce ? false : { opacity: 1 }}
+              animate={reduce ? {} : { opacity: 1 }}
+              exit={reduce ? {} : { opacity: 0, y: -26, scale: 0.985 }}
+              transition={{ duration: 0.72, ease: [0.22, 1, 0.36, 1] }}
+              className="relative z-0 mx-auto mb-14 max-w-5xl text-center md:mb-20 lg:mb-24"
+            >
+              <p className="mb-7 text-xs uppercase tracking-[0.56em] text-[#C9A25B]">
+                <LetterReveal
+                  text="SIGNATURE EXPERIENCE"
+                  delay={0.05}
+                  stagger={0.055}
+                />
+              </p>
 
-          <h2 className="font-serif text-[clamp(3.4rem,9vw,8.5rem)] leading-[0.82] tracking-[-0.075em] text-white">
-            <span className="block">
-              <LetterReveal
-                text="One masterpiece."
-                delay={0.2}
-                stagger={0.06}
-              />
-            </span>
+              <h2 className="font-serif text-[clamp(3.4rem,9vw,8.5rem)] leading-[0.82] tracking-[-0.075em] text-white">
+                <span className="block">
+                  <LetterReveal
+                    text="One masterpiece."
+                    delay={0.2}
+                    stagger={0.06}
+                  />
+                </span>
 
-            <span className="block">
-              <LetterReveal
-                text="Slowly revealed."
-                delay={1.05}
-                stagger={0.06}
-              />
-            </span>
-          </h2>
+                <span className="block">
+                  <LetterReveal
+                    text="Slowly revealed."
+                    delay={1.05}
+                    stagger={0.06}
+                  />
+                </span>
+              </h2>
 
-          <p className="mx-auto mt-9 max-w-2xl text-sm uppercase leading-relaxed tracking-[0.22em] text-white/48">
-            <LetterReveal
-              text="Three house signatures, presented with the silence and ceremony of a private tasting room."
-              delay={2.0}
-              stagger={0.012}
-            />
-          </p>
-        </motion.div>
+              <p className="mx-auto mt-9 max-w-2xl text-sm uppercase leading-relaxed tracking-[0.22em] text-white/48">
+                <LetterReveal
+                  text="Three house signatures, presented with the silence and ceremony of a private tasting room."
+                  delay={2.0}
+                  stagger={0.012}
+                />
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        <div className="relative z-20 grid items-center gap-16 lg:grid-cols-12 lg:gap-20">
+        <AnimatePresence mode="wait">
+          {showDishChapter && (
+            <motion.div
+              key="signature-dishes"
+              ref={dishChapterRef}
+              initial={reduce ? false : { opacity: 0, y: 24, scale: 0.988 }}
+              animate={reduce ? {} : { opacity: 1, y: 0, scale: 1 }}
+              exit={reduce ? {} : { opacity: 0, y: -24, scale: 0.985 }}
+              transition={{ duration: 0.86, ease: [0.22, 1, 0.36, 1] }}
+              className={isExiting ? "pointer-events-none" : ""}
+            >
+              <div className="relative z-20 grid items-center gap-16 lg:grid-cols-12 lg:gap-20">
           <div className="order-2 lg:order-1 lg:col-span-5">
             <div className="mb-10 flex items-center gap-5">
               <AnimatePresence mode="wait">
@@ -475,7 +912,7 @@ export default function SignatureMenu() {
                     ? {}
                     : { opacity: 0, y: -18 }
                 }
-                transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.86, ease: [0.22, 1, 0.36, 1] }}
               >
                 <p className="mb-5 text-[10px] uppercase tracking-[0.48em] text-[#C9A25B]/80">
                   {dish.subtitle}
@@ -525,6 +962,7 @@ export default function SignatureMenu() {
 
                   <a
                     href="#full-menu"
+                    onClick={releaseForAnchorNavigation}
                     className="inline-flex items-center justify-center rounded-full border border-white/10 px-7 py-4 text-sm text-white/58 transition duration-500 hover:-translate-y-1 hover:border-[#C9A25B]/40 hover:text-[#C9A25B]"
                   >
                     See the full menu
@@ -538,8 +976,6 @@ export default function SignatureMenu() {
                 <button
                   key={item.name}
                   onClick={() => handleSelectDish(index)}
-                  onMouseEnter={() => setIsPaused(true)}
-                  onMouseLeave={() => setIsPaused(false)}
                   className={`group relative overflow-hidden border px-4 py-5 text-left transition duration-500 ${
                     active === index
                       ? "border-[#C9A25B]/55 bg-[#C9A25B]/8"
@@ -562,14 +998,14 @@ export default function SignatureMenu() {
                     {item.short}
                   </p>
 
-                  {active === index && !reduce && !isPaused && (
+                  {active === index && !reduce && (
                     <motion.span
                       key={`selector-progress-${active}`}
                       initial={{ scaleX: 0 }}
                       animate={{ scaleX: 1 }}
                       transition={{
-                        duration: AUTOPLAY_DELAY / 1000,
-                        ease: "linear",
+                        duration: 0.46,
+                        ease: "easeOut",
                       }}
                       className="absolute bottom-0 left-0 h-px w-full origin-left bg-[#C9A25B]"
                     />
@@ -579,11 +1015,7 @@ export default function SignatureMenu() {
             </div>
           </div>
 
-          <div
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-            className="relative z-30 order-1 lg:order-2 lg:col-span-7"
-          >
+          <div className="relative z-30 order-1 lg:order-2 lg:col-span-7">
             <motion.div
               initial={reduce ? false : { opacity: 0, y: 60, scale: 0.96 }}
               whileInView={reduce ? {} : { opacity: 1, y: 0, scale: 1 }}
@@ -717,29 +1149,14 @@ export default function SignatureMenu() {
                       className="h-px flex-1 overflow-hidden bg-white/14"
                     >
                       <motion.div
-                        key={
-                          active === index && !isPaused
-                            ? `active-progress-${index}-${active}`
-                            : `inactive-progress-${index}`
-                        }
+                        key={`dish-progress-${index}-${active}`}
                         initial={{ scaleX: 0 }}
                         animate={{
-                          scaleX:
-                            index < active
-                              ? 1
-                              : active === index && !reduce && !isPaused
-                                ? 1
-                                : active === index
-                                  ? 0.42
-                                  : 0,
+                          scaleX: index <= active ? 1 : 0,
                         }}
                         transition={{
-                          duration:
-                            active === index && !isPaused && !reduce
-                              ? AUTOPLAY_DELAY / 1000
-                              : 0.35,
-                          ease:
-                            active === index && !isPaused ? "linear" : "easeOut",
+                          duration: 0.38,
+                          ease: "easeOut",
                         }}
                         className="h-full w-full origin-left bg-gradient-to-r from-[#C9A25B] to-[#f3d48a]"
                       />
@@ -809,20 +1226,24 @@ export default function SignatureMenu() {
           </div>
         </div>
 
-        <div className="mt-24 flex flex-col items-start justify-between gap-6 border-t border-white/10 pt-8 sm:flex-row sm:items-center">
-          <p className="max-w-xl text-white/42">
-            A full seasonal menu, wine pairings, and private tasting options are
-            available for an elevated evening.
-          </p>
+              <div className="mt-24 flex flex-col items-start justify-between gap-6 border-t border-white/10 pt-8 sm:flex-row sm:items-center">
+                <p className="max-w-xl text-white/42">
+                  A full seasonal menu, wine pairings, and private tasting options are
+                  available for an elevated evening.
+                </p>
 
-          <a
-            href="#full-menu"
-            className="inline-flex items-center gap-2 rounded-full border border-[#C9A25B]/40 px-6 py-3.5 text-[#C9A25B] transition duration-500 hover:-translate-y-1 hover:bg-[#C9A25B] hover:text-black"
-          >
-            View the complete menu
-            <ArrowUpRight className="h-4 w-4" />
-          </a>
-        </div>
+                <a
+                  href="#full-menu"
+                  onClick={releaseForAnchorNavigation}
+                  className="inline-flex items-center gap-2 rounded-full border border-[#C9A25B]/40 px-6 py-3.5 text-[#C9A25B] transition duration-500 hover:-translate-y-1 hover:bg-[#C9A25B] hover:text-black"
+                >
+                  View the complete menu
+                  <ArrowUpRight className="h-4 w-4" />
+                </a>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <motion.div
