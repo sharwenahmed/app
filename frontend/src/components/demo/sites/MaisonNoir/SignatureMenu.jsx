@@ -100,18 +100,19 @@ const SIGNATURE_STAGE = {
 
 const SIGNATURE_STAGE_NAMES = [
   "intro",
-  "ribeye",
-  "filet",
-  "wagyu",
+  "dishes",
+  "dishes",
+  "dishes",
   "exiting",
   "complete",
 ];
 
 const WHEEL_INTENT_THRESHOLD = 118;
 const TOUCH_INTENT_THRESHOLD = 56;
-const STAGE_SETTLE_MS = 880;
-const ENTRY_SETTLE_MS = 640;
+const STAGE_SETTLE_MS = 560;
+const ENTRY_SETTLE_MS = 560;
 const EXIT_SETTLE_MS = 860;
+const AUTOPLAY_DELAY = 3600;
 
 const emberParticles = Array.from({ length: 18 }, (_, index) => ({
   id: index,
@@ -124,10 +125,12 @@ const emberParticles = Array.from({ length: 18 }, (_, index) => ({
 export default function SignatureMenu() {
   const [stage, setStage] = useState(SIGNATURE_STAGE.INTRO);
   const [active, setActive] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const [isReserving, setIsReserving] = useState(false);
   const sectionRef = useRef(null);
   const introRef = useRef(null);
   const dishChapterRef = useRef(null);
+  const intervalRef = useRef(null);
   const touchStartYRef = useRef(null);
   const stageRef = useRef(SIGNATURE_STAGE.INTRO);
   const wheelIntentRef = useRef(0);
@@ -139,14 +142,34 @@ export default function SignatureMenu() {
   const viewGateCompleteRef = useRef(false);
   const transitionTimerRef = useRef(null);
   const exitTimerRef = useRef(null);
+  const naturalScrollReleaseTimerRef = useRef(null);
   const releaseScrollLockRef = useRef(null);
   const reduce = useReducedMotion();
   const { lockScroll, unlockScroll } = useMaisonScroll();
 
   const dish = dishes[active];
   const showIntroChapter = reduce || stage === SIGNATURE_STAGE.INTRO;
-  const showDishChapter = reduce || stage !== SIGNATURE_STAGE.INTRO;
+  const showDishChapter =
+    reduce ||
+    (stage !== SIGNATURE_STAGE.INTRO && stage !== SIGNATURE_STAGE.COMPLETE);
   const isExiting = stage === SIGNATURE_STAGE.EXITING;
+
+  useEffect(() => {
+    if (reduce || isPaused || isReserving || !showDishChapter || isExiting) {
+      return undefined;
+    }
+
+    intervalRef.current = window.setInterval(() => {
+      setActive((current) => (current + 1) % dishes.length);
+    }, AUTOPLAY_DELAY);
+
+    return () => {
+      if (intervalRef.current) {
+        window.clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [isExiting, isPaused, isReserving, reduce, showDishChapter]);
 
   const resetInputIntent = React.useCallback(() => {
     wheelIntentRef.current = 0;
@@ -175,6 +198,14 @@ export default function SignatureMenu() {
     root.dataset.mnSignatureExperienceComplete = complete ? "true" : "false";
     root.dataset.mnSignatureStage =
       SIGNATURE_STAGE_NAMES[nextStage] || "active";
+  }, []);
+
+  const markSignatureReadyForRunway = React.useCallback(() => {
+    if (typeof document === "undefined") return;
+
+    const root = document.documentElement;
+    root.dataset.mnSignatureExperienceComplete = "true";
+    root.dataset.mnSignatureStage = "dishes";
   }, []);
 
   const measureSignature = React.useCallback(() => {
@@ -220,33 +251,81 @@ export default function SignatureMenu() {
     }
   }, [getSignatureTargetY]);
 
-  const completeSignatureExperience = React.useCallback(() => {
+  const completeSignatureExperience = React.useCallback(
+    (handoffToRunway = false) => {
+      if (transitionTimerRef.current) {
+        window.clearTimeout(transitionTimerRef.current);
+        transitionTimerRef.current = null;
+      }
+
+      if (exitTimerRef.current) {
+        window.clearTimeout(exitTimerRef.current);
+        exitTimerRef.current = null;
+      }
+
+      if (naturalScrollReleaseTimerRef.current) {
+        window.clearTimeout(naturalScrollReleaseTimerRef.current);
+        naturalScrollReleaseTimerRef.current = null;
+      }
+
+      resetInputIntent();
+      inputLockedUntilRef.current = 0;
+      stageRef.current = SIGNATURE_STAGE.COMPLETE;
+      viewGateActiveRef.current = false;
+      viewGateCompleteRef.current = true;
+      setStage(SIGNATURE_STAGE.COMPLETE);
+      markSignatureStage(SIGNATURE_STAGE.COMPLETE);
+      releaseSignatureScrollLock();
+
+      if (!handoffToRunway) return;
+
+      window.requestAnimationFrame(() => {
+        const runwaySection = document.getElementById("food-film-runway");
+
+        if (runwaySection) {
+          runwaySection.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+      });
+    },
+    [markSignatureStage, releaseSignatureScrollLock, resetInputIntent]
+  );
+
+  const releaseDishChapterToNaturalScroll = React.useCallback(() => {
     if (transitionTimerRef.current) {
       window.clearTimeout(transitionTimerRef.current);
       transitionTimerRef.current = null;
     }
 
-    if (exitTimerRef.current) {
-      window.clearTimeout(exitTimerRef.current);
-      exitTimerRef.current = null;
+    if (naturalScrollReleaseTimerRef.current) {
+      window.clearTimeout(naturalScrollReleaseTimerRef.current);
+      naturalScrollReleaseTimerRef.current = null;
     }
 
     resetInputIntent();
     inputLockedUntilRef.current = 0;
-    stageRef.current = SIGNATURE_STAGE.COMPLETE;
     viewGateActiveRef.current = false;
     viewGateCompleteRef.current = true;
-    setStage(SIGNATURE_STAGE.COMPLETE);
-    setActive(2);
-    markSignatureStage(SIGNATURE_STAGE.COMPLETE);
+    markSignatureReadyForRunway();
     releaseSignatureScrollLock();
-  }, [markSignatureStage, releaseSignatureScrollLock, resetInputIntent]);
+  }, [
+    markSignatureReadyForRunway,
+    releaseSignatureScrollLock,
+    resetInputIntent,
+  ]);
 
   const goToSignatureStage = React.useCallback(
     (nextStage, settleMs = STAGE_SETTLE_MS) => {
       if (exitTimerRef.current) {
         window.clearTimeout(exitTimerRef.current);
         exitTimerRef.current = null;
+      }
+
+      if (naturalScrollReleaseTimerRef.current) {
+        window.clearTimeout(naturalScrollReleaseTimerRef.current);
+        naturalScrollReleaseTimerRef.current = null;
       }
 
       const stageValue = Math.min(
@@ -265,14 +344,16 @@ export default function SignatureMenu() {
 
       if (stageValue === SIGNATURE_STAGE.INTRO) {
         setActive(0);
-      } else if (stageValue <= SIGNATURE_STAGE.WAGYU) {
-        setActive(stageValue - 1);
-      } else {
-        setActive(2);
-        exitTimerRef.current = window.setTimeout(
-          completeSignatureExperience,
-          EXIT_SETTLE_MS
+      } else if (stageValue === SIGNATURE_STAGE.RIBEYE) {
+        setActive(0);
+        naturalScrollReleaseTimerRef.current = window.setTimeout(
+          releaseDishChapterToNaturalScroll,
+          Math.min(settleMs, 520)
         );
+      } else if (stageValue === SIGNATURE_STAGE.EXITING) {
+        exitTimerRef.current = window.setTimeout(() => {
+          completeSignatureExperience(true);
+        }, EXIT_SETTLE_MS);
       }
     },
     [
@@ -280,6 +361,7 @@ export default function SignatureMenu() {
       lockInputFor,
       lockToSignature,
       markSignatureStage,
+      releaseDishChapterToNaturalScroll,
       resetInputIntent,
     ]
   );
@@ -290,16 +372,28 @@ export default function SignatureMenu() {
 
       viewGateActiveRef.current = true;
       viewGateCompleteRef.current = false;
+      measureSignature();
+      lockToSignature();
       engageSignatureScrollLock();
       goToSignatureStage(initialStage, ENTRY_SETTLE_MS);
     },
-    [engageSignatureScrollLock, goToSignatureStage]
+    [
+      engageSignatureScrollLock,
+      goToSignatureStage,
+      lockToSignature,
+      measureSignature,
+    ]
   );
 
   const releaseToPreviousSection = React.useCallback(() => {
     if (exitTimerRef.current) {
       window.clearTimeout(exitTimerRef.current);
       exitTimerRef.current = null;
+    }
+
+    if (naturalScrollReleaseTimerRef.current) {
+      window.clearTimeout(naturalScrollReleaseTimerRef.current);
+      naturalScrollReleaseTimerRef.current = null;
     }
 
     resetInputIntent();
@@ -330,17 +424,11 @@ export default function SignatureMenu() {
           return;
         }
 
-        if (currentStage === SIGNATURE_STAGE.RIBEYE) {
-          goToSignatureStage(SIGNATURE_STAGE.FILET);
-          return;
-        }
-
-        if (currentStage === SIGNATURE_STAGE.FILET) {
-          goToSignatureStage(SIGNATURE_STAGE.WAGYU);
-          return;
-        }
-
-        if (currentStage === SIGNATURE_STAGE.WAGYU) {
+        if (
+          currentStage === SIGNATURE_STAGE.RIBEYE ||
+          currentStage === SIGNATURE_STAGE.FILET ||
+          currentStage === SIGNATURE_STAGE.WAGYU
+        ) {
           goToSignatureStage(SIGNATURE_STAGE.EXITING, EXIT_SETTLE_MS);
         }
 
@@ -348,21 +436,15 @@ export default function SignatureMenu() {
       }
 
       if (currentStage === SIGNATURE_STAGE.EXITING) {
-        goToSignatureStage(SIGNATURE_STAGE.WAGYU);
-        return;
-      }
-
-      if (currentStage === SIGNATURE_STAGE.WAGYU) {
-        goToSignatureStage(SIGNATURE_STAGE.FILET);
-        return;
-      }
-
-      if (currentStage === SIGNATURE_STAGE.FILET) {
         goToSignatureStage(SIGNATURE_STAGE.RIBEYE);
         return;
       }
 
-      if (currentStage === SIGNATURE_STAGE.RIBEYE) {
+      if (
+        currentStage === SIGNATURE_STAGE.RIBEYE ||
+        currentStage === SIGNATURE_STAGE.FILET ||
+        currentStage === SIGNATURE_STAGE.WAGYU
+      ) {
         goToSignatureStage(SIGNATURE_STAGE.INTRO);
         return;
       }
@@ -376,21 +458,23 @@ export default function SignatureMenu() {
 
   const handleSelectDish = React.useCallback(
     (index) => {
-      const nextStage = index + SIGNATURE_STAGE.RIBEYE;
+      resetInputIntent();
+      setActive(index);
 
-      if (viewGateActiveRef.current) {
-        goToSignatureStage(nextStage, 520);
-        return;
+      if (intervalRef.current) {
+        window.clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
 
-      resetInputIntent();
-      stageRef.current = nextStage;
+      if (stageRef.current === SIGNATURE_STAGE.INTRO) {
+        stageRef.current = SIGNATURE_STAGE.RIBEYE;
+        setStage(SIGNATURE_STAGE.RIBEYE);
+        markSignatureStage(SIGNATURE_STAGE.RIBEYE);
+      }
+
       viewGateCompleteRef.current = false;
-      setStage(nextStage);
-      setActive(index);
-      markSignatureStage(nextStage);
     },
-    [goToSignatureStage, markSignatureStage, resetInputIntent]
+    [markSignatureStage, resetInputIntent]
   );
 
   const releaseForAnchorNavigation = React.useCallback(() => {
@@ -463,6 +547,10 @@ export default function SignatureMenu() {
         window.clearTimeout(exitTimerRef.current);
       }
 
+      if (naturalScrollReleaseTimerRef.current) {
+        window.clearTimeout(naturalScrollReleaseTimerRef.current);
+      }
+
       if (typeof document !== "undefined") {
         delete document.documentElement.dataset.mnSignatureExperienceComplete;
         delete document.documentElement.dataset.mnSignatureStage;
@@ -516,7 +604,7 @@ export default function SignatureMenu() {
             autoAlpha: 1,
             y: 0,
             scale: 1,
-            duration: 0.86,
+            duration: 0.62,
             ease: "power3.out",
             clearProps: "transform,opacity,visibility",
           }
@@ -576,25 +664,14 @@ export default function SignatureMenu() {
     const isForwardGateZone = (deltaY = 0) => {
       const { top, height } = getSignatureBounds();
       const viewportHeight = window.innerHeight;
+      const entryLine = window.scrollY + viewportHeight * 1.05;
       const projectedScrollY =
-        window.scrollY + Math.min(Math.max(deltaY, 0), viewportHeight * 5.5);
+        window.scrollY + Math.min(Math.max(deltaY, 0), viewportHeight * 1.35);
 
       return (
+        entryLine >= top &&
         projectedScrollY + viewportHeight * 0.82 >= top &&
         window.scrollY < top + height * 0.72
-      );
-    };
-
-    const isReverseGateZone = (deltaY = 0) => {
-      const { top, bottom } = getSignatureBounds();
-      const viewportHeight = window.innerHeight;
-      const projectedScrollY =
-        window.scrollY - Math.min(Math.max(Math.abs(deltaY), 0), viewportHeight);
-
-      return (
-        viewGateCompleteRef.current &&
-        window.scrollY <= bottom + viewportHeight * 0.48 &&
-        projectedScrollY + viewportHeight * 0.36 >= top
       );
     };
 
@@ -638,10 +715,6 @@ export default function SignatureMenu() {
           return;
         }
 
-        if (!isReverseGateZone(event.deltaY)) return;
-
-        stopManagedEvent(event);
-        activateSignatureGate(SIGNATURE_STAGE.WAGYU);
         return;
       }
 
@@ -686,13 +759,6 @@ export default function SignatureMenu() {
           return;
         }
 
-        if (!isReverseGateZone(delta)) {
-          touchStartYRef.current = currentY;
-          return;
-        }
-
-        stopManagedEvent(event);
-        activateSignatureGate(SIGNATURE_STAGE.WAGYU);
         touchStartYRef.current = currentY;
         return;
       }
@@ -737,10 +803,6 @@ export default function SignatureMenu() {
           return;
         }
 
-        if (!isReverseGateZone(120)) return;
-
-        stopManagedEvent(event);
-        activateSignatureGate(SIGNATURE_STAGE.WAGYU);
         return;
       }
 
@@ -776,7 +838,7 @@ export default function SignatureMenu() {
     <section
       id="menu"
       ref={sectionRef}
-      className="relative isolate overflow-hidden border-t border-white/10 bg-[#060403] px-6 py-24 md:py-36"
+      className="relative isolate overflow-hidden border-t border-white/10 bg-[#060403] px-6 py-16 md:py-20 lg:min-h-screen lg:py-14"
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(201,162,91,0.08),transparent_42%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_82%,rgba(74,20,24,0.28),transparent_38%)]" />
@@ -872,20 +934,22 @@ export default function SignatureMenu() {
               initial={reduce ? false : { opacity: 0, y: 24, scale: 0.988 }}
               animate={reduce ? {} : { opacity: 1, y: 0, scale: 1 }}
               exit={reduce ? {} : { opacity: 0, y: -24, scale: 0.985 }}
-              transition={{ duration: 0.86, ease: [0.22, 1, 0.36, 1] }}
-              className={isExiting ? "pointer-events-none" : ""}
+              transition={{ duration: 0.66, ease: [0.22, 1, 0.36, 1] }}
+              className={`lg:flex lg:min-h-[calc(100vh-7rem)] lg:flex-col lg:justify-center ${
+                isExiting ? "pointer-events-none" : ""
+              }`}
             >
-              <div className="relative z-20 grid items-center gap-16 lg:grid-cols-12 lg:gap-20">
+              <div className="relative z-20 grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
           <div className="order-2 lg:order-1 lg:col-span-5">
-            <div className="mb-10 flex items-center gap-5">
+            <div className="mb-5 flex items-center gap-5">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={dish.number}
                   initial={reduce ? false : { opacity: 0, y: 18 }}
                   animate={reduce ? {} : { opacity: 1, y: 0 }}
                   exit={reduce ? {} : { opacity: 0, y: -14 }}
-                  transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                  className="font-serif text-[clamp(5rem,11vw,10rem)] leading-none text-[#C9A25B]/30"
+                  transition={{ duration: 0.48, ease: [0.22, 1, 0.36, 1] }}
+                  className="font-serif text-[clamp(3.8rem,8vw,7rem)] leading-none text-[#C9A25B]/30"
                 >
                   {dish.number}
                 </motion.div>
@@ -912,25 +976,25 @@ export default function SignatureMenu() {
                     ? {}
                     : { opacity: 0, y: -18 }
                 }
-                transition={{ duration: 0.86, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
               >
                 <p className="mb-5 text-[10px] uppercase tracking-[0.48em] text-[#C9A25B]/80">
                   {dish.subtitle}
                 </p>
 
-                <h3 className="font-serif text-[clamp(4.4rem,9vw,8.6rem)] leading-[0.78] tracking-[-0.08em] text-white">
+                <h3 className="font-serif text-[clamp(3.8rem,8vw,7.4rem)] leading-[0.78] tracking-[-0.08em] text-white">
                   {dish.short}
                 </h3>
 
-                <p className="mt-7 text-[10px] uppercase tracking-[0.38em] text-[#C9A25B]/70">
+                <p className="mt-5 text-[10px] uppercase tracking-[0.38em] text-[#C9A25B]/70">
                   {dish.details}
                 </p>
 
-                <p className="mt-8 max-w-xl text-lg leading-8 text-white/58">
+                <p className="mt-6 max-w-xl text-base leading-7 text-white/58 lg:text-lg">
                   {dish.story}
                 </p>
 
-                <div className="mt-12 flex items-end justify-between gap-8 border-t border-white/10 pt-8">
+                <div className="mt-8 flex items-end justify-between gap-8 border-t border-white/10 pt-6">
                   <div>
                     <p className="text-[10px] uppercase tracking-[0.36em] text-white/32">
                       Evening allocation
@@ -951,7 +1015,7 @@ export default function SignatureMenu() {
                   </motion.div>
                 </div>
 
-                <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+                <div className="mt-7 flex flex-col gap-4 sm:flex-row">
                   <button
                     onClick={handleReserveExperience}
                     className="group inline-flex items-center justify-center gap-3 rounded-full border border-[#C9A25B]/60 bg-[#C9A25B]/10 px-7 py-4 text-sm text-[#F2D48A] backdrop-blur-xl transition duration-500 hover:-translate-y-1 hover:bg-[#C9A25B] hover:text-black"
@@ -971,11 +1035,13 @@ export default function SignatureMenu() {
               </motion.div>
             </AnimatePresence>
 
-            <div className="mt-14 grid grid-cols-3 gap-3">
+            <div className="mt-8 grid grid-cols-3 gap-3">
               {dishes.map((item, index) => (
                 <button
                   key={item.name}
                   onClick={() => handleSelectDish(index)}
+                  onMouseEnter={() => setIsPaused(true)}
+                  onMouseLeave={() => setIsPaused(false)}
                   className={`group relative overflow-hidden border px-4 py-5 text-left transition duration-500 ${
                     active === index
                       ? "border-[#C9A25B]/55 bg-[#C9A25B]/8"
@@ -998,14 +1064,14 @@ export default function SignatureMenu() {
                     {item.short}
                   </p>
 
-                  {active === index && !reduce && (
+                  {active === index && !reduce && !isPaused && (
                     <motion.span
                       key={`selector-progress-${active}`}
                       initial={{ scaleX: 0 }}
                       animate={{ scaleX: 1 }}
                       transition={{
-                        duration: 0.46,
-                        ease: "easeOut",
+                        duration: AUTOPLAY_DELAY / 1000,
+                        ease: "linear",
                       }}
                       className="absolute bottom-0 left-0 h-px w-full origin-left bg-[#C9A25B]"
                     />
@@ -1015,7 +1081,11 @@ export default function SignatureMenu() {
             </div>
           </div>
 
-          <div className="relative z-30 order-1 lg:order-2 lg:col-span-7">
+          <div
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            className="relative z-30 order-1 lg:order-2 lg:col-span-7"
+          >
             <motion.div
               initial={reduce ? false : { opacity: 0, y: 60, scale: 0.96 }}
               whileInView={reduce ? {} : { opacity: 1, y: 0, scale: 1 }}
@@ -1064,7 +1134,7 @@ export default function SignatureMenu() {
                             scale: 1.01,
                           }
                     }
-                    transition={{ duration: 1.25, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ duration: 0.76, ease: [0.22, 1, 0.36, 1] }}
                     className="relative"
                   >
                     <motion.img
@@ -1080,11 +1150,11 @@ export default function SignatureMenu() {
                             }
                       }
                       transition={{
-                        duration: 8.5,
+                        duration: 6.5,
                         repeat: Infinity,
                         ease: "easeInOut",
                       }}
-                      className="aspect-[4/5] w-full object-cover opacity-95 sm:aspect-[16/11]"
+                      className="aspect-[4/5] max-h-[58vh] w-full object-cover opacity-95 sm:aspect-[16/10]"
                     />
                   </motion.div>
                 </AnimatePresence>
@@ -1095,7 +1165,7 @@ export default function SignatureMenu() {
                   animate={
                     reduce ? {} : { scaleX: [0, 1, 0], opacity: [0, 1, 0] }
                   }
-                  transition={{ duration: 1.18, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: 0.82, ease: [0.22, 1, 0.36, 1] }}
                   className="pointer-events-none absolute left-0 top-1/2 z-40 h-px w-full origin-left bg-gradient-to-r from-transparent via-[#F2D48A] to-transparent shadow-[0_0_36px_rgba(242,212,138,0.95)]"
                 />
 
@@ -1103,7 +1173,7 @@ export default function SignatureMenu() {
                   key={`shimmer-${active}`}
                   initial={reduce ? false : { x: "-120%", opacity: 0 }}
                   animate={reduce ? {} : { x: "130%", opacity: [0, 0.5, 0] }}
-                  transition={{ duration: 2.4, delay: 0.45, ease: "easeInOut" }}
+                  transition={{ duration: 1.65, delay: 0.28, ease: "easeInOut" }}
                   className="pointer-events-none absolute inset-y-0 left-[-40%] z-40 w-[48%] rotate-[13deg] bg-gradient-to-r from-transparent via-white/18 to-transparent blur-xl"
                 />
 
@@ -1149,14 +1219,29 @@ export default function SignatureMenu() {
                       className="h-px flex-1 overflow-hidden bg-white/14"
                     >
                       <motion.div
-                        key={`dish-progress-${index}-${active}`}
+                        key={
+                          active === index && !isPaused
+                            ? `active-progress-${index}-${active}`
+                            : `inactive-progress-${index}`
+                        }
                         initial={{ scaleX: 0 }}
                         animate={{
-                          scaleX: index <= active ? 1 : 0,
+                          scaleX:
+                            index < active
+                              ? 1
+                              : active === index && !reduce && !isPaused
+                                ? 1
+                                : active === index
+                                  ? 0.42
+                                  : 0,
                         }}
                         transition={{
-                          duration: 0.38,
-                          ease: "easeOut",
+                          duration:
+                            active === index && !isPaused && !reduce
+                              ? AUTOPLAY_DELAY / 1000
+                              : 0.35,
+                          ease:
+                            active === index && !isPaused ? "linear" : "easeOut",
                         }}
                         className="h-full w-full origin-left bg-gradient-to-r from-[#C9A25B] to-[#f3d48a]"
                       />
@@ -1172,7 +1257,7 @@ export default function SignatureMenu() {
                         initial={reduce ? false : { opacity: 0, y: 14 }}
                         animate={reduce ? {} : { opacity: 1, y: 0 }}
                         exit={reduce ? {} : { opacity: 0, y: -10 }}
-                        transition={{ duration: 0.5 }}
+                        transition={{ duration: 0.38 }}
                         className="mb-4 text-[10px] uppercase tracking-[0.42em] text-[#C9A25B]/80"
                       >
                         {dish.number} / 03
@@ -1198,7 +1283,7 @@ export default function SignatureMenu() {
                             : { opacity: 0, y: -16 }
                         }
                         transition={{
-                          duration: 0.75,
+                          duration: 0.5,
                           ease: [0.22, 1, 0.36, 1],
                         }}
                         className="font-serif text-5xl leading-[0.9] tracking-tight text-white md:text-7xl"
@@ -1214,7 +1299,7 @@ export default function SignatureMenu() {
                       initial={reduce ? false : { opacity: 0, y: 18 }}
                       animate={reduce ? {} : { opacity: 1, y: 0 }}
                       exit={reduce ? {} : { opacity: 0, y: -12 }}
-                      transition={{ duration: 0.65, delay: 0.18 }}
+                      transition={{ duration: 0.46, delay: 0.1 }}
                       className="font-serif text-4xl text-[#C9A25B] md:text-5xl"
                     >
                       {dish.price}
@@ -1226,7 +1311,7 @@ export default function SignatureMenu() {
           </div>
         </div>
 
-              <div className="mt-24 flex flex-col items-start justify-between gap-6 border-t border-white/10 pt-8 sm:flex-row sm:items-center">
+              <div className="mt-10 flex flex-col items-start justify-between gap-6 border-t border-white/10 pt-8 sm:flex-row sm:items-center lg:mt-12">
                 <p className="max-w-xl text-white/42">
                   A full seasonal menu, wine pairings, and private tasting options are
                   available for an elevated evening.

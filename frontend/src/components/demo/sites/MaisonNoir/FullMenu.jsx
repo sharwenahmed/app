@@ -1161,6 +1161,9 @@ export default function FullMenu({ onAddToCart = () => {} }) {
   const fullMenuRef = useRef(null);
   const heroVideoRef = useRef(null);
   const dishPreviewRafRef = useRef(null);
+  const menuGridRefs = useRef({});
+  const menuCardRefs = useRef({});
+  const menuCardRafRef = useRef(null);
   const pendingDishPreviewRef = useRef(null);
   const sectionRefs = useRef({});
 
@@ -1306,6 +1309,77 @@ export default function FullMenu({ onAddToCart = () => {} }) {
       if (dishPreviewRafRef.current) {
         window.cancelAnimationFrame(dishPreviewRafRef.current);
       }
+    };
+  }, []);
+
+  useEffect(() => {
+    const resetMenuCards = () => {
+      categories.forEach((category) => {
+        const card = menuCardRefs.current[category];
+        if (!card) return;
+
+        card.style.transform = "translate3d(0, 0, 0)";
+        card.style.willChange = "auto";
+      });
+    };
+
+    const updateMenuCards = () => {
+      menuCardRafRef.current = null;
+
+      if (window.innerWidth < 1024) {
+        resetMenuCards();
+        return;
+      }
+
+      categories.forEach((category) => {
+        const grid = menuGridRefs.current[category];
+        const card = menuCardRefs.current[category];
+        if (!grid || !card) return;
+
+        const gridRect = grid.getBoundingClientRect();
+        const cardHeight = card.offsetHeight;
+        const maxOffset = Math.max(grid.offsetHeight - cardHeight, 0);
+        const rawOffset = 96 - gridRect.top;
+        const cardOffset = Math.min(Math.max(rawOffset, 0), maxOffset);
+
+        card.style.transform = `translate3d(0, ${cardOffset}px, 0)`;
+        card.style.willChange = cardOffset > 0 && cardOffset < maxOffset ? "transform" : "auto";
+      });
+    };
+
+    const scheduleMenuCardUpdate = () => {
+      if (menuCardRafRef.current) return;
+      menuCardRafRef.current = window.requestAnimationFrame(updateMenuCards);
+    };
+
+    const resizeObserver =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(scheduleMenuCardUpdate)
+        : null;
+
+    categories.forEach((category) => {
+      const grid = menuGridRefs.current[category];
+      const card = menuCardRefs.current[category];
+
+      if (grid) resizeObserver?.observe(grid);
+      if (card) resizeObserver?.observe(card);
+    });
+
+    scheduleMenuCardUpdate();
+
+    window.addEventListener("scroll", scheduleMenuCardUpdate, { passive: true });
+    window.addEventListener("resize", scheduleMenuCardUpdate);
+
+    return () => {
+      if (menuCardRafRef.current) {
+        window.cancelAnimationFrame(menuCardRafRef.current);
+        menuCardRafRef.current = null;
+      }
+
+      resizeObserver?.disconnect();
+      window.removeEventListener("scroll", scheduleMenuCardUpdate);
+      window.removeEventListener("resize", scheduleMenuCardUpdate);
+      resetMenuCards();
     };
   }, []);
 
@@ -1536,7 +1610,12 @@ export default function FullMenu({ onAddToCart = () => {} }) {
                     />
                   </div>
 
-                  <div className="grid lg:grid-cols-12 gap-12 items-start">
+                  <div
+                    ref={(el) => {
+                      menuGridRefs.current[category] = el;
+                    }}
+                    className="grid lg:grid-cols-12 gap-12 items-start"
+                  >
                     <div className="lg:col-span-7 divide-y divide-white/10">
                       {menuItems[category].map((item) => {
                         const [name, price, desc] = item;
@@ -1606,8 +1685,13 @@ export default function FullMenu({ onAddToCart = () => {} }) {
                       })}
                     </div>
 
-                    <div className="hidden lg:block lg:col-span-5 relative">
-                      <div className="sticky top-24 rounded-[2rem] overflow-hidden border border-white/10 bg-black backdrop-blur-xl shadow-[0_50px_120px_-55px_rgba(201,162,91,0.45)]">
+                    <div className="hidden lg:block lg:col-span-5 lg:self-stretch relative">
+                      <div
+                        ref={(el) => {
+                          menuCardRefs.current[category] = el;
+                        }}
+                        className="rounded-[2rem] overflow-hidden border border-white/10 bg-black backdrop-blur-xl shadow-[0_50px_120px_-55px_rgba(201,162,91,0.45)]"
+                      >
                         <AnimatePresence mode="wait">
                           <motion.div
                             key={`${category}-${selectedName}-image`}
